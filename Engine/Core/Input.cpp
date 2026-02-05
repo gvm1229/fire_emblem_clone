@@ -7,7 +7,7 @@
 
 // Ctrl + Home키로 파일 제일 위로 이동 가능.
 // Rider는 헤더 자동 추가 해줌.
-namespace Wanted
+namespace FE
 {
 	// 전역 변수 초기화.
 	Input* Input::instance = nullptr;
@@ -236,5 +236,20 @@ namespace Wanted
 			keyStates[ix].wasKeyDown
 				= keyStates[ix].isKeyDown;
 		}
+	}
+
+	// ??? ??? ??? ??? ??
+	Vector2 Input::ScreenToGrid(int gridOffsetX, int gridOffsetY) const
+	{
+		int gridX = mousePosition.x - gridOffsetX;
+		int gridY = mousePosition.y - gridOffsetY;
+		return Vector2(gridX, gridY);
+	}
+
+	// ?? ??? ??? ?????? ??
+	bool Input::IsGridClicked(int gridX, int gridY, int gridOffsetX, int gridOffsetY) const
+	{
+		Vector2 gridPos = ScreenToGrid(gridOffsetX, gridOffsetY);
+		return gridPos.x == gridX && gridPos.y == gridY;
 	}
 }

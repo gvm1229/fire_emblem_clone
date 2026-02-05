@@ -6,7 +6,7 @@
 #include <iostream>
 #include <Windows.h> // 콘솔을 조작하는 함수가 OS 마다 다름
 
-namespace Wanted
+namespace FE
 {
 	Actor::Actor(
 		const char* image,

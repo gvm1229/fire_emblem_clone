@@ -3,7 +3,7 @@
 #include "Math/Vector2.h"
 #include <Windows.h>
 
-namespace Wanted
+namespace FE
 {
 	/*
 	* 작성자 : 장세윤

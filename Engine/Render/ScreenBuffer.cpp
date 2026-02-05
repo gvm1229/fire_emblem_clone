@@ -2,7 +2,7 @@
 #include <iostream>
 #include "Renderer.h"
 
-namespace Wanted
+namespace FE
 {
 	ScreenBuffer::ScreenBuffer(const Vector2& screenSize)
 		: screenSize(screenSize)

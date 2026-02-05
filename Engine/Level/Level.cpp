@@ -1,7 +1,7 @@
 #include "Level.h"
 #include "Actor/Actor.h"
 
-namespace Wanted
+namespace FE
 {
 	Level::Level()
 	{

@@ -2,7 +2,7 @@
 #include "ScreenBuffer.h"
 #include "Util/Util.h"
 
-namespace Wanted
+namespace FE
 {
 	Renderer::Frame::Frame(int bufferCount)
 	{

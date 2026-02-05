@@ -7,7 +7,7 @@
 #include <iostream>
 #include <Windows.h>
 
-namespace Wanted
+namespace FE
 {
 	// 전역 변수 초기화.
 	Engine* Engine::instance = nullptr;

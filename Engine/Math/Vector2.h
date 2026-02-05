@@ -3,9 +3,9 @@
 #include "Common/Common.h"
 #include <Windows.h>
 
-namespace Wanted
+namespace FE
 {
-	class WANTED_API Vector2
+	class FE_API Vector2
 	{
 	public:
 		Vector2();

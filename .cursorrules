@@ -25,6 +25,7 @@
 - All non-code comments must be in Korean, and be literal about variable names and function names instead of translating them.
 - If a task is complex, think "step-by-step" before writing code.
 - If you need more verbal context from the user or if you're not sure about something, just say so instead of a vague or wrong answer.
+- Update every plans that needs to be carried out to the project in the TODO.md, and only proceed until the specified section of it. For example, if you have plans from A~G, and the user says to only proceed up until B, then you should mark the sections up until B as completed, but must not proceed any further. You are only allowed to document the plans into the TODO.md as preparation. This is to account for git commits, as it is better to separate the commits per feature.
 
 ## Negative Constraints
 - Try to stick with standard libraries as much as possible. Advanced features are good, but going overboard like bombarding the project with external libraries are a no-go.

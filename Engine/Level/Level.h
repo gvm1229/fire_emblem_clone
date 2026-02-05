@@ -6,13 +6,13 @@
 // 크기가 알아서 변경되는 배열.
 #include <vector>
 
-namespace Wanted
+namespace FE
 {
 	// 전방 선언.
 	class Actor;
 
 	// 담당 임무: 레벨에 있는 모든 액터(물체) 관리.
-	class WANTED_API Level : public RTTI
+	class FE_API Level : public RTTI
 	{
 		RTTI_DECLARATIONS(Level, RTTI)
 

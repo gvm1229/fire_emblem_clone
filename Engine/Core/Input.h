@@ -3,9 +3,9 @@
 #include "Common/Common.h"
 #include "Math/Vector2.h"
 
-namespace Wanted
+namespace FE
 {
-	class WANTED_API Input
+	class FE_API Input
 	{
 		friend class Engine;
 
@@ -54,6 +54,12 @@ namespace Wanted
 
 		// 마우스 커서 위치 확인 함수.
 		inline Vector2 MousePosition() const { return mousePosition; }
+
+		// ??? ??? ??? ??? ?? (gridOffsetX, gridOffsetY: ???? ???? ???? ??)
+		Vector2 ScreenToGrid(int gridOffsetX, int gridOffsetY) const;
+
+		// ?? ??? ??? ?????? ??
+		bool IsGridClicked(int gridX, int gridY, int gridOffsetX, int gridOffsetY) const;
 
 	private:
 		// 입력 처리 함수.
