@@ -1,0 +1,30 @@
+# Project Instructions: FireEmblemClone
+
+## Technical Stack
+- C++
+
+## Ignored directories
+- .git
+- .vs
+- Bin\
+- Includes\
+- Intermediate\
+- Library\
+
+## Coding Rules
+- **Strict Typing:** Never use `auto` or C-style type casting. Only use C++ type casting explicitly.
+- **Error Handling:** Always use early returns in case of an error with user-friendly logs. The filename and the function name must be included neatly in the log as well.
+- **Includes:** Use absolute paths that start from the project root, as the project directory is included in the include directory.
+
+## Documentation Requirements
+- Add comment blocks for exported utility functions.
+- Keep README.md updated with any core structure changes or if any environment variables need to be documented.
+- Update every project feature changes in the Context.md.
+
+## Specialized Instructions
+- All non-code comments must be in Korean, and be literal about variable names and function names instead of translating them.
+- If a task is complex, think "step-by-step" before writing code.
+- If you need more verbal context from the user or if you're not sure about something, just say so instead of a vague or wrong answer.
+
+## Negative Constraints
+- Try to stick with standard libraries as much as possible. Advanced features are good, but going overboard like bombarding the project with external libraries are a no-go.
