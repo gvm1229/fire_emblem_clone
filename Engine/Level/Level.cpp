@@ -9,10 +9,10 @@ namespace FE
 
 	Level::~Level()
 	{
-		// ¸Þ¸ð¸® Á¤¸®.
+		// ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		for (Actor*& actor : actors)
 		{
-			// ¾×ÅÍ °´Ã¼ ¸Þ¸ð¸® ÇØÁ¦.
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½.
 			if (actor)
 			{
 				delete actor;
@@ -20,16 +20,16 @@ namespace FE
 			}
 		}
 
-		// ¹è¿­ ÃÊ±âÈ­.
+		// ï¿½è¿­ ï¿½Ê±ï¿½È­.
 		actors.clear();
 	}
 
 	void Level::BeginPlay()
 	{
-		// ¾×ÅÍ¿¡ ÀÌº¥Æ® Èê¸®±â.
+		// ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½Ìºï¿½Æ® ï¿½ê¸®ï¿½ï¿½.
 		for (Actor* actor : actors)
 		{
-			// ÀÌ¹Ì BeginPlay È£ÃâµÈ ¾×ÅÍ´Â °Ç³Ê¶Ù±â.
+			// ï¿½Ì¹ï¿½ BeginPlay È£ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í´ï¿½ ï¿½Ç³Ê¶Ù±ï¿½.
 			if (actor->HasBeganPlay())
 			{
 				continue;
@@ -41,7 +41,7 @@ namespace FE
 
 	void Level::Tick(float deltaTime)
 	{
-		// ¾×ÅÍ¿¡ ÀÌº¥Æ® Èê¸®±â.
+		// ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½Ìºï¿½Æ® ï¿½ê¸®ï¿½ï¿½.
 		for (Actor* actor : actors)
 		{
 			actor->Tick(deltaTime);
@@ -50,23 +50,23 @@ namespace FE
 
 	void Level::Draw()
 	{
-		//// ¾×ÅÍ¿¡ ÀÌº¥Æ® Èê¸®±â.
+		//// ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½Ìºï¿½Æ® ï¿½ê¸®ï¿½ï¿½.
 		//for (Actor* actor : actors)
 		//{
-		//	// °°Àº À§Ä¡¿¡ ´Ù¸¥ ¾×ÅÍ°¡ ÀÖ´ÂÁö È®ÀÎÇÏ±â À§ÇÔ.
+		//	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½Í°ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		//	Actor* search = nullptr;
 		//	for (Actor* otherActor : actors)
 		//	{
-		//		// °°Àº ¾×ÅÍ´Â ºñ±³ ¾ÈÇÔ.
+		//		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		//		if (actor == otherActor)
 		//		{
 		//			continue;
 		//		}
 
-		//		// À§Ä¡ ºñ±³.
+		//		// ï¿½ï¿½Ä¡ ï¿½ï¿½.
 		//		if (actor->GetPosition() == otherActor->GetPosition())
 		//		{
-		//			// Á¤·Ä ¼ø¼­ ºñ±³.
+		//			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½.
 		//			if (actor->GetSortingOrder()
 		//				< otherActor->GetSortingOrder())
 		//			{
@@ -76,17 +76,17 @@ namespace FE
 		//		}
 		//	}
 
-		//	// °°Àº À§Ä¡¿¡ ¿ì¼±¼øÀ§ ³ôÀº ´Ù¸¥ ¾×ÅÍ°¡ ÀÖÀ¸¸é ¾È±×¸².
+		//	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ì¼±ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½È±×¸ï¿½.
 		//	if (search)
 		//	{
 		//		continue;
 		//	}
 
-		//	// ±×¸®±â.
+		//	// ï¿½×¸ï¿½ï¿½ï¿½.
 		//	actor->Draw();
 		//}
 
-		// ¾×ÅÍ ¼øÈ¸ÇÏ¸é¼­ Draw ÇÔ¼ö È£Ãâ.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ï¿½Ï¸é¼­ Draw ï¿½Ô¼ï¿½ È£ï¿½ï¿½.
 		for (Actor* const actor : actors)
 		{
 			if (!actor->IsActive())
@@ -100,22 +100,22 @@ namespace FE
 
 	void Level::AddNewActor(Actor* newActor)
 	{
-		// ³ªÁß¿¡ Ãß°¡¸¦ À§ÇØ ÀÓ½Ã ¹è¿­¿¡ ÀúÀå.
+		// ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ó½ï¿½ ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		addRequestedActors.emplace_back(newActor);
 
-		// ¿À³Ê½Ê ¼³Á¤.
+		// ï¿½ï¿½ï¿½Ê½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		newActor->SetOwner(this);
 	}
 
 	void Level::ProcessAddAndDestroyActors()
 	{
-		// Á¦°Å Ã³¸®.
+		// ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
 		for (int ix = 0; ix < static_cast<int>(actors.size()); )
 		{
-			// Á¦°Å ¿äÃ»µÈ ¾×ÅÍ°¡ ÀÖ´ÂÁö È®ÀÎ.
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ï¿½Í°ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½.
 			if (actors[ix]->DestroyRequested())
 			{
-				// »èÁ¦ Ã³¸®.
+				// ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
 				delete actors[ix];
 				actors.erase(actors.begin() + ix);
 				continue;
@@ -124,7 +124,7 @@ namespace FE
 			++ix;
 		}
 
-		// Ãß°¡ Ã³¸®.
+		// ï¿½ß°ï¿½ Ã³ï¿½ï¿½.
 		if (addRequestedActors.size() == 0)
 		{
 			return;
@@ -135,7 +135,7 @@ namespace FE
 			actors.emplace_back(actor);
 		}
 
-		// Ã³¸®°¡ ³¡³µÀ¸¸é ¹è¿­ ÃÊ±âÈ­.
+		// Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ ï¿½Ê±ï¿½È­.
 		addRequestedActors.clear();
 	}
 }

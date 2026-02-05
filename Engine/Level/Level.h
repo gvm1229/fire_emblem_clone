@@ -2,16 +2,16 @@
 
 #include "Common/RTTI.h"
 
-// STL(Standard Template Library - C++¿¡¼­ ±âº» Á¦°ø).
-// Å©±â°¡ ¾Ë¾Æ¼­ º¯°æµÇ´Â ¹è¿­.
+// STL(Standard Template Library - C++ï¿½ï¿½ï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½).
+// Å©ï¿½â°¡ ï¿½Ë¾Æ¼ï¿½ ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ ï¿½è¿­.
 #include <vector>
 
 namespace FE
 {
-	// Àü¹æ ¼±¾ð.
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 	class Actor;
 
-	// ´ã´ç ÀÓ¹«: ·¹º§¿¡ ÀÖ´Â ¸ðµç ¾×ÅÍ(¹°Ã¼) °ü¸®.
+	// ï¿½ï¿½ï¿½ ï¿½Ó¹ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½Ã¼) ï¿½ï¿½ï¿½ï¿½.
 	class FE_API Level : public RTTI
 	{
 		RTTI_DECLARATIONS(Level, RTTI)
@@ -20,22 +20,22 @@ namespace FE
 		Level();
 		virtual ~Level();
 
-		// °ÔÀÓ ÇÃ·¹ÀÌ ÀÌº¥Æ®.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®.
 		virtual void BeginPlay();
 		virtual void Tick(float deltaTime);
 		virtual void Draw();
 
-		// ¾×ÅÍ Ãß°¡ ÇÔ¼ö.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½Ô¼ï¿½.
 		void AddNewActor(Actor* newActor);
 
-		// ¾×ÅÍ Ãß°¡/Á¦°Å Ã³¸® ÇÔ¼ö.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½/ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½Ô¼ï¿½.
 		void ProcessAddAndDestroyActors();
 
 	protected:
-		// ¾×ÅÍ ¹è¿­.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­.
 		std::vector<Actor*> actors;
 
-		// ½ÇÇà Áß¿¡ Ãß°¡ ¿äÃ»µÈ ¾×ÅÍÀÇ ¹è¿­.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½ ï¿½ß°ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­.
 		std::vector<Actor*> addRequestedActors;
 	};
 }

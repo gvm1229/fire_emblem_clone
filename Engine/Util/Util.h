@@ -6,10 +6,10 @@
 
 using namespace FE;
 
-// ÇïÆÛ(Helper) ±â´É Á¦°ø.
+// ï¿½ï¿½ï¿½ï¿½(Helper) ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 namespace Util
 {
-	// ÄÜ¼Ö Ä¿¼­ À§Ä¡ ÀÌµ¿(¼³Á¤)ÇÏ´Â ÇÔ¼ö.
+	// ï¿½Ü¼ï¿½ Ä¿ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½Ìµï¿½(ï¿½ï¿½ï¿½ï¿½)ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½.
 	inline void SetConsolePosition(const Vector2& position)
 	{
 		SetConsoleCursorPosition(
@@ -18,7 +18,7 @@ namespace Util
 		);
 	}
 
-	// ÄÜ¼Ö ÅØ½ºÆ® ¼³Á¤ ÇÔ¼ö.
+	// ï¿½Ü¼ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½.
 	inline void SetConsoleTextColor(Color color)
 	{
 		SetConsoleTextAttribute(
@@ -27,10 +27,10 @@ namespace Util
 		);
 	}
 
-	// Ä¿¼­ ²ô±â.
+	// Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½.
 	inline void TurnOffCursor()
 	{
-		// Ä¿¼­ ²ô±â.
+		// Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½.
 		CONSOLE_CURSOR_INFO info = {};
 		GetConsoleCursorInfo(
 			GetStdHandle(STD_OUTPUT_HANDLE),
@@ -44,10 +44,10 @@ namespace Util
 		);
 	}
 
-	// Ä¿¼­ ÄÑ±â.
+	// Ä¿ï¿½ï¿½ ï¿½Ñ±ï¿½.
 	inline void TurnOnCursor()
 	{
-		// Ä¿¼­ ²ô±â.
+		// Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½.
 		CONSOLE_CURSOR_INFO info = {};
 		GetConsoleCursorInfo(
 			GetStdHandle(STD_OUTPUT_HANDLE),
@@ -63,21 +63,21 @@ namespace Util
 
 	inline void SetRandomSeed()
 	{
-		// ½Ã°£ °ªÀ» ·£´ý Á¾ÀÚ°ªÀ¸·Î ¼³Á¤.
+		// ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		srand(static_cast<unsigned int>(time(nullptr)));
 	}
 
-	// Á¤¼ö ³­¼ö ÇÔ¼ö.
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½.
 	inline int Random(int min, int max)
 	{
 		int diff = (max - min) + 1;
 		return ((diff * rand()) / (RAND_MAX + 1)) + min;
 	}
 
-	// ºÎµ¿¼Ò¼öÁ¡ ³­¼ö ÇÔ¼ö.
+	// ï¿½Îµï¿½ï¿½Ò¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½.
 	inline float RandomRange(float min, float max)
 	{
-		// 0~1»çÀÌÀÇ float ±â¹Ý ·£´ý °ª.
+		// 0~1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ float ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½.
 		float random
 			= static_cast<float>(rand())
 			/ static_cast<float>(RAND_MAX);
@@ -86,7 +86,7 @@ namespace Util
 		return (random * diff) + min;
 	}
 
-	// ¾î¶² °ªÀ» µÎ ¼ö »çÀÌ·Î °íÁ¤ÇÒ ¶§ »ç¿ëÇÏ´Â ÇÔ¼ö.
+	// ï¿½î¶² ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ì·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½.
 	template<typename T>
 	T Clamp(T value, T min, T max)
 	{
@@ -103,7 +103,7 @@ namespace Util
 	}
 }
 
-// ¸Þ¸ð¸® Á¤¸® ÇÔ¼ö.
+// ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½.
 template<typename T>
 void SafeDelete(T*& t)
 {

@@ -5,17 +5,17 @@
 #include <iostream>
 #include <cassert>
 
-// Ctrl + HomeÅ°·Î ÆÄÀÏ Á¦ÀÏ À§·Î ÀÌµ¿ °¡´É.
-// Rider´Â Çì´õ ÀÚµ¿ Ãß°¡ ÇØÁÜ.
+// Ctrl + HomeÅ°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½.
+// Riderï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ß°ï¿½ ï¿½ï¿½ï¿½ï¿½.
 namespace FE
 {
-	// Àü¿ª º¯¼ö ÃÊ±âÈ­.
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­.
 	Input* Input::instance = nullptr;
 
 	Input::Input()
 	{
-		// Àü¿ª º¯¼ö¿¡ ÀÚ±â ÀÚ½Å ÇÒ´ç
-		// °´Ã¼°¡ ÃÊ±âÈ­µÇ¸é ÀÚ±â ÀÚ½ÅÀÇ ÁÖ¼Ò¸¦ ÀúÀå.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú±ï¿½ ï¿½Ú½ï¿½ ï¿½Ò´ï¿½
+		// ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½Ê±ï¿½È­ï¿½Ç¸ï¿½ ï¿½Ú±ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½Ö¼Ò¸ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		instance = this;
 	}
 	
@@ -42,8 +42,8 @@ namespace FE
 
 	bool Input::GetMouseButtonDown(int buttonCode)
 	{
-		// buttonCode°¡ 0ÀÌ°Å³ª 1ÀÎÁö È®ÀÎ.
-		// ÀÌ °Ë»ç¸¦ Åë°ú ¸øÇÏ¸é debugbreak°¡ µ¿ÀÛÇÔ.
+		// buttonCodeï¿½ï¿½ 0ï¿½Ì°Å³ï¿½ 1ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½.
+		// ï¿½ï¿½ ï¿½Ë»ç¸¦ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ debugbreakï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 		assert(buttonCode == 0 || buttonCode == 1);
 
 		int keyCode = 0;
@@ -62,8 +62,8 @@ namespace FE
 
 	bool Input::GetMouseButtonUp(int buttonCode)
 	{
-		// buttonCode°¡ 0ÀÌ°Å³ª 1ÀÎÁö È®ÀÎ.
-		// ÀÌ °Ë»ç¸¦ Åë°ú ¸øÇÏ¸é debugbreak°¡ µ¿ÀÛÇÔ.
+		// buttonCodeï¿½ï¿½ 0ï¿½Ì°Å³ï¿½ 1ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½.
+		// ï¿½ï¿½ ï¿½Ë»ç¸¦ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ debugbreakï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 		assert(buttonCode == 0 || buttonCode == 1);
 
 		int keyCode = 0;
@@ -82,8 +82,8 @@ namespace FE
 
 	bool Input::GetMouseButton(int buttonCode)
 	{
-		// buttonCode°¡ 0ÀÌ°Å³ª 1ÀÎÁö È®ÀÎ.
-		// ÀÌ °Ë»ç¸¦ Åë°ú ¸øÇÏ¸é debugbreak°¡ µ¿ÀÛÇÔ.
+		// buttonCodeï¿½ï¿½ 0ï¿½Ì°Å³ï¿½ 1ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½.
+		// ï¿½ï¿½ ï¿½Ë»ç¸¦ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½ debugbreakï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
 		assert(buttonCode == 0 || buttonCode == 1);
 
 		int keyCode = 0;
@@ -101,43 +101,43 @@ namespace FE
 
 	Input& Input::Get()
 	{
-		// ½Ì±ÛÅÏ (Singleton)
-		// °´Ã¼´Â Á¤È®È÷ ÇÏ³ª¸¸ Á¸Àç, ´õ ¸¹¾Æ¼­µµ, ´õ Àû¾î¼­µµ ¾ÈµÊ
-		// ÀÌ ÇÔ¼ö´Â ÄÜÅÙÃ÷ ÇÁ·ÎÁ§Æ®¿¡¼­ Á¢±ÙÇÔ.
-		// µû¶ó¼­ ¿£ÁøÀº ÀÌ¹Ì ÃÊ±âÈ­ ¿Ï·á »óÅÂ.
+		// ï¿½Ì±ï¿½ï¿½ï¿½ (Singleton)
+		// ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½È®ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½, ï¿½ï¿½ ï¿½ï¿½ï¿½î¼­ï¿½ï¿½ ï¿½Èµï¿½
+		// ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ ï¿½Ê±ï¿½È­ ï¿½Ï·ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		if (!instance)
 		{
 			//return *nullptr;
 			std::cout << "Error: Input::Get(). instance is null\n";
 
-			// µð¹ö±× ¸ðµå¿¡¼­¸¸ µ¿ÀÛÇÔ.
-			// ÀÚµ¿À¸·Î Áß´ÜÁ¡ °É¸².
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½å¿¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+			// ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß´ï¿½ï¿½ï¿½ ï¿½É¸ï¿½.
 			__debugbreak();
 		}
 
 		// Lazy-Pattern.
-		// ÀÌÆåÆ¼ºê C++¿¡ ³ª¿È.
+		// ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ C++ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		//static Input instance;
 		return *instance;
 	}
 
 	void Input::ProcessInput()
 	{
-		// ÀÔ·Â ÇÚµé ¾ò¾î¿À±â & ¸¶¿ì½º ÀÔ·Â È°¼ºÈ­ ¼³Á¤.
+		// ï¿½Ô·ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ & ï¿½ï¿½ï¿½ì½º ï¿½Ô·ï¿½ È°ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½.
 		static HANDLE inputHandle = GetStdHandle(STD_INPUT_HANDLE);
 		static bool initialized = false;
 
 		if (!initialized)
 		{
-			// ¸¶¿ì½º ÀÌº¥Æ® È°¼ºÈ­.
+			// ï¿½ï¿½ï¿½ì½º ï¿½Ìºï¿½Æ® È°ï¿½ï¿½È­.
 			DWORD mode = ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS;
 			mode &= ~ENABLE_QUICK_EDIT_MODE;
 			BOOL result = SetConsoleMode(inputHandle, mode);
 
-			// ¼³Á¤ ½ÇÆÐÇÑ °æ¿ì ¿¹¿ÜÃ³¸®.
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½.
 			if (result == FALSE)
 			{
-				// ¿À·ù ¸Þ½ÃÁö Ãâ·Â.
+				// ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½.
 				MessageBoxA(
 					nullptr,
 					"Input::ProcessInput() - Failed to set console mode",
@@ -150,40 +150,40 @@ namespace FE
 			initialized = true;
 		}
 
-		// Å°º¸µå/¸¶¿ì½º ÀÔ·ÂÀ» ÀÐ±â À§ÇÑ º¯¼ö.
+		// Å°ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ì½º ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		const int recordCount = 256;
 
-		// ¼ö½ÅÇÑ ÀÔ·Â ÀÌº¥Æ®¸¦ ÀúÀåÇÏ±â À§ÇÑ ¹è¿­.
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­.
 		INPUT_RECORD records[recordCount] = {};
 
-		// ÀÌ¹ø ÇÁ·¹ÀÓ¿¡ Ã³¸®ÇÑ ÀÔ·Â ÀÌº¥Æ® ¼ö.
+		// ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½.
 		DWORD eventReadCount = 0;
 
-		// µé¾î¿Â ÀÔ·Â ÀÌº¥Æ®°¡ ÀÖ´ÂÁö È®ÀÎ.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½.
 		if (PeekConsoleInput(inputHandle, records, recordCount, &eventReadCount)
 			&& eventReadCount > 0)
 		{
-			// ÀÌº¥Æ®°¡ ÀÖÀ¸¸é, ÀÌº¥Æ®¸¦ ÀÐ¾î¼­ Ã³¸®.
+			// ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½Ð¾î¼­ Ã³ï¿½ï¿½.
 			if (ReadConsoleInput(inputHandle, records, recordCount, &eventReadCount))
 			{
-				// µé¾î¿Â ÀÌº¥Æ® ¼ö¸¸Å­ ·çÇÁ.
+				// ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½Å­ ï¿½ï¿½ï¿½ï¿½.
 				for (int ix = 0; ix < static_cast<int>(eventReadCount); ++ix)
 				{
 					INPUT_RECORD& record = records[ix];
 
-					// ÀÌº¥Æ® Å¸ÀÔ º°·Î Ã³¸®.
+					// ï¿½Ìºï¿½Æ® Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
 					switch (record.EventType)
 					{
-						// Å° ÀÌº¥Æ®ÀÎ °æ¿ì.
+						// Å° ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½.
 					case KEY_EVENT:
 					{
-						// Å° ´­¸² Ã³¸®.
+						// Å° ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½.
 						if (record.Event.KeyEvent.bKeyDown)
 						{
 							keyStates[record.Event.KeyEvent.wVirtualKeyCode].isKeyDown = true;
 						}
 
-						// Å°°¡ ¾È´­·ÈÀ» ¶§.
+						// Å°ï¿½ï¿½ ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½.
 						else
 						{
 							keyStates[record.Event.KeyEvent.wVirtualKeyCode].isKeyDown = false;
@@ -191,21 +191,21 @@ namespace FE
 					}
 					break;
 
-					// ¸¶¿ì½º ÀÌº¥Æ® Ã³¸®.
+					// ï¿½ï¿½ï¿½ì½º ï¿½Ìºï¿½Æ® Ã³ï¿½ï¿½.
 					case MOUSE_EVENT:
 					{
-						// ¸¶¿ì½º x À§Ä¡ ¼³Á¤.
+						// ï¿½ï¿½ï¿½ì½º x ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½.
 						mousePosition.x = record.Event.MouseEvent.dwMousePosition.X;
 
-						// xÁÂÇ¥ Á¶Á¤ (¸¶¿ì½º Ä¿¼­°¡ È­¸é ¾È¿¡ °íÁ¤µÇµµ·Ï).
+						// xï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ì½º Ä¿ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½ ï¿½È¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½).
 						mousePosition.x
 							= Util::Clamp<int>(mousePosition.x, 0, Engine::Get().GetWidth() - 1);
 
-						// yÁÂÇ¥ Á¶Á¤.
+						// yï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½.
 						mousePosition.y
 							= Util::Clamp<int>(mousePosition.y, 0, Engine::Get().GetHeight() - 1);
 
-						// ¸¶¿ì½º Å¬¸¯ ¿©ºÎ »óÅÂ ÀúÀå.
+						// ï¿½ï¿½ï¿½ì½º Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 						keyStates[VK_LBUTTON].isKeyDown
 							= (record.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) != 0;
 
@@ -218,8 +218,8 @@ namespace FE
 			}
 		}
 
-		// Å° ¸¶´ÙÀÇ ÀÔ·Â ÀÐ±â.
-		// !!! ¿î¿µÃ¼Á¦°¡ Á¦°øÇÏ´Â ±â´ÉÀ» »ç¿ëÇÒ ¼ö ¹Û¿¡ ¾øÀ½.
+		// Å° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½Ð±ï¿½.
+		// !!! ï¿½î¿µÃ¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		//for (int ix = 0; ix < 255; ++ix)
 		//{
 		//	keyStates[ix].isKeyDown
@@ -229,8 +229,8 @@ namespace FE
 	
 	void Input::SavePreviousInputStates()
 	{
-		// ¿ø·¡ Engine::Run() ¿¡ ÀÖ¾úÀ½
-		// ÇöÀç ÀÔ·Â °ªÀ» ÀÌÀü ÀÔ·Â °ªÀ¸·Î ÀúÀå.
+		// ï¿½ï¿½ï¿½ï¿½ Engine::Run() ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		for (int ix = 0; ix < 255; ++ix)
 		{
 			keyStates[ix].wasKeyDown

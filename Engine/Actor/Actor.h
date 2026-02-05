@@ -6,47 +6,47 @@
 
 namespace FE
 {
-	// Àü¹æ ¼±¾ð.
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 	class Level;
 
 	class FE_API Actor : public RTTI
 	{
-		// RTTI ÄÚµå Ãß°¡.
+		// RTTI ï¿½Úµï¿½ ï¿½ß°ï¿½.
 		RTTI_DECLARATIONS(Actor, RTTI)
 
 	public:
 		Actor(
 			const char* image = "",
-			const Vector2& position = Vector2::Zero, // Tip: static ÁöÁ¤ÇØµÎ¸é ±âº»°ª ¼³Á¤ ½Ã À¯¿ëÇÔ
+			const Vector2& position = Vector2::Zero, // Tip: static ï¿½ï¿½ï¿½ï¿½ï¿½ØµÎ¸ï¿½ ï¿½âº»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			Color color = Color::White
 		);
 		virtual ~Actor();
 
-		// °ÔÀÓ ÇÃ·¹ÀÌ ÀÌº¥Æ®.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®.
 		virtual void BeginPlay();
 		virtual void Tick(float deltaTime);
 		virtual void Draw();
 
-		// »èÁ¦ ¿äÃ» ÇÔ¼ö.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã» ï¿½Ô¼ï¿½.
 		void Destroy();
 
-		// »èÁ¦°¡ µÉ ¶§ È£ÃâµÉ ÀÌº¥Æ® ÇÔ¼ö.
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½Ô¼ï¿½.
 		virtual void OnDestroy();
 
-		// °ÔÀÓ Á¾·á ÇÔ¼ö.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½.
 		void QuitGame();
 
-		// Ãæµ¹ ¿©ºÎ È®ÀÎ ÇÔ¼ö.
+		// ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½Ô¼ï¿½.
 		bool TestIntersect(const Actor* const other);
 
-		// ¾×ÅÍÀÇ ÀÌ¹ÌÁö °ª º¯°æ ÇÔ¼ö.
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½.
 		void ChangeImage(const char* newImage);
 
-		// À§Ä¡ º¯°æ ¹× ÀÐ±â ÇÔ¼ö.
+		// ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ð±ï¿½ ï¿½Ô¼ï¿½.
 		void SetPosition(const Vector2& newPosition);
 		inline Vector2 GetPosition() const { return position; }
 
-		// ¿À³Ê½Ê Ãß°¡/ÀÐ±â ÇÔ¼ö.
+		// ï¿½ï¿½ï¿½Ê½ï¿½ ï¿½ß°ï¿½/ï¿½Ð±ï¿½ ï¿½Ô¼ï¿½.
 		inline void SetOwner(Level* newOwner) { owner = newOwner; }
 		inline Level* GetOwner() const { return owner; }
 
@@ -71,31 +71,31 @@ namespace FE
 		inline int GetWidth() const { return width; }
 
 	protected:
-		// ÀÌ¹Ì BeginPlay ÀÌº¥Æ®¸¦ ¹Þ¾Ò´ÂÁö ¿©ºÎ.
+		// ï¿½Ì¹ï¿½ BeginPlay ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½Þ¾Ò´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		bool hasBeganPlay = false;
 
-		// È°¼ºÈ­ »óÅÂ ¿©ºÎ.
+		// È°ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		bool isActive = true;
 
-		// ÇöÀç ÇÁ·¹ÀÓ¿¡ »èÁ¦ ¿äÃ» ¹Þ¾Ò´ÂÁö ¿©ºÎ.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã» ï¿½Þ¾Ò´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		bool destroyRequested = false;
 
-		// ±×¸± ¹®ÀÚ(ÀÌ¹ÌÁö).
+		// ï¿½×¸ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½Ì¹ï¿½ï¿½ï¿½).
 		char* image = nullptr;
 
-		// ¹®ÀÚ¿­ ±æÀÌ.
+		// ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		int width = 0;
 
-		// »ö»ó.
+		// ï¿½ï¿½ï¿½ï¿½.
 		Color color = Color::White;
 
-		// ¿À³Ê½Ê(Ownership).
+		// ï¿½ï¿½ï¿½Ê½ï¿½(Ownership).
 		Level* owner = nullptr;
 
-		// ±×¸®±â ¿ì¼± ¼øÀ§ (°ªÀÌ Å©¸é ¿ì¼±¼øÀ§°¡ ³ôÀ½).
+		// ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ì¼± ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ Å©ï¿½ï¿½ ï¿½ì¼±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½).
 		int sortingOrder = 0;
 
-		// À§Ä¡.
+		// ï¿½ï¿½Ä¡.
 		Vector2 position;
 	};
 }
