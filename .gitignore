@@ -6,6 +6,10 @@
 # ConsoleEngine Includes
 Includes/
 
+# Past projects
+# SokobanGame/
+ShootingGame/
+
 # User-specific files
 *.rsuser
 *.suo

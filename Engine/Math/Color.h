@@ -3,11 +3,11 @@
 #include "Common/Common.h"
 #include <Windows.h>
 
-namespace Wanted
+namespace FE
 {
-	// ÄÜ¼Ö¿¡ ÅØ½ºÆ® »ö»ó µîÀ» ÁöÁ¤ÇÒ ¶§ »ç¿ëÇÒ
-	// »ö»ó ¿­°ÅÇü.
-	enum class WANTED_API Color : unsigned short
+	// ï¿½Ü¼Ö¿ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+	enum class FE_API Color : unsigned short
 	{
 		Black = 0,
 		Blue = FOREGROUND_BLUE,

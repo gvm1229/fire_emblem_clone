@@ -2,11 +2,11 @@
 #include "ScreenBuffer.h"
 #include "Util/Util.h"
 
-namespace Wanted
+namespace FE
 {
 	Renderer::Frame::Frame(int bufferCount)
 	{
-		// ¹è¿­ »ý¼º ¹× ÃÊ±âÈ­.
+		// ï¿½è¿­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ê±ï¿½È­.
 		charInfoArray = new CHAR_INFO[bufferCount];
 		memset(charInfoArray, 0, sizeof(CHAR_INFO) * bufferCount);
 
@@ -24,8 +24,8 @@ namespace Wanted
 
 	void Renderer::Frame::Clear(const Vector2& screenSize)
 	{
-		// 2Â÷¿ø ¹è¿­·Î ´Ù·ç´Â 1Â÷¿ø ¹è¿­À» ¼øÈ¸ÇÏ¸é¼­
-		// ºó ¹®ÀÚ(' ')¸¦ ¼³Á¤.
+		// 2ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ï¿½ï¿½ ï¿½Ù·ï¿½ï¿½ 1ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½È¸ï¿½Ï¸é¼­
+		// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(' ')ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		const int width = screenSize.x;
 		const int height = screenSize.y;
 
@@ -33,15 +33,15 @@ namespace Wanted
 		{
 			for (int x = 0; x < width; ++x)
 			{
-				// ¹è¿­ ÀÎµ¦½º ±¸ÇÏ±â.
+				// ï¿½è¿­ ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï±ï¿½.
 				const int index = (y * width) + x;
 
-				// ±ÛÀÚ °ª ¹× ¼Ó¼º ¼³Á¤.
+				// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ï¿½ï¿½ï¿½.
 				CHAR_INFO& info = charInfoArray[index];
 				info.Char.AsciiChar = ' ';
 				info.Attributes = 0;
 
-				// ±×¸®±â ¿ì¼±¼øÀ§ ÃÊ±âÈ­.
+				// ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ì¼±ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­.
 				sortingOrderArray[index] = -1;
 			}
 		}
@@ -49,7 +49,7 @@ namespace Wanted
 
 	// -------------- Frame -------------- //
 
-	// Á¤Àû º¯¼ö ÃÊ±âÈ­.
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­.
 	Renderer* Renderer::instance = nullptr;
 
 	Renderer::Renderer(const Vector2& screenSize)
@@ -57,21 +57,21 @@ namespace Wanted
 	{
 		instance = this;
 
-		// ÇÁ·¹ÀÓ °´Ã¼ »ý¼º.
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½.
 		const int bufferCount = screenSize.x * screenSize.y;
 		frame = new Frame(bufferCount);
 
-		// ÇÁ·¹ÀÓ ÃÊ±âÈ­.
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­.
 		frame->Clear(screenSize);
 
-		// ÀÌÁß ¹öÆÛ °´Ã¼ »ý¼º ¹× ÃÊ±âÈ­.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ê±ï¿½È­.
 		screenBuffers[0] = new ScreenBuffer(screenSize);
 		screenBuffers[0]->Clear();
 
 		screenBuffers[1] = new ScreenBuffer(screenSize);
 		screenBuffers[1]->Clear();
 
-		// È°¼ºÈ­ ¹öÆÛ ¼³Á¤.
+		// È°ï¿½ï¿½È­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		Present();
 	}
 
@@ -86,38 +86,38 @@ namespace Wanted
 
 	void Renderer::Draw()
 	{
-		// È­¸é Áö¿ì±â.
+		// È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
 		Clear();
 
-		// ÀüÁ¦Á¶°Ç: ·¹º§ÀÇ ¸ðµç ¾×ÅÍ°¡ ·»´õ·¯¿¡ submit À» ¿Ï·á
-		// ·»´õ Å¥ ¼øÈ¸ÇÏ¸é¼­ ÇÁ·¹ÀÓ Ã¤¿ì±â (2Â÷¿ø ¹è¿­¿¡¼­ °è»ê)
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ submit ï¿½ï¿½ ï¿½Ï·ï¿½
+		// ï¿½ï¿½ï¿½ï¿½ Å¥ ï¿½ï¿½È¸ï¿½Ï¸é¼­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¤ï¿½ï¿½ï¿½ (2ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½)
 		for (const RenderCommand& command : renderQueue)
 		{
-			// È­¸é¿¡ ±×¸± ÅØ½ºÆ®°¡ ¾øÀ¸¸é °Ç³Ê¶Ü.
+			// È­ï¿½é¿¡ ï¿½×¸ï¿½ ï¿½Ø½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç³Ê¶ï¿½.
 			if (!command.text)
 			{
 				continue;
 			}
 
-			// ¼¼·Î ±âÁØ È­¸é ¹þ¾î³µ´ÂÁö È®ÀÎ.
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½ ï¿½ï¿½ï¿½î³µï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½.
 			if (command.position.y < 0
 				|| command.position.y >= screenSize.y)
 			{
 				continue;
 			}
 
-			// È­¸é¿¡ ±×¸± ¹®ÀÚ¿­ ±æÀÌ.
+			// È­ï¿½é¿¡ ï¿½×¸ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½.
 			const int length = static_cast<int>(strlen(command.text));
 
-			// ¾È±×·Áµµ µÇ¸é °Ç³Ê¶Ü.
+			// ï¿½È±×·ï¿½ï¿½ï¿½ ï¿½Ç¸ï¿½ ï¿½Ç³Ê¶ï¿½.
 			if (length <= 0)
 			{
 				continue;
 			}
 
-			// xÁÂÇ¥ ±âÁØÀ¸·Î È­¸é¿¡¼­ ¹þ¾î³µ´ÂÁö È®ÀÎ.
-			// À§Ä¡´Â ¿ÞÂÊ ±âÁØ: "abcde"
-			// length ¿¡¼­ 1 »©´Â ÀÌÀ¯´Â index °í·Á Â÷¿ø
+			// xï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È­ï¿½é¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½î³µï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½.
+			// ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: "abcde"
+			// length ï¿½ï¿½ï¿½ï¿½ 1 ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ index ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			const int startX = command.position.x;
 			const int endX = command.position.x + length - 1;
 
@@ -126,48 +126,48 @@ namespace Wanted
 				continue;
 			}
 
-			// ½ÃÀÛ À§Ä¡.
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡.
 			const int visibleStart = startX < 0 ? 0 : startX;
-			// È­¸é ¹þ¾î³µ´ÂÁö Ã¼Å©ÇÏ°í Á¦ÇÑ ¼³Á¤
+			// È­ï¿½ï¿½ ï¿½ï¿½ï¿½î³µï¿½ï¿½ï¿½ï¿½ Ã¼Å©ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			const int visibleEnd
 				= endX >= screenSize.x ? screenSize.x - 1 : endX;
 
-			// ¹®ÀÚ¿­ ¼³Á¤.
+			// ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½.
 			for (int x = visibleStart; x <= visibleEnd; ++x)
 			{
-				// ¹®ÀÚ¿­ ¾ÈÀÇ ¹®ÀÚ ÀÎµ¦½º.
+				// ï¿½ï¿½ï¿½Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½.
 				const int sourceIndex = x - startX;
 
-				// ÇÁ·¹ÀÓ (2Â÷¿ø ¹®ÀÚ ¹è¿­) ÀÎµ¦½º.
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (2ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­) ï¿½Îµï¿½ï¿½ï¿½.
 				const int index
 					= (command.position.y * screenSize.x) + x;
 
-				// ±×¸®±â ¿ì¼±¼øÀ§ ºñ±³.
+				// ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ì¼±ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½.
 				if (frame->sortingOrderArray[index]
 					> command.sortingOrder)
 				{
 					continue;
 				}
 
-				// µ¥ÀÌÅÍ ±â·Ï.
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½.
 				frame->charInfoArray[index].Char.AsciiChar
 					= command.text[sourceIndex];
 				frame->charInfoArray[index].Attributes
 					= (WORD)command.color;
 
-				// ¿ì¼±¼øÀ§ ¾÷µ¥ÀÌÆ®.
+				// ï¿½ì¼±ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®.
 				frame->sortingOrderArray[index]
 					= command.sortingOrder;
 			}
 		}
 
-		// ±×¸®±â.
+		// ï¿½×¸ï¿½ï¿½ï¿½.
 		GetCurrentBuffer()->Draw(frame->charInfoArray);
 
-		// ¹öÆÛ ±³È¯.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯.
 		Present();
 
-		// ·»´õ Å¥ ºñ¿ì±â.
+		// ï¿½ï¿½ï¿½ï¿½ Å¥ ï¿½ï¿½ï¿½ï¿½.
 		renderQueue.clear();
 	}
 
@@ -190,11 +190,11 @@ namespace Wanted
 
 	void Renderer::Clear()
 	{
-		// È­¸é Áö¿ì±â.
-		// 1. ÇÁ·¹ÀÓ(2Â÷¿ø ¹è¿­ µ¥ÀÌÅÍ) Áö¿ì±â.
+		// È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
+		// 1. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(2ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½.
 		frame->Clear(screenSize);
 
-		// 2. ÄÜ¼Ö ¹öÆÛ Áö¿ì±â.
+		// 2. ï¿½Ü¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
 		GetCurrentBuffer()->Clear();
 	}
 
@@ -204,7 +204,7 @@ namespace Wanted
 		Color color,
 		int sortingOrder)
 	{
-		// ·»´õ µ¥ÀÌÅÍ »ý¼º ÈÄ Å¥¿¡ Ãß°¡.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å¥ï¿½ï¿½ ï¿½ß°ï¿½.
 		RenderCommand command = {};
 		command.text = text;
 		command.position = position;
@@ -223,10 +223,10 @@ namespace Wanted
 
 	void Renderer::Present()
 	{
-		// ¹öÆÛ ±³È¯.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯.
 		SetConsoleActiveScreenBuffer(GetCurrentBuffer()->GetBuffer());
 
-		// ÀÎµ¦½º ±³Ã¼.
+		// ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼.
 		currentBufferIndex = 1 - currentBufferIndex;
 	}
 

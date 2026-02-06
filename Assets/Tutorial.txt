@@ -1,0 +1,29 @@
+# Tutorial Map
+# 간단한 10x10 맵, 플레이어 1명 vs 적 1명
+
+WIDTH 10
+HEIGHT 10
+
+# Tiles (지형)
+# . = Plain, T = Forest, ^ = Mountain, # = Castle, V = Village, ~ = Water
+TILES
+..........
+..........
+..T.....T.
+..........
+....##....
+....##....
+..........
+..T.....T.
+..........
+..........
+
+# Units (유닛 배치)
+# Faction GridX GridY ClassName WeaponType
+UNITS
+PLAYER 2 7 Lord Sword
+ENEMY 7 2 Fighter Axe
+
+# Victory/Defeat Conditions
+VICTORY DEFEAT_ALL_ENEMIES
+DEFEAT ALL_PLAYER_UNITS_DEAD

@@ -66,7 +66,8 @@
       <AdditionalLibraryDirectories>..\Library\Engine\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y</Command>
+      <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y
+xcopy ..\Assets $(OutDir)..\Assets\ /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -86,31 +87,34 @@
       <AdditionalLibraryDirectories>..\Library\Engine\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y</Command>
+      <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y
+xcopy ..\Assets $(OutDir)..\Assets\ /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Actor\Enemy.cpp" />
-    <ClCompile Include="Actor\EnemyBullet.cpp" />
-    <ClCompile Include="Actor\EnemyDestroyEffect.cpp" />
-    <ClCompile Include="Actor\EnemySpawner.cpp" />
-    <ClCompile Include="Actor\MouseTester.cpp" />
-    <ClCompile Include="Actor\Player.cpp" />
-    <ClCompile Include="Actor\PlayerBullet.cpp" />
-    <ClCompile Include="Level\GameLevel.cpp" />
+    <ClCompile Include="AI\AIController.cpp" />
+    <ClCompile Include="Combat\CombatCalculator.cpp" />
+    <ClCompile Include="Combat\CombatSequence.cpp" />
+    <ClCompile Include="Item\Weapon.cpp" />
+    <ClCompile Include="Level\MapLevel.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Util\Timer.cpp" />
+    <ClCompile Include="System\EnemyPhaseController.cpp" />
+    <ClCompile Include="System\PlayerPhaseController.cpp" />
+    <ClCompile Include="System\TurnManager.cpp" />
+    <ClCompile Include="Unit\Unit.cpp" />
+    <ClCompile Include="Unit\UnitClass.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Actor\Enemy.h" />
-    <ClInclude Include="Actor\EnemyBullet.h" />
-    <ClInclude Include="Actor\EnemyDestroyEffect.h" />
-    <ClInclude Include="Actor\EnemySpawner.h" />
-    <ClInclude Include="Actor\MouseTester.h" />
-    <ClInclude Include="Actor\Player.h" />
-    <ClInclude Include="Actor\PlayerBullet.h" />
-    <ClInclude Include="Level\GameLevel.h" />
-    <ClInclude Include="Util\Timer.h" />
+    <ClInclude Include="AI\AIController.h" />
+    <ClInclude Include="Combat\CombatCalculator.h" />
+    <ClInclude Include="Combat\CombatSequence.h" />
+    <ClInclude Include="Item\Weapon.h" />
+    <ClInclude Include="Level\MapLevel.h" />
+    <ClInclude Include="System\EnemyPhaseController.h" />
+    <ClInclude Include="System\PlayerPhaseController.h" />
+    <ClInclude Include="System\TurnManager.h" />
+    <ClInclude Include="Unit\Unit.h" />
+    <ClInclude Include="Unit\UnitClass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

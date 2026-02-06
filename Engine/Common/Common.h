@@ -1,15 +1,15 @@
 #pragma once
-#pragma warning(disable: 4251)	// ¹ÌºÀÃ¥(¹æ¹ý ¾øÀ½).
-#pragma warning(disable: 4172)	// À§Çè¼º ÀÎÁöÇÑ »óÅÂ·Î »ç¿ë.
+#pragma warning(disable: 4251)	// ï¿½Ìºï¿½Ã¥(ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½).
+#pragma warning(disable: 4172)	// ï¿½ï¿½ï¿½è¼º ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½.
 
 //#define ENGINE_BUILD_DLL 1
 
 #define DLLEXPORT   __declspec(dllexport)
 #define DLLIMPORT   __declspec(dllimport)
 
-// ENGINE_BUILD_DLLÀÌ ¼±¾ðµÇ¾î ÀÖ´ÂÁö¿¡ µû¶ó ºÐ±â.
+// ENGINE_BUILD_DLLï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½.
 #if ENGINE_BUILD_DLL
-#define WANTED_API DLLEXPORT
+#define FE_API DLLEXPORT
 #else
-#define WANTED_API DLLIMPORT
+#define FE_API DLLIMPORT
 #endif

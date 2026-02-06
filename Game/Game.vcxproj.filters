@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -18,60 +18,66 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Level\GameLevel.cpp">
+    <ClCompile Include="AI\AIController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Actor\Player.cpp">
+    <ClCompile Include="Combat\CombatCalculator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Actor\PlayerBullet.cpp">
+    <ClCompile Include="Combat\CombatSequence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Util\Timer.cpp">
+    <ClCompile Include="Item\Weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Actor\Enemy.cpp">
+    <ClCompile Include="Level\MapLevel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Actor\EnemySpawner.cpp">
+    <ClCompile Include="System\EnemyPhaseController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Actor\EnemyBullet.cpp">
+    <ClCompile Include="System\PlayerPhaseController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Actor\EnemyDestroyEffect.cpp">
+    <ClCompile Include="System\TurnManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Actor\MouseTester.cpp">
+    <ClCompile Include="Unit\Unit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Unit\UnitClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Level\GameLevel.h">
+    <ClInclude Include="AI\AIController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Actor\Player.h">
+    <ClInclude Include="Combat\CombatCalculator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Actor\PlayerBullet.h">
+    <ClInclude Include="Combat\CombatSequence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Util\Timer.h">
+    <ClInclude Include="Item\Weapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Actor\Enemy.h">
+    <ClInclude Include="Level\MapLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Actor\EnemySpawner.h">
+    <ClInclude Include="System\EnemyPhaseController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Actor\EnemyBullet.h">
+    <ClInclude Include="System\PlayerPhaseController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Actor\EnemyDestroyEffect.h">
+    <ClInclude Include="System\TurnManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Actor\MouseTester.h">
+    <ClInclude Include="Unit\Unit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Unit\UnitClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
