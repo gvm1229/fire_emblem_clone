@@ -2,6 +2,7 @@
 
 #include "Unit/Unit.h"
 #include "Map/Tile.h"
+#include "Item/Weapon.h"
 
 namespace FE
 {

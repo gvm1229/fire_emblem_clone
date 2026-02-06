@@ -149,6 +149,14 @@ namespace FE
 		}
 	}
 
+	// MovementSelected 상태: 이동 확정 후 처리 (현재 미사용)
+	void PlayerPhaseController::HandleMovementSelectedState()
+	{
+		// 현재 UnitSelected에서 직접 ActionMenuOpen으로 전환하므로 이 상태는 사용되지 않음
+		// 향후 이동 확정 전 확인 단계가 필요하면 여기에 구현
+		inputState = PlayerInputState::ActionMenuOpen;
+	}
+
 	// 행동 메뉴 상태: Attack 또는 Wait 선택
 	void PlayerPhaseController::HandleActionMenuState()
 	{

@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "CombatCalculator.h"
 #include "Item/Weapon.h"
 #include <algorithm>

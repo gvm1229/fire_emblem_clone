@@ -3,6 +3,7 @@
 #include "Item/Weapon.h"
 #include "Render/Renderer.h"
 #include "Engine/Engine.h"
+#include "Core/Input.h"
 #include "System/TurnManager.h"
 #include "System/PlayerPhaseController.h"
 #include "System/EnemyPhaseController.h"
@@ -10,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <direct.h>
 
 namespace FE
 {
@@ -25,7 +27,12 @@ namespace FE
 		, isGameOver(false)
 		, isVictory(false)
 		, nextMapName(nullptr)
+		, isGameMenuOpen(false)
+		, mapLoadSuccess(false)
 	{
+		debugCwd[0] = '\0';
+		debugFilePath[0] = '\0';
+		
 		grid = new Grid();
 		LoadMap(mapFilePath);
 
@@ -77,6 +84,23 @@ namespace FE
 	{
 		Level::Tick(deltaTime);
 
+		// 게임 메뉴 토글 (ESC 키, 플레이어 페이즈에서만)
+		if (Input::Get().GetKeyDown(VK_ESCAPE) && !isGameOver)
+		{
+			if (turnManager->GetCurrentPhase() == GamePhase::PlayerPhase)
+			{
+				// PlayerPhaseController의 상태가 Idle일 때만 메뉴 열기
+				isGameMenuOpen = !isGameMenuOpen;
+			}
+		}
+
+		// 게임 메뉴가 열려있으면 메뉴 처리
+		if (isGameMenuOpen)
+		{
+			ShowGameMenu();
+			return; // 메뉴가 열려있으면 게임 로직 업데이트 안 함
+		}
+
 		// 게임 오버가 아니면 턴 관리 업데이트
 		if (!isGameOver)
 		{
@@ -117,37 +141,116 @@ namespace FE
 
 	void MapLevel::Draw()
 	{
-		// 그리드 그리기
-		if (grid != nullptr)
+		// 에러 표시 (최우선)
+		if (!mapLoadSuccess)
 		{
+			Renderer::Get().Submit("ERROR: Map not loaded!", Vector2(0, 0), Color::White, 15);
+			Renderer::Get().Submit("Check: ../Assets/Tutorial.txt", Vector2(0, 1), Color::White, 15);
+			return; // 맵이 로드되지 않으면 나머지 그리지 않음
+		}
+
+		// UI 정보 표시
+		char uiBuffer[256];
+		if (turnManager != nullptr)
+		{
+			const char* phaseStr = (turnManager->GetCurrentPhase() == GamePhase::PlayerPhase) ? "PLAYER" : "ENEMY";
+			sprintf_s(uiBuffer, sizeof(uiBuffer), "Turn:%d Phase:%s", turnManager->GetTurnCount(), phaseStr);
+			Renderer::Get().Submit(uiBuffer, Vector2(0, 0), Color::White, 10);
+		}
+
+		// 그리드 그리기
+		if (grid != nullptr && grid->GetWidth() > 0 && grid->GetHeight() > 0)
+		{
+			int plainCount = 0;
+			int forestCount = 0;
+			int castleCount = 0;
+			
 			for (int y = 0; y < grid->GetHeight(); ++y)
 			{
 				for (int x = 0; x < grid->GetWidth(); ++x)
 				{
-				Tile* tile = grid->GetTile(x, y);
-				if (tile != nullptr)
-				{
-					char tileChar = tile->GetDisplayCharacter();
-					// 그리드는 (1, 1)부터 시작 (0, 0)은 UI용
-					Renderer::Get().Draw(Vector2(x + 1, y + 1), tileChar, Color::White);
-				}
+					Tile* tile = grid->GetTile(x, y);
+					if (tile != nullptr)
+					{
+						char tileChar = tile->GetDisplayCharacter();
+						char tileStr[2] = { tileChar, '\0' };
+						// 그리드는 (1, 1)부터 시작 (0, 0)은 UI용
+						Renderer::Get().Submit(tileStr, Vector2(x + 1, y + 1), Color::White, 0);
+						
+						// 카운팅
+						if (tileChar == '.') plainCount++;
+						else if (tileChar == 'T') forestCount++;
+						else if (tileChar == '#') castleCount++;
+					}
 				}
 			}
+			
+			// 디버그: 지형 개수 (ASCII만 사용)
+			char debugTerrain[64];
+			sprintf_s(debugTerrain, sizeof(debugTerrain), "P:%d F:%d C:%d", plainCount, forestCount, castleCount);
+			Renderer::Get().Submit(debugTerrain, Vector2(25, 0), Color::White, 10);
 		}
 
 		// 액터(유닛) 그리기
 		Level::Draw();
+
+		// 게임 메뉴 표시 (오버레이)
+		if (isGameMenuOpen)
+		{
+			Renderer::Get().Submit("===================", Vector2(5, 5), Color::White, 20);
+			Renderer::Get().Submit("    GAME MENU    ", Vector2(5, 6), Color::White, 20);
+			Renderer::Get().Submit("===================", Vector2(5, 7), Color::White, 20);
+			Renderer::Get().Submit(" [R] Resume       ", Vector2(5, 8), Color::White, 20);
+			Renderer::Get().Submit(" [Q] Quit         ", Vector2(5, 9), Color::White, 20);
+			Renderer::Get().Submit("===================", Vector2(5, 10), Color::White, 20);
+		}
+
+		// 구분선 (맵 아래)
+		int separatorY = (grid != nullptr) ? grid->GetHeight() + 2 : 12;
+		Renderer::Get().Submit("--------------------", Vector2(0, separatorY), Color::White, 10);
+
+		// 입력 모니터 (구분선 아래)
+		DrawInputMonitor(separatorY + 1);
+	}
+
+	// 입력 모니터 그리기
+	void MapLevel::DrawInputMonitor(int startY)
+	{
+		// 단순 테스트
+		Renderer::Get().Submit("Input Monitor Line 1", Vector2(0, startY), Color::White, 10);
+		Renderer::Get().Submit("Input Monitor Line 2", Vector2(0, startY + 1), Color::White, 10);
+		Renderer::Get().Submit("Input Monitor Line 3", Vector2(0, startY + 2), Color::White, 10);
+	}
+
+	// 게임 메뉴 표시
+	void MapLevel::ShowGameMenu()
+	{
+		// 메뉴가 열려있을 때 화면에 표시 (Draw에서 처리)
+		// 키 입력 처리
+		if (Input::Get().GetKeyDown('R'))
+		{
+			// Resume (메뉴 닫기)
+			isGameMenuOpen = false;
+		}
+		else if (Input::Get().GetKeyDown('Q'))
+		{
+			// Quit
+			Engine::Get().QuitEngine();
+		}
 	}
 
 	// 맵 파일 로딩
 	void MapLevel::LoadMap(const char* filePath)
 	{
-		printf("[MapLevel::LoadMap] Loading map: %s\n", filePath);
-
-		std::ifstream file(filePath);
+		// 현재 작업 디렉토리 저장 (디버깅용)
+		_getcwd(debugCwd, sizeof(debugCwd));
+		sprintf_s(debugFilePath, sizeof(debugFilePath), "%s", filePath);
+		
+		// 파일 열기
+		std::ifstream file(filePath, std::ios::in);
 		if (!file.is_open())
 		{
-			printf("[MapLevel::LoadMap] Failed to open file: %s\n", filePath);
+			mapLoadSuccess = false;
 			return;
 		}
 
@@ -306,7 +409,16 @@ namespace FE
 		}
 
 		file.close();
-		printf("[MapLevel::LoadMap] Map loaded successfully.\n");
+		
+		// 로딩 성공 여부 확인
+		if (grid->GetWidth() > 0 && grid->GetHeight() > 0)
+		{
+			mapLoadSuccess = true;
+		}
+		else
+		{
+			mapLoadSuccess = false;
+		}
 	}
 
 	// 유닛 생성
@@ -315,7 +427,7 @@ namespace FE
 		// 유닛 이름 생성
 		char unitName[32];
 		const char* factionName = (faction == UnitFaction::Player) ? "Player" : (faction == UnitFaction::Enemy) ? "Enemy" : "Ally";
-		sprintf_s(unitName, "%s_%s", factionName, GetUnitClassInfo(classType).className);
+		sprintf_s(unitName, sizeof(unitName), "%s_%s", factionName, GetUnitClassInfo(classType).className);
 
 		Unit* unit = new Unit(classType, faction, gridX, gridY, unitName);
 
@@ -343,7 +455,8 @@ namespace FE
 
 		AddNewActor(unit);
 
-		printf("[MapLevel::SpawnUnit] Spawned %s at (%d, %d)\n", unitName, gridX, gridY);
+		printf("[MapLevel::SpawnUnit] Spawned %s at Grid(%d,%d) Screen(%d,%d)\n", 
+			unitName, gridX, gridY, gridX + 1, gridY + 1);
 
 		return unit;
 	}
