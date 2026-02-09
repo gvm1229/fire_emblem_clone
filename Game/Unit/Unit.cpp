@@ -71,7 +71,8 @@ void Unit::Draw()
 	Vector2 renderPos = gridPosition + Vector2(1, 1);
 
 	// 유닛 문자열 출력
-	Renderer::Get().Submit(displayStr, renderPos, GetDisplayColor(), 5);
+	// Render Priority: 10 (Unit - highest priority)
+	Renderer::Get().Submit(displayStr, renderPos, GetDisplayColor(), 10);
 }
 
 	// 이동 경로 설정

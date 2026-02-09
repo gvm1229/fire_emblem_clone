@@ -275,7 +275,8 @@ namespace FEClone
 				if (tile != nullptr)
 				{
 					// UI 공간 1칸 확보 (0,0은 턴 정보용)
-					Renderer::Get().Submit(tile->GetDisplayString(), Vector2(x + 1, y + 1), tile->GetDisplayColor(), 0);
+					// Render Priority: 7 (Terrain)
+					Renderer::Get().Submit(tile->GetDisplayString(), Vector2(x + 1, y + 1), tile->GetDisplayColor(), 7);
 				}
 			}
 		}
@@ -289,14 +290,15 @@ namespace FEClone
 			// UI 공간 고려
 			Vector2 renderPos = tile + Vector2(1, 1);
 
+			// Render Priority: 9 (Tile highlights - above items, below units)
 			// Lord 유닛은 항상 녹색 (선택 시 제외)
 			if (selectedUnit->GetUnitClass() == UnitClass::Lord)
 			{
-				Renderer::Get().Submit("·", renderPos, Color::Yellow, 3);  // Middle dot (UTF-8)
+				Renderer::Get().Submit("·", renderPos, Color::Yellow, 9);  // Middle dot (UTF-8)
 			}
 			else // 이외 Player 유닛은 하이라이트 하늘색
 			{
-				Renderer::Get().Submit("·", renderPos, Color::Cyan, 3);  // Middle dot (UTF-8)
+				Renderer::Get().Submit("·", renderPos, Color::Cyan, 9);  // Middle dot (UTF-8)
 			}
 		}
 	}
@@ -391,7 +393,7 @@ namespace FEClone
 		Renderer::Get().Submit("[1-9,0] Select Unit", Vector2(col1X, tooltipY + 1), Color::White, 10);
 		Renderer::Get().Submit("[Click] Move Unit", Vector2(col1X, tooltipY + 2), Color::White, 10);
 		Renderer::Get().Submit("[ESC] Deselect", Vector2(col1X, tooltipY + 3), Color::White, 10);
-		Renderer::Get().Submit("[ENTER] End Turn", Vector2(col1X, tooltipY + 4), Color::White, 10);
+		Renderer::Get().Submit("[SPACE] End Turn", Vector2(col1X, tooltipY + 4), Color::White, 10);
 
 		// 두 번째 열: UNIT COLORS
 		Renderer::Get().Submit("=== COLORS ===", Vector2(col2X, tooltipY), Color::Yellow, 10);
@@ -399,6 +401,7 @@ namespace FEClone
 		Renderer::Get().Submit("[Blue] Player", Vector2(col2X, tooltipY + 2), Color::Blue, 10);
 		Renderer::Get().Submit("[Red] Enemy", Vector2(col2X, tooltipY + 3), Color::Red, 10);
 		Renderer::Get().Submit("[Cyan] Selected", Vector2(col2X, tooltipY + 4), Color::Cyan, 10);
+		Renderer::Get().Submit("[Purple] Done", Vector2(col2X, tooltipY + 5), Color::Purple, 10);
 	}
 
 	// 입력 처리
@@ -439,8 +442,8 @@ namespace FEClone
 			return;
 		}
 
-		// ENTER 키: 턴 종료
-		if (Input::Get().GetKeyDown(VK_RETURN))
+		// SPACE 키: 턴 종료
+		if (Input::Get().GetKeyDown(VK_SPACE))
 		{
 			// 플레이어 턴이면 적 턴으로, 적 턴이면 플레이어 턴으로
 			isPlayerTurn = !isPlayerTurn;
