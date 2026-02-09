@@ -67,7 +67,7 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y
-xcopy ..\Assets $(OutDir)Assets\ /e /y</Command>
+xcopy ..\Assets $(OutDir)..\Assets\ /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -88,7 +88,7 @@ xcopy ..\Assets $(OutDir)Assets\ /e /y</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y
-xcopy ..\Assets $(OutDir)Assets\ /e /y</Command>
+xcopy ..\Assets $(OutDir)..\Assets\ /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

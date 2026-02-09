@@ -32,10 +32,11 @@ int main()
 	BattleLevel* battleLevel = new BattleLevel();
 
 	// 맵 로딩 (Assets 폴더에 BattleMap.txt 필요)
-	if (!battleLevel->LoadMap("Assets/BattleMap.txt"))
+	if (!battleLevel->LoadMap("../Assets/BattleMap.txt"))
 	{
 		std::cout << "Failed to load map: Assets/BattleMap.txt" << std::endl;
-		std::cout << "Using default map instead." << std::endl;
+		// std::cout << "Using default map instead." << std::endl;
+		return 1;
 	}
 
 	// 플레이어 유닛 추가 (최대 10개, 숫자 키 0~9)
