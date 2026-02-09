@@ -306,9 +306,17 @@ namespace FEClone
 		if (selectedUnit != nullptr)
 		{
 			const UnitStats& stats = selectedUnit->GetStats();
-
+			
+			if (selectedUnit->GetUnitClass() == UnitClass::Lord)
+			{
+				sprintf_s(uiBuffers[0], sizeof(uiBuffers[0]), "Unit: #%d (Player Unit)", selectedUnit->GetUnitIndex() + 1);
+			}
+			else
+			{
 			// 클래스 멤버 버퍼 사용 (렌더 큐가 포인터를 저장하므로 로컬 변수는 위험)
-			sprintf_s(uiBuffers[0], sizeof(uiBuffers[0]), "Unit: #%d", selectedUnit->GetUnitIndex());
+				sprintf_s(uiBuffers[0], sizeof(uiBuffers[0]), "Unit: #%d", selectedUnit->GetUnitIndex() + 1);
+			}
+
 			Renderer::Get().Submit(uiBuffers[0], Vector2(panelX, panelY++), Color::White, 10);
 
 			panelY++;
