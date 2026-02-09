@@ -29,21 +29,21 @@ namespace Wanted
 			int* sortingOrderArray = nullptr;
 		};
 
-		// 렌더링할 데이터.
-		struct RenderCommand
-		{
-			// 화면에 보여줄 문자열 값.
-			const char* text = nullptr;
+	// 렌더링할 데이터.
+	struct RenderCommand
+	{
+		// 화면에 보여줄 문자열 값 (UTF-8)
+		const char* text = nullptr;
 
-			// 좌표.
-			Vector2 position;
+		// 좌표.
+		Vector2 position;
 
-			// 색상.
-			Color color = Color::White;
+		// 색상.
+		Color color = Color::White;
 
-			// 그리기 우선순위.
-			int sortingOrder = 0;
-		};
+		// 그리기 우선순위.
+		int sortingOrder = 0;
+	};
 
 	public:
 		Renderer(const Vector2& screenSize);
@@ -52,13 +52,13 @@ namespace Wanted
 		// 그리기 함수.
 		void Draw();
 
-		// 그리는데 필요한 데이터를 제출(적재)하는 함수.
-		void Submit(
-			const char* text,
-			const Vector2& position,
-			Color color = Color::White,
-			int sortingOrder = 0
-		);
+	// 그리는데 필요한 데이터를 제출(적재)하는 함수.
+	void Submit(
+		const char* text,
+		const Vector2& position,
+		Color color = Color::White,
+		int sortingOrder = 0
+	);
 
 		// 즉시 화면에 표시할 때 사용.
 		void PresentImmediately();

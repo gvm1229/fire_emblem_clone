@@ -5,8 +5,8 @@
 
 namespace Wanted
 {
-	// ÄÜ¼Ö¿¡ ÅØ½ºÆ® »ö»ó µîÀ» ÁöÁ¤ÇÒ ¶§ »ç¿ëÇÒ
-	// »ö»ó ¿­°ÅÇü.
+	// ì½˜ì†”ì— í…ìŠ¤íŠ¸ ìƒ‰ìƒ ë“±ì„ ì§€ì •í•  ë•Œ ì‚¬ìš©í• 
+	// ìƒ‰ìƒ ì—´ê±°í˜•.
 	enum class WANTED_API Color : unsigned short
 	{
 		Black = 0,
@@ -14,5 +14,7 @@ namespace Wanted
 		Green = FOREGROUND_GREEN,
 		Red = FOREGROUND_RED,
 		White = Blue | Green | Red,
+		Yellow = Red | Green,
+		Cyan = Blue | Green,
 	};
 }

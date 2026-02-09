@@ -14,13 +14,13 @@ namespace Wanted
 		// RTTI 코드 추가.
 		RTTI_DECLARATIONS(Actor, RTTI)
 
-	public:
-		Actor(
-			const char* image = "",
-			const Vector2& position = Vector2::Zero, // Tip: static 지정해두면 기본값 설정 시 유용함
-			Color color = Color::White
-		);
-		virtual ~Actor();
+public:
+	Actor(
+		const char* image = "",
+		const Vector2& position = Vector2::Zero, // Tip: static 지정해두면 기본값 설정 시 유용함
+		Color color = Color::White
+	);
+	virtual ~Actor();
 
 		// 게임 플레이 이벤트.
 		virtual void BeginPlay();
@@ -39,8 +39,8 @@ namespace Wanted
 		// 충돌 여부 확인 함수.
 		bool TestIntersect(const Actor* const other);
 
-		// 액터의 이미지 값 변경 함수.
-		void ChangeImage(const char* newImage);
+	// 액터의 이미지 값 변경 함수.
+	void ChangeImage(const char* newImage);
 
 		// 위치 변경 및 읽기 함수.
 		void SetPosition(const Vector2& newPosition);
@@ -80,8 +80,8 @@ namespace Wanted
 		// 현재 프레임에 삭제 요청 받았는지 여부.
 		bool destroyRequested = false;
 
-		// 그릴 문자(이미지).
-		char* image = nullptr;
+	// 그릴 문자(이미지).
+	char* image = nullptr;
 
 		// 문자열 길이.
 		int width = 0;

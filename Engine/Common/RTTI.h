@@ -84,3 +84,7 @@ public:																					\
 	{																					\
 		return Is(rtti->GetType());														\
 	}
+
+// RTTI를 사용하는 클래스의 구현(.cpp) 파일에 추가할 매크로
+// TypeIdClass()는 헤더에서 inline으로 정의되므로 별도 정의 불필요
+#define RTTI_DEFINITIONS(Type)

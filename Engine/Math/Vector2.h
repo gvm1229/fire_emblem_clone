@@ -2,6 +2,7 @@
 
 #include "Common/Common.h"
 #include <Windows.h>
+#include <functional>
 
 namespace Wanted
 {
@@ -12,32 +13,46 @@ namespace Wanted
 		Vector2(int x, int y);
 		~Vector2();
 
-		// ¹®ÀÚ¿­·Î º¯È¯ÇØ¼­ ¹İÈ¯ÇÏ´Â ÇÔ¼ö.
+		// ë¬¸ìì—´ë¡œ ë³€í™˜í•´ì„œ ë°˜í™˜í•˜ëŠ” í•¨ìˆ˜.
 		const char* ToString();
 
-		// ¿¬»êÀÚ ¿À¹ö·Îµù.
+		// ì—°ì‚°ì ì˜¤ë²„ë¡œë”©.
 		Vector2 operator+(const Vector2& other) const;
 		Vector2 operator-(const Vector2& other) const;
 
 		bool operator==(const Vector2& other) const;
 		bool operator!=(const Vector2& other) const;
 
-		// Çüº¯È¯ ¿¬»êÀÚ ¿À¹ö·Îµù.
+		// í˜•ë³€í™˜ ì—°ì‚°ì ì˜¤ë²„ë¡œë”©.
 		operator COORD() const;
 
-		// º¤ÅÍ ±âº» °ª.
-		static Vector2 Zero; // (0,0) ÀÌ ÇÊ¿äÇÏ¸é ÀÌ°É static À¸·Î °¡Á®¿À¸é µÊ
+		// ë²¡í„° ê¸°ë³¸ ê°’.
+		static Vector2 Zero; // (0,0) ì´ í•„ìš”í•˜ë©´ ì´ê±¸ static ìœ¼ë¡œ ê°€ì ¸ì˜¤ë©´ ë¨
 		static Vector2 One;
 		static Vector2 Up;
 		static Vector2 Right;
 
 	public:
-		// x/y ÁÂÇ¥.
+		// x/y ì¢Œí‘œ.
 		int x = 0;
 		int y = 0;
 
 	private:
-		// º¤ÅÍ °ªÀ» ¹®ÀÚ¿­·Î º¯È¯ÇÒ ¶§ »ç¿ëÇÒ º¯¼ö.
+		// ë²¡í„° ê°’ì„ ë¬¸ìì—´ë¡œ ë³€í™˜í•  ë•Œ ì‚¬ìš©í•  ë³€ìˆ˜.
 		char* string = nullptr;
+	};
+}
+
+// std::unordered_map, std::unordered_setì„ ìœ„í•œ hash í•¨ìˆ˜ íŠ¹ìˆ˜í™”
+namespace std
+{
+	template<>
+	struct hash<Wanted::Vector2>
+	{
+		size_t operator()(const Wanted::Vector2& v) const noexcept
+		{
+			// xì™€ yë¥¼ ê²°í•©í•˜ì—¬ hash ìƒì„±
+			return hash<int>()(v.x) ^ (hash<int>()(v.y) << 1);
+		}
 	};
 }

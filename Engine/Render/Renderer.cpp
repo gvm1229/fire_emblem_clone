@@ -36,10 +36,10 @@ namespace Wanted
 				// 배열 인덱스 구하기.
 				const int index = (y * width) + x;
 
-				// 글자 값 및 속성 설정.
-				CHAR_INFO& info = charInfoArray[index];
-				info.Char.AsciiChar = ' ';
-				info.Attributes = 0;
+			// 글자 값 및 속성 설정.
+			CHAR_INFO& info = charInfoArray[index];
+			info.Char.UnicodeChar = L' ';
+			info.Attributes = 0;
 
 				// 그리기 우선순위 초기화.
 				sortingOrderArray[index] = -1;
@@ -106,59 +106,71 @@ namespace Wanted
 				continue;
 			}
 
-			// 화면에 그릴 문자열 길이.
-			const int length = static_cast<int>(strlen(command.text));
+		// UTF-8 문자열을 UTF-16으로 변환
+		int wideLength = MultiByteToWideChar(CP_UTF8, 0, command.text, -1, nullptr, 0);
+		if (wideLength <= 0)
+		{
+			continue;
+		}
 
-			// 안그려도 되면 건너뜀.
-			if (length <= 0)
+		wchar_t* wideText = new wchar_t[wideLength];
+		MultiByteToWideChar(CP_UTF8, 0, command.text, -1, wideText, wideLength);
+
+		// 화면에 그릴 문자열 길이 (null 제외).
+		const int length = wideLength - 1;
+
+		// 안그려도 되면 건너뜀.
+		if (length <= 0)
+		{
+			delete[] wideText;
+			continue;
+		}
+
+		// x좌표 기준으로 화면에서 벗어났는지 확인.
+		const int startX = command.position.x;
+		const int endX = command.position.x + length - 1;
+
+		if (endX < 0 || startX >= screenSize.x)
+		{
+			delete[] wideText;
+			continue;
+		}
+
+		// 시작 위치.
+		const int visibleStart = startX < 0 ? 0 : startX;
+		// 화면 벗어났는지 체크하고 제한 설정
+		const int visibleEnd
+			= endX >= screenSize.x ? screenSize.x - 1 : endX;
+
+		// 문자열 설정.
+		for (int x = visibleStart; x <= visibleEnd; ++x)
+		{
+			// 문자열 안의 문자 인덱스.
+			const int sourceIndex = x - startX;
+
+			// 프레임 (2차원 문자 배열) 인덱스.
+			const int index
+				= (command.position.y * screenSize.x) + x;
+
+			// 그리기 우선순위 비교.
+			if (frame->sortingOrderArray[index]
+				> command.sortingOrder)
 			{
 				continue;
 			}
 
-			// x좌표 기준으로 화면에서 벗어났는지 확인.
-			// 위치는 왼쪽 기준: "abcde"
-			// length 에서 1 빼는 이유는 index 고려 차원
-			const int startX = command.position.x;
-			const int endX = command.position.x + length - 1;
+			// 데이터 기록.
+			frame->charInfoArray[index].Char.UnicodeChar
+				= wideText[sourceIndex];
+			frame->charInfoArray[index].Attributes
+				= (WORD)command.color;
 
-			if (endX < 0 || startX >= screenSize.x)
-			{
-				continue;
-			}
+			// 우선순위 업데이트.
+			frame->sortingOrderArray[index]
+				= command.sortingOrder;
+		}
 
-			// 시작 위치.
-			const int visibleStart = startX < 0 ? 0 : startX;
-			// 화면 벗어났는지 체크하고 제한 설정
-			const int visibleEnd
-				= endX >= screenSize.x ? screenSize.x - 1 : endX;
-
-			// 문자열 설정.
-			for (int x = visibleStart; x <= visibleEnd; ++x)
-			{
-				// 문자열 안의 문자 인덱스.
-				const int sourceIndex = x - startX;
-
-				// 프레임 (2차원 문자 배열) 인덱스.
-				const int index
-					= (command.position.y * screenSize.x) + x;
-
-				// 그리기 우선순위 비교.
-				if (frame->sortingOrderArray[index]
-					> command.sortingOrder)
-				{
-					continue;
-				}
-
-				// 데이터 기록.
-				frame->charInfoArray[index].Char.AsciiChar
-					= command.text[sourceIndex];
-				frame->charInfoArray[index].Attributes
-					= (WORD)command.color;
-
-				// 우선순위 업데이트.
-				frame->sortingOrderArray[index]
-					= command.sortingOrder;
-			}
+		delete[] wideText;
 		}
 
 		// 그리기.
@@ -198,21 +210,21 @@ namespace Wanted
 		GetCurrentBuffer()->Clear();
 	}
 
-	void Renderer::Submit(
-		const char* text,
-		const Vector2& position,
-		Color color,
-		int sortingOrder)
-	{
-		// 렌더 데이터 생성 후 큐에 추가.
-		RenderCommand command = {};
-		command.text = text;
-		command.position = position;
-		command.color = color;
-		command.sortingOrder = sortingOrder;
+void Renderer::Submit(
+	const char* text,
+	const Vector2& position,
+	Color color,
+	int sortingOrder)
+{
+	// 렌더 데이터 생성 후 큐에 추가.
+	RenderCommand command = {};
+	command.text = text;
+	command.position = position;
+	command.color = color;
+	command.sortingOrder = sortingOrder;
 
-		renderQueue.emplace_back(command);
-	}
+	renderQueue.emplace_back(command);
+}
 
 	void Renderer::PresentImmediately()
 	{
