@@ -1,7 +1,7 @@
 # Fire Emblem Clone - 게임 실행 흐름 상세
 
 ## 개요
-이 문서는 프로그램 시작부터 게임 루프, 입력 처리, 렌더링까지의 전체 실행 흐름을 단계별로 상세히 설명합니다.
+이 문서는 프로그램 시작부터 게임 루프, 입력 처리, 렌더링까지의 전체 실행 흐름을 단계별로 상세히 설명합니다. 모든 타일과 유닛은 2x2 멀티라인 ASCII 아트로 렌더링되며, 렌더링 우선순위 시스템(7: 지형, 8: 아이템, 9: 하이라이트, 10: 유닛)을 통해 올바른 레이어 순서를 보장합니다.
 
 ---
 
@@ -173,7 +173,7 @@ void Engine::LoadSetting()
 **파싱 결과:**
 - `setting.framerate` = 60.0 (FPS)
 - `setting.width` = 70 (콘솔 너비)
-- `setting.height` = 30 (콘솔 높이)
+- `setting.height` = 50 (콘솔 높이 - 2x2 멀티라인 렌더링 고려)
 
 **4단계: Renderer 생성**
 - `Renderer` 인스턴스 생성, 화면 크기 전달
@@ -276,27 +276,53 @@ void BattleLevel::AddUnit(Unit* unit, const Vector2& gridPosition,
     // 1. 유닛 속성 설정
     unit->SetGridPosition(gridPosition);
     unit->SetFaction(faction);
+    unit->SetUnitIndex(unitIndex);
     
-    if (unitIndex >= 0)
-        unit->SetUnitIndex(unitIndex);  // 플레이어 유닛만
-    
-    // 2. 렌더링 위치 설정 (+1은 UI 여백)
-    Vector2 renderPos = gridPosition + Vector2(1, 1);
-    unit->SetPosition(renderPos);
-    
-    // 3. 타일에 유닛 존재 표시
+    // 2. 타일에 유닛 존재 표시
     Tile* tile = grid->GetTile(gridPosition);
     if (tile)
         tile->SetHasUnit(true);
     
-    // 4. Level의 Actor 목록에 추가
+    // 3. Level의 Actor 목록에 추가
     AddNewActor(unit);
     
-    // 5. 진영별 목록에 추가
+    // 4. 진영별 목록에 추가
     if (faction == Faction::Player)
         playerUnits.push_back(unit);
     else if (faction == Faction::Enemy)
         enemyUnits.push_back(unit);
+}
+```
+
+### Unit 생성자에서 발생하는 일
+
+```cpp
+Unit::Unit(UnitClass unitClass)
+{
+    // 1. 기본 스탯 초기화 (UnitStats 구조체)
+    // HP: 20, STR: 5, MAG: 0, SKL: 5, SPD: 5
+    // LCK: 0, DEF: 3, RES: 0, MOV: 5
+    
+    // 2. 병과에 따른 표시 문자 설정
+    strcpy_s(displayStr, sizeof(displayStr), GetUnitClassString(unitClass));
+    
+    // 3. Lord 유닛 특별 대우
+    if (unitClass == UnitClass::Lord)
+    {
+        // 모든 스탯 50% 강화
+        stats.maxHP = 30;      // 20 * 1.5
+        stats.currentHP = 30;
+        stats.strength = 7;    // 5 * 1.5
+        stats.skill = 7;       // 5 * 1.5
+        stats.speed = 7;       // 5 * 1.5
+        stats.defense = 4;     // 3 * 1.5
+        stats.movement = 7;    // 5 * 1.5
+        
+        // 0인 스탯은 3으로 설정
+        stats.magic = 3;
+        stats.luck = 3;
+        stats.resistance = 3;
+    }
 }
 ```
 
@@ -441,14 +467,14 @@ void Level::BeginPlay()
 }
 ```
 
-**Unit::BeginPlay() 예시:**
+**Unit::BeginPlay() 상세:**
 ```cpp
 void Unit::BeginPlay()
 {
     Actor::BeginPlay();
     
-    // 유닛 초기화 로직 (필요시)
-    // 예: 초기 애니메이션 설정, 스탯 보정 등
+    // Actor의 position은 사용하지 않음
+    // 렌더링은 gridPosition만 사용 (2x2 좌표 변환)
 }
 ```
 
@@ -499,7 +525,7 @@ void Unit::UpdateMovement(float deltaTime)
 {
     if (movementPath.empty())
     {
-        state = UnitState::Idle;  // 이동 완료
+        state = UnitState::Done;  // 이동 완료 후 턴 종료
         return;
     }
     
@@ -507,16 +533,20 @@ void Unit::UpdateMovement(float deltaTime)
     moveTimer += deltaTime;
     
     // 다음 타일로 이동할 시간이 되었는가?
-    if (moveTimer >= (1.0f / moveSpeed))
+    float timePerTile = 1.0f / moveSpeed;
+    if (moveTimer >= timePerTile)
     {
+        moveTimer = 0.0f;
+        
         // 경로의 다음 위치로 이동
-        Vector2 nextPos = movementPath.front();
+        gridPosition = movementPath.front();
         movementPath.pop_front();
         
-        SetGridPosition(nextPos);
-        SetPosition(nextPos + Vector2(1, 1));  // 렌더링 위치
-        
-        moveTimer = 0.0f;
+        // 모든 경로를 이동했으면 턴 종료
+        if (movementPath.empty())
+        {
+            state = UnitState::Done;
+        }
     }
 }
 ```
@@ -562,7 +592,7 @@ void BattleLevel::Draw()
 }
 ```
 
-**DrawGrid() 상세:**
+**DrawGrid() 상세 (2x2 멀티라인 렌더링):**
 ```cpp
 void BattleLevel::DrawGrid()
 {
@@ -575,16 +605,25 @@ void BattleLevel::DrawGrid()
             Tile* tile = grid->GetTile(x, y);
             if (!tile) continue;
             
-            // UI 여백 고려 (+1)
-            Vector2 renderPos = Vector2(x, y) + Vector2(1, 1);
+            // 2x2 멀티라인 ASCII 아트 가져오기
+            const char* topLeft, * topRight, * bottomLeft, * bottomRight;
+            tile->GetDisplayStrings(topLeft, topRight, bottomLeft, bottomRight);
             
-            // Renderer에 타일 문자 제출
-            Renderer::Get().Submit(
-                tile->GetDisplayString(),   // ".", "♣", "▲" 등
-                renderPos,
-                tile->GetDisplayColor(),
-                0  // 낮은 sortingOrder (배경)
-            );
+            // 화면 좌표 변환 (그리드 x,y → 화면 x*2+1, y*2+1)
+            int baseX = x * 2 + 1;
+            int baseY = y * 2 + 1;
+            
+            Color tileColor = tile->GetDisplayColor();
+            
+            // 4개의 셀을 각각 렌더링
+            Renderer::Get().Submit(topLeft, Vector2(baseX, baseY), 
+                                 tileColor, 7);       // 우선순위 7
+            Renderer::Get().Submit(topRight, Vector2(baseX + 1, baseY), 
+                                 tileColor, 7);
+            Renderer::Get().Submit(bottomLeft, Vector2(baseX, baseY + 1), 
+                                 tileColor, 7);
+            Renderer::Get().Submit(bottomRight, Vector2(baseX + 1, baseY + 1), 
+                                 tileColor, 7);
         }
     }
 }
@@ -603,32 +642,48 @@ void Level::Draw()
 }
 ```
 
-**Unit::Draw() 상세:**
+**Unit::Draw() 상세 (2x2 멀티라인 렌더링):**
 ```cpp
 void Unit::Draw()
 {
-    // Renderer에 유닛 문자 제출
-    Renderer::Get().Submit(
-        GetDisplayString(),     // "L", "C", "A", "S" 등
-        GetPosition(),
-        GetDisplayColor(),      // 진영/상태에 따라 색상 결정
-        5  // 높은 sortingOrder (유닛이 지형 위에 표시됨)
-    );
+    // gridPosition을 화면 좌표로 변환 (2x2 그리드)
+    int baseX = gridPosition.x * 2 + 1;
+    int baseY = gridPosition.y * 2 + 1;
+    
+    Color color = GetDisplayColor();
+    
+    // 4개의 셀에 동일한 문자 렌더링 (예: "L")
+    Renderer::Get().Submit(displayStr, Vector2(baseX, baseY), 
+                         color, 10);           // 우선순위 10
+    Renderer::Get().Submit(displayStr, Vector2(baseX + 1, baseY), 
+                         color, 10);
+    Renderer::Get().Submit(displayStr, Vector2(baseX, baseY + 1), 
+                         color, 10);
+    Renderer::Get().Submit(displayStr, Vector2(baseX + 1, baseY + 1), 
+                         color, 10);
 }
 
 Color Unit::GetDisplayColor() const
 {
-    // 턴 종료 상태면 회색
+    // Lord는 항상 녹색
+    if (unitClass == UnitClass::Lord)
+        return Color::Green;
+    
+    // 선택 상태면 노란색
+    if (state == UnitState::Selected)
+        return FEClone::Color::Yellow;
+    
+    // 턴 종료 상태면 흰색
     if (state == UnitState::Done)
-        return Color::White;  // 어둡게
+        return Color::White;
     
     // 진영에 따라 색상 결정
     switch (faction)
     {
-        case Faction::Player: return Color::Blue;   // 파란색
-        case Faction::Enemy:  return Color::Red;    // 빨간색
-        case Faction::Ally:   return Color::Green;  // 초록색
-        default:              return Color::White;  // 흰색
+        case Faction::Player: return FEClone::Color::Cyan;  // 청록색
+        case Faction::Enemy:  return Color::Red;            // 빨간색
+        case Faction::Ally:   return Color::Green;          // 초록색
+        default:              return Color::White;          // 흰색
     }
 }
 ```
@@ -772,11 +827,13 @@ if (nextLevel)
 
 ## 5. 입력 처리 흐름 (BattleLevel::HandleInput())
 
-### 유닛 선택 (숫자 키)
+### 유닛 선택 및 턴 종료 (키보드 입력)
 
 ```cpp
 void BattleLevel::HandleInput()
 {
+    if (!isPlayerTurn) return;  // 플레이어 턴이 아니면 입력 무시
+    
     // 1~9번 키: 유닛 인덱스 0~8
     for (int i = 1; i <= 9; ++i)
     {
@@ -797,8 +854,42 @@ void BattleLevel::HandleInput()
     // ESC 키: 선택 해제
     if (Input::Get().GetKeyDown(VK_ESCAPE))
     {
-        selectedUnit = nullptr;
+        if (selectedUnit != nullptr)
+        {
+            selectedUnit->SetState(UnitState::Idle);
+            selectedUnit = nullptr;
+        }
         reachableTiles.clear();
+        return;
+    }
+    
+    // SPACE 키: 턴 종료 및 전환
+    if (Input::Get().GetKeyDown(VK_SPACE))
+    {
+        // 선택 해제
+        if (selectedUnit != nullptr)
+        {
+            selectedUnit->SetState(UnitState::Idle);
+            selectedUnit = nullptr;
+        }
+        reachableTiles.clear();
+        
+        // 플레이어 턴 ↔ 적 턴 전환
+        isPlayerTurn = !isPlayerTurn;
+        if (isPlayerTurn)
+            turnCount++;  // 새로운 턴 시작
+        
+        // 모든 유닛 상태 초기화 (Done → Idle)
+        for (Unit* unit : playerUnits)
+        {
+            if (unit->GetState() == UnitState::Done)
+                unit->SetState(UnitState::Idle);
+        }
+        for (Unit* unit : enemyUnits)
+        {
+            if (unit->GetState() == UnitState::Done)
+                unit->SetState(UnitState::Idle);
+        }
         return;
     }
     
@@ -914,13 +1005,16 @@ void MovementCalculator::CalculateReachableTiles(
 }
 ```
 
-### OnMouseClick() 상세 (이동 명령)
+### OnMouseClick() 상세 (이동 명령 - 2x2 좌표 변환 포함)
 
 ```cpp
 void BattleLevel::OnMouseClick(const Vector2& mousePos)
 {
-    // 1. 마우스 위치를 그리드 좌표로 변환 (UI 여백 -1)
-    Vector2 gridPos = mousePos - Vector2(1, 1);
+    // 1. 마우스 위치를 그리드 좌표로 변환
+    // 2x2 렌더링이므로 ÷2 필요, UI 여백 -1 적용
+    int gridX = (mousePos.x - 1) / 2;
+    int gridY = (mousePos.y - 1) / 2;
+    Vector2 gridPos(gridX, gridY);
     
     // 2. 유효한 그리드 위치인가?
     if (!grid->IsValidPosition(gridPos))
@@ -954,19 +1048,19 @@ void BattleLevel::OnMouseClick(const Vector2& mousePos)
     if (path.empty())
         return;
     
-    // 5. 유닛에 경로 설정
-    selectedUnit->SetPath(path);
-    selectedUnit->SetState(UnitState::Moving);
-    
-    // 6. 이전 타일의 유닛 플래그 해제
+    // 5. 이전 타일의 유닛 플래그 해제
     Tile* oldTile = grid->GetTile(selectedUnit->GetGridPosition());
     if (oldTile)
         oldTile->SetHasUnit(false);
     
-    // 7. 새 타일의 유닛 플래그 설정
+    // 6. 새 타일의 유닛 플래그 설정 (경로의 마지막 위치)
     Tile* newTile = grid->GetTile(gridPos);
     if (newTile)
         newTile->SetHasUnit(true);
+    
+    // 7. 유닛에 경로 설정 및 상태 변경
+    selectedUnit->SetPath(path);
+    // SetPath() 내부에서 state를 Moving으로 변경함
     
     // 8. 선택 해제
     selectedUnit = nullptr;
@@ -1173,27 +1267,37 @@ SetConsoleActiveScreenBuffer() (버퍼 전환)
 ```
 Input::ProcessInput()
     ↓
-GetAsyncKeyState() (모든 키 상태 체크)
+ReadConsoleInput() (키보드/마우스 이벤트)
     ↓
-keyStates[] 배열 갱신
+keyStates[] / mousePosition 갱신
     ↓
 BattleLevel::HandleInput()
     ↓
-Input::Get().GetKeyDown(VK_1) → SelectUnitByIndex(0)
+Input::Get().GetKeyDown('1') → SelectUnitByIndex(0)
     ↓
 MovementCalculator::CalculateReachableTiles() (Dijkstra)
     ↓
 reachableTiles 벡터 갱신
     ↓
-DrawMovementRange() (노란색 "·" 표시)
+DrawMovementRange() (2x2 청록색 "·" 표시, Priority 9)
+    ↓
+Input::Get().GetMouseButtonDown(0) → OnMouseClick()
+    ↓
+화면 좌표 → 그리드 좌표 변환 (÷2)
+    ↓
+NavigationSystem::FindPath() (A*)
+    ↓
+Unit::SetPath() → state = Moving
 ```
 
 ### 유닛 이동 파이프라인
 
 ```
-마우스 클릭
+마우스 클릭 (화면 좌표)
     ↓
 BattleLevel::OnMouseClick()
+    ↓
+좌표 변환: (mousePos.x - 1) / 2, (mousePos.y - 1) / 2
     ↓
 NavigationSystem::FindPath() (A*)
     ↓
@@ -1209,11 +1313,11 @@ moveTimer >= (1.0f / moveSpeed) ?
     ↓ YES
 경로의 다음 위치로 이동
     ↓
-SetGridPosition(nextPos)
-    ↓
-SetPosition(nextPos + Vector2(1, 1))
+gridPosition = movementPath.front()
     ↓
 movementPath.pop_front()
+    ↓
+movementPath.empty() ? → state = Done
     ↓
 movementPath.empty() ? → state = UnitState::Idle
 ```
@@ -1279,10 +1383,17 @@ std::cout << "Unit moved to: " << gridPos.x << ", " << gridPos.y << std::endl;
 
 Fire Emblem Clone은 다음과 같은 흐름으로 실행됩니다:
 
-1. **초기화**: Engine → Input → Renderer → BattleLevel → Grid → Units
+1. **초기화**: Engine → Input → Renderer → BattleLevel → Grid → Units (Lord 스탯 50% 강화)
 2. **게임 루프**: Input → BeginPlay → Tick → Draw → ProcessActors
 3. **렌더링**: Submit → renderQueue → UTF-8→UTF-16 변환 → CHAR_INFO → WriteConsoleOutputW → 화면 출력
-4. **입력 처리**: 키보드/마우스 상태 체크 → 유닛 선택 → 이동 범위 계산 → 경로 탐색 → 이동 애니메이션
-5. **종료**: Shutdown → 소멸자 연쇄 호출 → 메모리 정리
+   - 2x2 멀티라인 ASCII 아트로 각 타일과 유닛 표현
+   - 렌더링 우선순위: 지형(7) < 하이라이트(9) < 유닛(10)
+4. **입력 처리**: 키보드/마우스 상태 체크 → 유닛 선택(1~9,0 키) → 이동 범위 계산(Dijkstra) → 마우스 클릭으로 경로 탐색(A*) → 이동 애니메이션 → 턴 종료(SPACE)
+   - 화면 좌표 ↔ 그리드 좌표 변환 (2x2 고려)
+5. **UI 시스템**: 
+   - 스탯 패널 (우측, uiBuffers 사용)
+   - 키보드 툴팁 (하단, 2열 레이아웃)
+   - 턴 정보 표시
+6. **종료**: Shutdown → 소멸자 연쇄 호출 → 메모리 정리
 
-각 시스템은 싱글톤 패턴, 이벤트 시스템, 지연 처리, 더블 버퍼링 등의 설계 패턴으로 안정적이고 효율적으로 동작합니다.
+각 시스템은 싱글톤 패턴, 이벤트 시스템, 지연 처리, 더블 버퍼링, 렌더링 우선순위 등의 설계 패턴으로 안정적이고 효율적으로 동작합니다.

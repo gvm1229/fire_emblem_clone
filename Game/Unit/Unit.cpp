@@ -62,17 +62,25 @@ Unit::Unit(UnitClass unitClass)
 		}
 	}
 
-// Draw: 유닛 렌더링
+// Draw: 유닛 렌더링 (2x2 멀티라인)
 void Unit::Draw()
 {
 	// Actor::Draw()는 호출하지 않음 (position 대신 gridPosition 사용)
 
-	// 그리드 위치 + 1 (UI 공간 확보)
-	Vector2 renderPos = gridPosition + Vector2(1, 1);
+	// 그리드 위치를 2x2 화면 좌표로 변환
+	int baseX = gridPosition.x * 2 + 1;
+	int baseY = gridPosition.y * 2 + 1;
 
-	// 유닛 문자열 출력
+	// 유닛을 2x2로 렌더링 (중앙에 문자 표시)
 	// Render Priority: 10 (Unit - highest priority)
-	Renderer::Get().Submit(displayStr, renderPos, GetDisplayColor(), 10);
+	Color color = GetDisplayColor();
+	
+	// 상단
+	Renderer::Get().Submit(displayStr, Vector2(baseX, baseY), color, 10);
+	Renderer::Get().Submit(displayStr, Vector2(baseX + 1, baseY), color, 10);
+	// 하단
+	Renderer::Get().Submit(displayStr, Vector2(baseX, baseY + 1), color, 10);
+	Renderer::Get().Submit(displayStr, Vector2(baseX + 1, baseY + 1), color, 10);
 }
 
 	// 이동 경로 설정

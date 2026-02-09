@@ -195,8 +195,10 @@ namespace FEClone
 	// 마우스 클릭 처리
 	void BattleLevel::OnMouseClick(const Vector2& mousePos)
 	{
-		// 화면 좌표를 그리드 좌표로 변환 (UI 공간 1칸 고려)
-		Vector2 gridPos = mousePos - Vector2(1, 1);
+		// 화면 좌표를 그리드 좌표로 변환 (UI 공간 1칸 + 2x2 그리드 고려)
+		int gridX = (mousePos.x - 1) / 2;
+		int gridY = (mousePos.y - 1) / 2;
+		Vector2 gridPos(gridX, gridY);
 
 		// 유효한 그리드 위치인지 확인
 		if (!grid->IsValidPosition(gridPos))
@@ -259,7 +261,7 @@ namespace FEClone
 		}
 	}
 
-	// 그리드 렌더링
+	// 그리드 렌더링 (멀티라인 ASCII - 2x2)
 	void BattleLevel::DrawGrid()
 	{
 		if (grid == nullptr)
@@ -274,40 +276,62 @@ namespace FEClone
 				Tile* tile = grid->GetTile(x, y);
 				if (tile != nullptr)
 				{
-					// UI 공간 1칸 확보 (0,0은 턴 정보용)
+					// 각 타일을 2x2로 렌더링
+					const char* topLeft;
+					const char* topRight;
+					const char* bottomLeft;
+					const char* bottomRight;
+					tile->GetDisplayStrings(topLeft, topRight, bottomLeft, bottomRight);
+
+					// UI 공간 1칸 확보 + 2x2 그리드
+					int baseX = x * 2 + 1;
+					int baseY = y * 2 + 1;
+
 					// Render Priority: 7 (Terrain)
-					Renderer::Get().Submit(tile->GetDisplayString(), Vector2(x + 1, y + 1), tile->GetDisplayColor(), 7);
+					Renderer::Get().Submit(topLeft, Vector2(baseX, baseY), tile->GetDisplayColor(), 7);
+					Renderer::Get().Submit(topRight, Vector2(baseX + 1, baseY), tile->GetDisplayColor(), 7);
+					Renderer::Get().Submit(bottomLeft, Vector2(baseX, baseY + 1), tile->GetDisplayColor(), 7);
+					Renderer::Get().Submit(bottomRight, Vector2(baseX + 1, baseY + 1), tile->GetDisplayColor(), 7);
 				}
 			}
 		}
 	}
 
-	// 이동 가능 범위 하이라이트
+	// 이동 가능 범위 하이라이트 (2x2)
 	void BattleLevel::DrawMovementRange()
 	{
 		for (const Vector2& tile : reachableTiles)
 		{
-			// UI 공간 고려
-			Vector2 renderPos = tile + Vector2(1, 1);
+			// 2x2 좌표로 변환
+			int baseX = tile.x * 2 + 1;
+			int baseY = tile.y * 2 + 1;
 
 			// Render Priority: 9 (Tile highlights - above items, below units)
+			Color highlightColor;
+			
 			// Lord 유닛은 항상 녹색 (선택 시 제외)
 			if (selectedUnit->GetUnitClass() == UnitClass::Lord)
 			{
-				Renderer::Get().Submit("·", renderPos, Color::Yellow, 9);  // Middle dot (UTF-8)
+				highlightColor = Color::Yellow;
 			}
 			else // 이외 Player 유닛은 하이라이트 하늘색
 			{
-				Renderer::Get().Submit("·", renderPos, Color::Cyan, 9);  // Middle dot (UTF-8)
+				highlightColor = Color::Cyan;
 			}
+
+			// 2x2로 하이라이트 렌더링
+			Renderer::Get().Submit("·", Vector2(baseX, baseY), highlightColor, 9);
+			Renderer::Get().Submit("·", Vector2(baseX + 1, baseY), highlightColor, 9);
+			Renderer::Get().Submit("·", Vector2(baseX, baseY + 1), highlightColor, 9);
+			Renderer::Get().Submit("·", Vector2(baseX + 1, baseY + 1), highlightColor, 9);
 		}
 	}
 
 	// 스탯 UI 패널 (오른쪽)
 	void BattleLevel::DrawStatsPanel()
 	{
-		// 맵에서 5칸 떨어진 위치에 패널 배치
-		int panelX = (grid != nullptr) ? grid->GetWidth() + 6 : 22;
+		// 맵에서 5칸 떨어진 위치에 패널 배치 (2x2 그리드 고려)
+		int panelX = (grid != nullptr) ? grid->GetWidth() * 2 + 6 : 37;
 		int panelY = 0;
 
 		// 패널 타이틀
@@ -374,16 +398,16 @@ namespace FEClone
 			Renderer::Get().Submit("No unit selected", Vector2(panelX, panelY), Color::White, 10);
 		}
 
-		// 구분선 (맵과 입력 모니터 사이)
-		int separatorY = (grid != nullptr) ? grid->GetHeight() + 2 : 17;
+		// 구분선 (맵과 입력 모니터 사이) - 2x2 그리드 고려
+		int separatorY = (grid != nullptr) ? grid->GetHeight() * 2 + 2 : 32;
 		Renderer::Get().Submit("--------------------", Vector2(0, separatorY), Color::White, 10);
 	}
 
 	// 키보드 툴팁 (하단)
 	void BattleLevel::DrawKeyboardTooltip()
 	{
-		// 맵 아래 충분히 떨어진 위치 (구분선 + 3칸)
-		int separatorY = (grid != nullptr) ? grid->GetHeight() + 2 : 17;
+		// 맵 아래 충분히 떨어진 위치 (구분선 + 3칸) - 2x2 그리드 고려
+		int separatorY = (grid != nullptr) ? grid->GetHeight() * 2 + 2 : 32;
 		int tooltipY = separatorY + 3;  // 구분선 아래 3칸
 		int col1X = 0;  // 첫 번째 열
 		int col2X = 28; // 두 번째 열

@@ -9,12 +9,17 @@ namespace FEClone
 		, movementCost(1)
 		, avoidBonus(0)
 		, defenseBonus(0)
-	, isHealing(false)
-	, isWalkable(true)
-	, hasUnit(false)
-	, displayStr(".")
-	, displayColor(Color::White)
+		, isHealing(false)
+		, isWalkable(true)
+		, hasUnit(false)
+		, displayColor(Color::White)
 	{
+		// displayStr 배열 초기화 (2x2 멀티라인 ASCII 아트)
+		strcpy_s(displayStr[0], sizeof(displayStr[0]), ".");
+		strcpy_s(displayStr[1], sizeof(displayStr[1]), ".");
+		strcpy_s(displayStr[2], sizeof(displayStr[2]), ".");
+		strcpy_s(displayStr[3], sizeof(displayStr[3]), ".");
+
 		// 지형 타입에 따른 속성 설정
 		switch (terrainType)
 		{
@@ -23,7 +28,11 @@ namespace FEClone
 		avoidBonus = 0;
 		defenseBonus = 0;
 		isWalkable = true;
-		strcpy_s(displayStr, sizeof(displayStr), ".");  // 평지 - 점
+		// 2x2 평지: 점들
+		strcpy_s(displayStr[0], sizeof(displayStr[0]), ".");
+		strcpy_s(displayStr[1], sizeof(displayStr[1]), ".");
+		strcpy_s(displayStr[2], sizeof(displayStr[2]), ".");
+		strcpy_s(displayStr[3], sizeof(displayStr[3]), ".");
 		displayColor = Color::White;
 		break;
 
@@ -32,7 +41,11 @@ namespace FEClone
 		avoidBonus = 20;
 		defenseBonus = 1;
 		isWalkable = true;
-		strcpy_s(displayStr, sizeof(displayStr), "♣");  // 숲 - 클로버 (UTF-8)
+		// 2x2 숲: 나무 모양
+		strcpy_s(displayStr[0], sizeof(displayStr[0]), "♠");
+		strcpy_s(displayStr[1], sizeof(displayStr[1]), "♠");
+		strcpy_s(displayStr[2], sizeof(displayStr[2]), "♠");
+		strcpy_s(displayStr[3], sizeof(displayStr[3]), "♠");
 		displayColor = Color::Green;
 		break;
 
@@ -41,7 +54,11 @@ namespace FEClone
 		avoidBonus = 30;
 		defenseBonus = 2;
 		isWalkable = true;
-		strcpy_s(displayStr, sizeof(displayStr), "▲");  // 산 - 삼각형 (UTF-8)
+		// 2x2 산: 삼각형
+		strcpy_s(displayStr[0], sizeof(displayStr[0]), "/");
+		strcpy_s(displayStr[1], sizeof(displayStr[1]), "\\");
+		strcpy_s(displayStr[2], sizeof(displayStr[2]), "▓");
+		strcpy_s(displayStr[3], sizeof(displayStr[3]), "▓");
 		displayColor = Color::White;
 		break;
 
@@ -51,7 +68,11 @@ namespace FEClone
 		defenseBonus = 2;
 		isHealing = true;
 		isWalkable = true;
-		strcpy_s(displayStr, sizeof(displayStr), "♦");  // 성 - 다이아몬드 (UTF-8)
+		// 2x2 성: 성곽
+		strcpy_s(displayStr[0], sizeof(displayStr[0]), "╔");
+		strcpy_s(displayStr[1], sizeof(displayStr[1]), "╗");
+		strcpy_s(displayStr[2], sizeof(displayStr[2]), "╚");
+		strcpy_s(displayStr[3], sizeof(displayStr[3]), "╝");
 		displayColor = FEClone::Color::Cyan;
 		break;
 
@@ -60,7 +81,11 @@ namespace FEClone
 		avoidBonus = 10;
 		defenseBonus = 0;
 		isWalkable = true;
-		strcpy_s(displayStr, sizeof(displayStr), "◘");  // 마을 - 역사각형 (UTF-8)
+		// 2x2 마을: 집 모양
+		strcpy_s(displayStr[0], sizeof(displayStr[0]), "/");
+		strcpy_s(displayStr[1], sizeof(displayStr[1]), "\\");
+		strcpy_s(displayStr[2], sizeof(displayStr[2]), "▄");
+		strcpy_s(displayStr[3], sizeof(displayStr[3]), "▄");
 		displayColor = FEClone::Color::Yellow;
 		break;
 
@@ -69,7 +94,11 @@ namespace FEClone
 		avoidBonus = 0;
 		defenseBonus = 0;
 		isWalkable = false;
-		strcpy_s(displayStr, sizeof(displayStr), "≈");  // 물 - 물결 (UTF-8)
+		// 2x2 물: 물결
+		strcpy_s(displayStr[0], sizeof(displayStr[0]), "≈");
+		strcpy_s(displayStr[1], sizeof(displayStr[1]), "≈");
+		strcpy_s(displayStr[2], sizeof(displayStr[2]), "≈");
+		strcpy_s(displayStr[3], sizeof(displayStr[3]), "≈");
 		displayColor = Color::Blue;
 		break;
 
@@ -78,7 +107,11 @@ namespace FEClone
 		avoidBonus = 0;
 		defenseBonus = 0;
 		isWalkable = false;
-		strcpy_s(displayStr, sizeof(displayStr), "█");  // 벽 - 실선 블록 (UTF-8)
+		// 2x2 벽: 실선 블록
+		strcpy_s(displayStr[0], sizeof(displayStr[0]), "█");
+		strcpy_s(displayStr[1], sizeof(displayStr[1]), "█");
+		strcpy_s(displayStr[2], sizeof(displayStr[2]), "█");
+		strcpy_s(displayStr[3], sizeof(displayStr[3]), "█");
 		displayColor = Color::White;
 		break;
 		}

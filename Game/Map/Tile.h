@@ -51,8 +51,15 @@ namespace FEClone
 		bool HasUnit() const { return hasUnit; }
 		void SetHasUnit(bool value) { hasUnit = value; }
 
-	// 렌더링용 문자열 반환
-	const char* GetDisplayString() const { return displayStr; }
+	// 렌더링용 문자열 반환 (멀티라인용)
+	void GetDisplayStrings(const char*& topLeft, const char*& topRight,
+	                        const char*& bottomLeft, const char*& bottomRight) const
+	{
+		topLeft = displayStr[0];
+		topRight = displayStr[1];
+		bottomLeft = displayStr[2];
+		bottomRight = displayStr[3];
+	}
 
 	// 렌더링용 색상 반환
 	Color GetDisplayColor() const { return displayColor; }
@@ -67,8 +74,8 @@ private:
 	bool isWalkable;               // 통과 가능 여부
 	bool hasUnit;                  // 유닛 존재 여부
 
-	// 렌더링 정보 (멀티라인 ASCII 대비)
-	char displayStr[8];            // UTF-8 문자열 (최대 4바이트 + null)
+	// 렌더링 정보 (멀티라인 ASCII - 2x2 그리드)
+	char displayStr[4][8];         // 4개의 셀 (topLeft, topRight, bottomLeft, bottomRight)
 	Color displayColor;            // 색상
 	};
 }

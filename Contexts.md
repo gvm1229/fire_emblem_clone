@@ -1,7 +1,7 @@
 # FireEmblemClone - 코드 구조 및 로직 설명
 
 ## 프로젝트 개요
-Fire Emblem: Shadow Dragon and the Blade of Light의 전투 시스템을 재현한 DOS 기반 C++ 턴제 전략 RPG 프로젝트입니다. 커스텀 게임 엔진을 기반으로 구축되었으며, 그리드 기반 전투, A* 경로 탐색, 지형 시스템, 유닛 관리 등의 핵심 기능을 포함합니다.
+Fire Emblem: Shadow Dragon and the Blade of Light의 전투 시스템을 재현한 DOS 기반 C++ 턴제 전략 RPG 프로젝트입니다. 커스텀 게임 엔진을 기반으로 구축되었으며, 그리드 기반 전투, A* 경로 탐색, 지형 시스템, 유닛 관리 등의 핵심 기능을 포함합니다. 프로젝트 네임스페이스는 `FEClone`이며, 엔진 DLL API는 `FECLONE_API` 매크로로 정의됩니다. 모든 타일과 유닛은 2x2 멀티라인 ASCII 아트로 렌더링되어 시각적으로 구분하기 쉽습니다.
 
 ---
 
@@ -17,13 +17,13 @@ Fire Emblem: Shadow Dragon and the Blade of Light의 전투 시스템을 재현�
 게임 내 모든 오브젝트의 기본 클래스로, 위치(Vector2), 색상(Color), 이미지(문자열) 등의 기본 속성을 가집니다. `BeginPlay()`, `Tick()`, `Draw()` 가상 함수를 제공하여 자식 클래스에서 오버라이드하도록 설계되었습니다. `Draw()` 함수는 기본적으로 Renderer에 자신의 이미지와 위치를 Submit하여 화면에 표시합니다. `Destroy()` 함수를 호출하면 `destroyRequested` 플래그가 설정되어 다음 프레임에 Level에 의해 제거됩니다. RTTI 시스템을 통해 런타임 타입 확인이 가능하며, 충돌 감지(`TestIntersect`) 기능도 제공합니다.
 
 ### `Engine/Render/Renderer.h/cpp`
-콘솔 화면 렌더링을 담당하는 싱글톤 클래스입니다. `Submit()` 함수를 통해 각 Actor로부터 텍스트, 위치, 색상, 정렬 순서(sortingOrder)를 받아 `renderQueue`에 저장합니다. `Draw()` 함수에서는 renderQueue를 순회하며 UTF-8 문자열을 UTF-16으로 변환(`MultiByteToWideChar`)한 후 `CHAR_INFO` 배열에 기록하고, 더블 버퍼링을 통해 화면 깜빡임 없이 출력합니다. sortingOrder가 낮은 항목은 높은 항목에 의해 덮어써지며, 같은 위치에 여러 문자가 있을 경우 우선순위가 높은 것만 표시됩니다. `Clear()` 함수는 매 프레임 시작 시 renderQueue와 화면을 초기화합니다.
+콘솔 화면 렌더링을 담당하는 싱글톤 클래스입니다. `Submit()` 함수를 통해 각 Actor로부터 텍스트, 위치, 색상, 정렬 순서(sortingOrder)를 받아 `renderQueue`에 저장합니다. `Draw()` 함수에서는 renderQueue를 순회하며 UTF-8 문자열을 UTF-16으로 변환(`MultiByteToWideChar`)한 후 `CHAR_INFO` 배열에 기록하고, 더블 버퍼링을 통해 화면 깜빡임 없이 출력합니다. sortingOrder가 낮은 항목은 높은 항목에 의해 덮어써지며, 같은 위치에 여러 문자가 있을 경우 우선순위가 높은 것만 표시됩니다. 렌더링 우선순위는 7(지형), 8(아이템), 9(하이라이트), 10(유닛) 순으로 설정되어 유닛이 항상 최상위에 표시됩니다. `Clear()` 함수는 매 프레임 시작 시 renderQueue와 화면을 초기화합니다.
 
 ### `Engine/Render/ScreenBuffer.h/cpp`
 Windows 콘솔 API를 사용한 더블 버퍼링 구현을 담당합니다. 두 개의 콘솔 화면 버퍼(`CreateConsoleScreenBuffer`)를 생성하여 백그라운드에서 그리기 작업을 수행한 후 `SetConsoleActiveScreenBuffer`로 순간 전환하여 화면 깜빡임을 방지합니다. `Draw()` 함수는 `WriteConsoleOutputW`를 사용하여 `CHAR_INFO` 배열을 버퍼에 한 번에 기록하며, `Clear()` 함수는 `FillConsoleOutputCharacterW`와 `FillConsoleOutputAttribute`로 화면을 공백 문자로 채웁니다. 생성자에서 `ENABLE_VIRTUAL_TERMINAL_PROCESSING` 플래그를 활성화하여 최신 Windows 콘솔의 UTF-8 지원을 개선합니다.
 
 ### `Engine/Core/Input.h/cpp`
-키보드 및 마우스 입력을 처리하는 싱글톤 클래스입니다. Windows API의 `GetAsyncKeyState`를 사용하여 255개의 가상 키 코드를 매 프레임 체크하고, 이전 프레임 상태와 비교하여 `GetKeyDown()`(한 번만), `GetKey()`(지속), `GetKeyUp()`(떼는 순간) 이벤트를 구분합니다. 마우스 입력도 동일한 방식으로 처리하며(`GetMouseButtonDown/Up/Button`), `GetConsoleScreenBufferInfo`와 `GetCursorPos`, `ScreenToClient`를 사용하여 마우스 커서의 콘솔 좌표를 계산합니다. `ProcessInput()` 함수가 매 프레임 호출되어 입력 상태를 갱신하고, `SavePreviousInputStates()` 함수가 다음 프레임을 위해 현재 상태를 저장합니다.
+키보드 및 마우스 입력을 처리하는 싱글톤 클래스입니다. Windows 콘솔 API의 `ReadConsoleInput`과 `PeekConsoleInput`을 사용하여 키보드와 마우스 이벤트를 받아 처리합니다. `KEY_EVENT`와 `MOUSE_EVENT`를 구분하여 각각 `keyStates` 배열과 `mousePosition`을 갱신하며, 이전 프레임 상태와 비교하여 `GetKeyDown()`(한 번만), `GetKey()`(지속), `GetKeyUp()`(떼는 순간) 이벤트를 구분합니다. 마우스 입력은 `GetMouseButtonDown/Up/Button` 함수로 처리되며, `dwMousePosition`에서 X, Y 좌표를 읽어 `mousePosition`에 저장합니다. `ENABLE_MOUSE_INPUT` 플래그를 설정하고 `ENABLE_QUICK_EDIT_MODE`를 비활성화하여 콘솔에서 마우스 입력을 정상적으로 받을 수 있도록 합니다. `SavePreviousInputStates()` 함수가 다음 프레임을 위해 현재 상태를 저장합니다.
 
 ### `Engine/Algorithm/NavigationSystem.h/cpp`
 A* 경로 탐색 알고리즘을 구현한 클래스로, AlgorithmPractice 프로젝트의 로직을 기반으로 작성되었습니다. `FindPath()` 함수는 시작 위치와 목적지, 그리고 2D bool 배열(이동 가능 여부 맵)을 입력받아 최적 경로를 `std::deque<Vector2>`로 반환합니다. `std::priority_queue`를 사용한 열린 리스트(openList)에서 fCost(gCost + hCost)가 가장 낮은 노드를 선택하며, 4방향 이동을 고려하여 인접 노드를 탐색합니다. 휴리스틱 함수(`CalculateHeuristic`)는 유클리드 거리를 사용하며, 경로를 찾지 못한 경우 `SetAlternativeDestination`을 호출하여 가장 가까운 도달 가능 지점을 대체 목적지로 설정합니다. `ConstructPath`는 닫힌 리스트를 역추적하여 최종 경로를 생성합니다.
@@ -45,19 +45,19 @@ A* 경로 탐색 알고리즘을 구현한 클래스로, AlgorithmPractice 프�
 프로그램의 진입점으로, `main()` 함수에서 Engine 인스턴스를 생성하고 게임 루프를 시작합니다. 콘솔 코드 페이지를 UTF-8로 설정(`SetConsoleOutputCP`, `SetConsoleCP`)하고 가상 터미널 시퀀스를 활성화하여 유니코드 박스 문자가 올바르게 표시되도록 합니다. `BattleLevel` 인스턴스를 생성하여 엔진에 등록하고, 맵 파일(`Assets/BattleMap.txt`)을 로드합니다. 초기 유닛 3개(Lord, Cavalier, Archer)를 플레이어 진영으로, 2개(Soldier, Archer)를 적 진영으로 생성하여 맵의 특정 위치에 배치한 후, 엔진의 `Run()` 함수를 호출하여 게임을 시작합니다.
 
 ### `Game/Level/BattleLevel.h/cpp`
-Fire Emblem 전투 맵을 구현한 메인 게임 레벨 클래스입니다. `Grid` 객체를 통해 지형 정보를 관리하고, `playerUnits`와 `enemyUnits` 벡터로 아군과 적군 유닛을 분리 관리합니다. `LoadMap()` 함수는 텍스트 파일에서 맵 크기와 지형 데이터를 읽어 Grid를 초기화합니다. `HandleInput()` 함수는 1~9, 0 숫자 키로 플레이어 유닛을 선택하고, 마우스 클릭으로 이동 목적지를 지정하며, ESC 키로 선택 해제를 처리합니다. 유닛 선택 시 `MovementCalculator`를 사용하여 이동 가능 범위를 계산하고, 이동 명령 시 `NavigationSystem`으로 최적 경로를 생성하여 유닛에 전달합니다. `DrawGrid()`, `DrawMovementRange()`, `DrawStatsPanel()` 함수로 맵, 이동 가능 타일 하이라이트, 유닛 스탯 패널을 각각 렌더링하며, `uiBuffers`라는 클래스 멤버 배열을 사용하여 동적 텍스트의 메모리 수명을 보장합니다. 턴 관리 시스템(`isPlayerTurn`, `turnCount`)을 통해 플레이어와 적의 턴을 구분합니다.
+Fire Emblem 전투 맵을 구현한 메인 게임 레벨 클래스입니다. `Grid` 객체를 통해 지형 정보를 관리하고, `playerUnits`와 `enemyUnits` 벡터로 아군과 적군 유닛을 분리 관리합니다. `LoadMap()` 함수는 텍스트 파일에서 맵 크기와 지형 데이터를 읽어 Grid를 초기화합니다. `HandleInput()` 함수는 1~9, 0 숫자 키(1번 키가 첫 번째 유닛)로 플레이어 유닛을 선택하고, 마우스 클릭으로 이동 목적지를 지정하며, ESC 키로 선택 해제, SPACE 키로 턴 종료를 처리합니다. 유닛 선택 시 `MovementCalculator`를 사용하여 이동 가능 범위를 계산하고, 이동 명령 시 `NavigationSystem`으로 최적 경로를 생성하여 유닛에 전달합니다. `DrawGrid()`는 각 타일을 2x2 멀티라인 ASCII 아트로 렌더링하며(그리드 좌표 x,y → 화면 좌표 x*2+1, y*2+1), `DrawMovementRange()`는 이동 가능 타일을 노란색/청록색 점으로 하이라이트하고, `DrawStatsPanel()`은 선택된 유닛의 스탯(HP, Class, STR~MOV)을 우측 패널에 표시합니다. `DrawKeyboardTooltip()`은 화면 하단에 2열 레이아웃으로 조작법과 색상 정보를 표시합니다. `uiBuffers[12][64]` 배열을 사용하여 동적 텍스트의 메모리 수명을 보장하며, 턴 관리 시스템(`isPlayerTurn`, `turnCount`)을 통해 플레이어와 적의 턴을 구분합니다.
 
 ### `Game/Map/Grid.h/cpp`
 2D 그리드 맵을 관리하는 클래스로, `std::vector<std::vector<Tile*>>`로 타일 배열을 저장합니다. 생성자에서 주어진 너비와 높이만큼 Tile 객체를 동적 할당하여 초기화하며, 소멸자에서 모든 Tile을 안전하게 삭제합니다. `GetTile()` 함수는 x, y 좌표 또는 Vector2로 특정 타일을 반환하고, `SetTile()` 함수는 특정 위치의 지형 타입을 변경합니다. `IsValidPosition()` 함수는 주어진 좌표가 그리드 범위 내에 있는지 확인하며, `IsWalkable()` 함수는 해당 타일이 이동 가능하고 유닛이 없는지 검사합니다. `GenerateNavigationMap()` 함수는 NavigationSystem을 위해 bool 2D 배열을 생성하여, true는 이동 가능, false는 장애물을 나타냅니다.
 
 ### `Game/Map/Tile.h/cpp`
-그리드의 각 타일을 나타내는 클래스로, 지형 타입(`TerrainType`)에 따라 이동 비용, 회피/방어 보너스, 체력 회복 여부 등의 속성을 설정합니다. 생성자에서 `switch` 문으로 지형 타입별 특성을 초기화하며, 평지(`.`)는 이동 비용 1, 숲(`♣`)은 이동 비용 2와 회피 +20, 산(`▲`)은 이동 비용 3과 회피 +30, 성(`♦`)은 체력 회복 기능, 물(`≈`)과 벽(`█`)은 통과 불가로 설정됩니다. 각 지형은 고유한 UTF-8 문자(`displayStr`)와 색상(`displayColor`)을 가지며, `GetDisplayString()`과 `GetDisplayColor()` 함수를 통해 렌더링 시 사용됩니다. `HasUnit()` 플래그로 해당 타일에 유닛이 있는지 추적하여 이동 가능 여부 판단에 활용됩니다.
+그리드의 각 타일을 나타내는 클래스로, 지형 타입(`TerrainType`)에 따라 이동 비용, 회피/방어 보너스, 체력 회복 여부 등의 속성을 설정합니다. 생성자에서 `switch` 문으로 지형 타입별 특성을 초기화하며, 평지는 이동 비용 1, 숲은 이동 비용 2와 회피 +20, 산은 이동 비용 3과 회피 +30, 성은 체력 회복 기능, 물과 벽은 통과 불가로 설정됩니다. 각 지형은 2x2 멀티라인 ASCII 아트로 표현되며, `displayStr[4][8]` 배열에 4개의 셀(topLeft, topRight, bottomLeft, bottomRight)을 저장합니다. 평지는 점 4개, 숲은 스페이드(♠) 4개, 산은 삼각형(/\)과 블록(▓), 성은 박스 문자(╔╗╚╝), 마을은 지붕(/\)과 벽(▄), 물은 물결(≈) 4개, 벽은 블록(█) 4개로 표현됩니다. `GetDisplayStrings()` 함수로 4개의 문자열 포인터를 반환하며, `GetDisplayColor()`로 지형별 색상을 제공합니다. `HasUnit()` 플래그로 해당 타일에 유닛이 있는지 추적하여 이동 가능 여부 판단에 활용됩니다.
 
 ### `Game/Unit/Unit.h/cpp`
-Fire Emblem의 유닛(캐릭터)을 나타내는 Actor 자식 클래스입니다. `UnitStats` 구조체로 HP, STR, MAG, SKL, SPD, LCK, DEF, RES, MOV 등의 스탯을 관리하고, `Faction`(Player/Enemy/Ally)으로 진영을 구분하며, `UnitState`(Idle/Selected/Moving/Acting/Done)로 현재 상태를 추적합니다. `UnitClass`(Lord, Cavalier, Knight, Archer 등)에 따라 표시 문자(`displayStr`)가 결정되며, `SetUnitClass()` 함수로 병과 변경 시 문자도 자동으로 갱신됩니다. `SetPath()` 함수는 이동 경로(`std::deque<Vector2>`)를 받아 저장하고, `UpdateMovement()` 함수는 매 프레임 호출되어 타이머 기반으로 경로를 따라 이동하며 목적지 도착 시 다음 웨이포인트로 전환합니다. `GetDisplayColor()` 함수는 진영과 상태에 따라 색상을 반환하며, Done 상태는 회색으로 표시됩니다. `unitIndex`는 플레이어 유닛의 숫자 키(0~9) 매핑에 사용됩니다.
+Fire Emblem의 유닛(캐릭터)을 나타내는 Actor 자식 클래스입니다. `UnitStats` 구조체로 HP, STR, MAG, SKL, SPD, LCK, DEF, RES, MOV 등의 스탯을 관리하고, `Faction`(Player/Enemy/Ally/Neutral)으로 진영을 구분하며, `UnitState`(Idle/Selected/Moving/Acting/Done)로 현재 상태를 추적합니다. `UnitClass`(Lord, Cavalier, Knight, Archer 등)에 따라 표시 문자(`displayStr`)가 결정되며, Lord 유닛은 생성자에서 모든 스탯이 50% 강화되고(0인 스탯은 3으로 설정), `GetDisplayColor()`에서 항상 녹색(Color::Green)을 반환하여 특별한 주인공임을 시각적으로 표현합니다. `SetPath()` 함수는 이동 경로(`std::deque<Vector2>`)를 받아 저장하고 상태를 Moving으로 변경하며, `UpdateMovement()` 함수는 매 프레임 호출되어 타이머 기반으로 경로를 따라 `gridPosition`을 갱신하고 이동 완료 시 상태를 Done으로 변경합니다. `Draw()` 함수는 `gridPosition`을 2x2 화면 좌표로 변환하여 같은 문자를 4번 렌더링하며, Actor의 `position` 변수는 사용하지 않습니다. 선택 상태는 노란색, Done 상태는 흰색, Player는 파란색, Enemy는 빨간색으로 표시됩니다. `unitIndex`는 플레이어 유닛의 숫자 키(1~9, 0) 매핑에 사용됩니다.
 
 ### `Game/Unit/UnitClass.h`
-유닛의 병과(클래스)를 정의한 열거형과 유틸리티 함수를 제공합니다. `UnitClass` enum은 Lord(주인공), Cavalier(기마병), Knight(중보병), Archer(궁병), Mage(마법사), Pegasus Knight(천마병), Soldier(병사) 등을 포함합니다. `GetUnitClassString()` 함수는 각 병과를 나타내는 단일 문자 UTF-8 문자열을 반환하며, 예를 들어 Lord는 "L", Cavalier는 "C", Knight는 "K"를 반환합니다. 이 문자들은 콘솔 화면에서 유닛을 시각적으로 구분하는 데 사용되며, 향후 멀티라인 ASCII 아트로 확장할 수 있도록 설계되었습니다.
+유닛의 병과(클래스)를 정의한 열거형과 유틸리티 함수를 제공합니다. `UnitClass` enum은 Lord(주인공), Cavalier(기마병), Knight(중보병), Archer(궁병), Mage(마법사), Fighter(전사), Soldier(병사), Mercenary(용병), Thief(도적), Cleric(성직자) 등을 포함합니다. `GetUnitClassString()` 함수는 각 병과를 나타내는 단일 문자 UTF-8 문자열을 반환하며(Lord는 "L", Cavalier는 "C" 등), 2x2 멀티라인 렌더링 시 모든 셀에 동일한 문자가 표시됩니다. `GetFullUnitClassString()` 함수는 스탯 패널 표시용으로 전체 클래스 이름("Lord", "Cavalier", "Archer" 등)을 반환하여 플레이어가 병과를 명확하게 인식할 수 있도록 합니다.
 
 ### `Game/Unit/UnitStats.h`
 유닛의 전투 스탯을 담는 구조체입니다. `maxHP`와 `currentHP`로 체력을 관리하며, `strength`(물리 공격력), `magic`(마법 공격력), `skill`(명중률/필살률), `speed`(공격 순서/회피), `luck`(필살 회피), `defense`(물리 방어), `resistance`(마법 방어), `movement`(이동력) 등의 스탯을 int 타입으로 저장합니다. 이 값들은 전투 시스템에서 데미지 계산, 명중 판정, 회피 판정 등에 사용되며, 지형 보너스와 결합하여 최종 전투 결과를 결정합니다. 현재는 기본값을 생성자에서 초기화하며, 향후 레벨업이나 아이템 시스템으로 확장 가능합니다.
@@ -80,18 +80,19 @@ Fire Emblem의 유닛(캐릭터)을 나타내는 Actor 자식 클래스입니다
 ## Config 폴더 - 설정 파일
 
 ### `Config/Setting.txt`
-게임 엔진의 초기 설정을 담은 텍스트 파일입니다. `width=70`, `height=30`, `framerate=60.0` 등의 키-값 쌍으로 콘솔 화면 크기와 목표 프레임레이트를 지정합니다. Engine 클래스의 `LoadSetting()` 함수가 시작 시 이 파일을 읽어 파싱하며, 각 설정 값을 `EngineSetting` 구조체에 저장합니다. 화면 너비는 맵과 유닛 정보 패널을 함께 표시할 수 있도록 충분히 설정되어야 하며, 높이는 맵 전체와 상단 UI, 하단 입력 모니터를 표시할 수 있어야 합니다. 프레임레이트는 게임 루프의 `Sleep()` 호출로 제어되어 CPU 사용률을 조절합니다.
+게임 엔진의 초기 설정을 담은 텍스트 파일입니다. `width=70`, `height=50`, `framerate=60.0` 등의 키-값 쌍으로 콘솔 화면 크기와 목표 프레임레이트를 지정합니다. Engine 클래스의 `LoadSetting()` 함수가 시작 시 이 파일을 읽어 파싱하며, 각 설정 값을 `EngineSetting` 구조체에 저장합니다. 2x2 멀티라인 렌더링으로 인해 15x15 그리드가 30x30 화면 공간을 차지하므로, 화면 높이는 50으로 설정되어 맵(32줄), 구분선(1줄), 툴팁(5줄), 여유 공간을 모두 표시할 수 있습니다. 화면 너비는 맵(30칸) + 여백(6칸) + 유닛 정보 패널(20칸) + 여유를 고려하여 70으로 설정됩니다. 프레임레이트는 게임 루프에서 deltaTime 계산으로 제어되어 60 FPS를 유지하며 CPU 사용률을 조절합니다.
 
 ---
 
 ## 핵심 게임 플레이 흐름
 
-1. **초기화**: `Main.cpp`에서 Engine 생성 → BattleLevel 생성 및 맵 로드 → 유닛 배치
+1. **초기화**: `Main.cpp`에서 Engine 생성 → BattleLevel 생성 및 맵 로드 → 유닛 배치(Lord는 스탯 50% 강화)
 2. **게임 루프**: Engine이 매 프레임 `BeginPlay()` → `Tick()` → `Draw()` 호출
-3. **입력 처리**: `Input`이 키보드/마우스 상태 갱신 → BattleLevel의 `HandleInput()`이 유닛 선택/이동 명령 처리
-4. **유닛 선택**: 숫자 키 입력 → `SelectUnitByIndex()` → MovementCalculator로 이동 범위 계산 → `reachableTiles` 갱신
-5. **유닛 이동**: 마우스 클릭 → `OnMouseClick()` → NavigationSystem으로 경로 생성 → Unit에 경로 설정 → `UpdateMovement()`로 애니메이션 처리
-6. **렌더링**: `DrawGrid()`로 지형 표시 → `DrawMovementRange()`로 이동 가능 타일 하이라이트 → 각 Unit의 `Draw()`로 유닛 표시 → `DrawStatsPanel()`로 스탯 UI 출력 → Renderer가 renderQueue 처리 → ScreenBuffer로 더블 버퍼링 출력
+3. **입력 처리**: `Input`이 키보드/마우스 상태 갱신 → BattleLevel의 `HandleInput()`이 유닛 선택/이동/턴 종료 처리
+4. **유닛 선택**: 숫자 키(1~9, 0) 입력 → `SelectUnitByIndex()` → MovementCalculator로 이동 범위 계산 → `reachableTiles` 갱신
+5. **유닛 이동**: 마우스 클릭 → 화면 좌표를 그리드 좌표로 변환(÷2) → `OnMouseClick()` → NavigationSystem으로 경로 생성 → Unit에 경로 설정 및 상태 Moving → `UpdateMovement()`로 타이머 기반 애니메이션 → 이동 완료 시 상태 Done
+6. **렌더링**: `DrawGrid()`로 지형을 2x2로 표시(Priority 7) → `DrawMovementRange()`로 이동 가능 타일 하이라이트(Priority 9) → 각 Unit의 `Draw()`로 유닛 2x2 표시(Priority 10) → `DrawStatsPanel()`로 스탯 UI 출력 → `DrawKeyboardTooltip()`로 조작법 표시 → Renderer가 renderQueue 처리 → ScreenBuffer로 더블 버퍼링 출력
+7. **턴 전환**: SPACE 키 → 플레이어 턴 ↔ 적 턴 전환 → 모든 유닛 상태 초기화(Done → Idle)
 
 ---
 
@@ -99,9 +100,14 @@ Fire Emblem의 유닛(캐릭터)을 나타내는 Actor 자식 클래스입니다
 
 - **UTF-8 인코딩**: 모든 문자열을 UTF-8로 관리하고, Renderer에서 UTF-16으로 변환하여 Windows 콘솔 API(`WriteConsoleOutputW`)에 전달
 - **더블 버퍼링**: 두 개의 콘솔 버퍼를 교대로 사용하여 화면 깜빡임 방지
+- **멀티라인 ASCII 아트**: 모든 타일과 유닛을 2x2 크기로 렌더링하여 시각적 표현력 향상
+- **렌더링 우선순위**: sortingOrder 시스템으로 지형(7) < 아이템(8) < 하이라이트(9) < 유닛(10) 계층 구조 구현
 - **싱글톤 패턴**: Engine, Renderer, Input 등 핵심 시스템은 전역 접근 가능한 싱글톤으로 구현
 - **커스텀 RTTI**: 런타임 타입 확인과 안전한 캐스팅을 위한 자체 RTTI 시스템 구축
 - **A* 경로 탐색**: 우선순위 큐 기반 A* 알고리즘으로 최적 경로 계산
 - **Dijkstra 이동 범위**: 지형 비용을 고려한 Dijkstra 알고리즘으로 이동 가능 영역 계산
-- **지형 시스템**: 각 타일이 이동 비용, 회피/방어 보너스, 체력 회복 등의 속성을 가짐
-- **턴제 시스템**: 플레이어/적 턴 구분 및 유닛 상태 관리(Idle/Selected/Moving/Done)
+- **지형 시스템**: 각 타일이 이동 비용, 회피/방어 보너스, 체력 회복 등의 속성을 가지며 고유한 2x2 ASCII 아트로 표현
+- **턴제 시스템**: 플레이어/적 턴 구분 및 유닛 상태 관리(Idle/Selected/Moving/Done), SPACE 키로 턴 전환
+- **좌표 변환 시스템**: 그리드 좌표(논리적) ↔ 화면 좌표(물리적) 변환, 2x2 렌더링 고려
+- **UI 버퍼 관리**: `uiBuffers[12][64]` 배열로 동적 텍스트의 메모리 수명 보장
+- **마우스 입력**: 콘솔 마우스 이벤트로 유닛 이동 명령, 화면 좌표를 그리드 좌표로 자동 변환
