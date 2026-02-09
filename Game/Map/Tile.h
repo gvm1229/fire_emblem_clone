@@ -4,7 +4,7 @@
 #include "Math/Vector2.h"
 #include "Math/Color.h"
 
-namespace Wanted
+namespace FEClone
 {
 	// 지형 타입 열거형
 	enum class TerrainType

@@ -1,7 +1,7 @@
 #include "MovementCalculator.h"
 #include <algorithm>
 
-namespace Wanted
+namespace FEClone
 {
 	// Dijkstra 알고리즘으로 이동 가능 범위 계산
 	void MovementCalculator::CalculateReachableTiles(

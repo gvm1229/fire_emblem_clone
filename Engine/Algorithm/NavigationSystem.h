@@ -7,11 +7,11 @@
 #include <deque>
 #include <vector>
 
-namespace Wanted
+namespace FEClone
 {
 	// A* 길찾기 알고리즘을 처리하는 클래스
 	// AlgorithmPractice의 NavigationSystem을 참고하여 구현
-	class WANTED_API NavigationSystem
+	class FECLONE_API NavigationSystem
 	{
 	private:
 		// A* 노드 구조체

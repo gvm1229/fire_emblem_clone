@@ -1,6 +1,6 @@
 #include "Grid.h"
 
-namespace Wanted
+namespace FEClone
 {
 	// 생성자: 기본 평지로 초기화
 	Grid::Grid(int width, int height)

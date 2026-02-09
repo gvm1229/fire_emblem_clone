@@ -2,7 +2,7 @@
 
 #include "Common/Common.h"
 
-namespace Wanted
+namespace FEClone
 {
 	// 전방 선언.
 	class Input;
@@ -10,7 +10,7 @@ namespace Wanted
 	// Tip: 게임 엔진 만들 때 시스템적인 것들은 명시적으로 싱글톤으로 전역적으로 접근하도록 함.
 
 	// Main game engine class.
-	class WANTED_API Engine
+	class FECLONE_API Engine
 	{
 		// 엔진 설정 구조체.
 		struct EngineSetting

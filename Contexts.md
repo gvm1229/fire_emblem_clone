@@ -29,7 +29,7 @@ Windows 콘솔 API를 사용한 더블 버퍼링 구현을 담당합니다. 두 
 A* 경로 탐색 알고리즘을 구현한 클래스로, AlgorithmPractice 프로젝트의 로직을 기반으로 작성되었습니다. `FindPath()` 함수는 시작 위치와 목적지, 그리고 2D bool 배열(이동 가능 여부 맵)을 입력받아 최적 경로를 `std::deque<Vector2>`로 반환합니다. `std::priority_queue`를 사용한 열린 리스트(openList)에서 fCost(gCost + hCost)가 가장 낮은 노드를 선택하며, 4방향 이동을 고려하여 인접 노드를 탐색합니다. 휴리스틱 함수(`CalculateHeuristic`)는 유클리드 거리를 사용하며, 경로를 찾지 못한 경우 `SetAlternativeDestination`을 호출하여 가장 가까운 도달 가능 지점을 대체 목적지로 설정합니다. `ConstructPath`는 닫힌 리스트를 역추적하여 최종 경로를 생성합니다.
 
 ### `Engine/Math/Vector2.h/cpp`
-2D 좌표를 표현하는 구조체로, `int x`와 `int y` 멤버 변수를 가집니다. 연산자 오버로딩을 통해 벡터 덧셈(`+`), 뺄셈(`-`), 비교(`==`, `!=`) 등을 지원하며, `Distance()` 정적 함수로 두 벡터 간 유클리드 거리를 계산할 수 있습니다. `Zero`, `One`, `Up`, `Down`, `Left`, `Right` 등의 정적 상수를 제공하여 편리하게 사용 가능합니다. `std::hash<Wanted::Vector2>` 특수화를 통해 `std::unordered_map`의 키로 사용할 수 있도록 구현되었으며, 해시 함수는 x와 y의 해시 값을 XOR 연산으로 결합합니다.
+2D 좌표를 표현하는 구조체로, `int x`와 `int y` 멤버 변수를 가집니다. 연산자 오버로딩을 통해 벡터 덧셈(`+`), 뺄셈(`-`), 비교(`==`, `!=`) 등을 지원하며, `Distance()` 정적 함수로 두 벡터 간 유클리드 거리를 계산할 수 있습니다. `Zero`, `One`, `Up`, `Down`, `Left`, `Right` 등의 정적 상수를 제공하여 편리하게 사용 가능합니다. `std::hash<FEClone::Vector2>` 특수화를 통해 `std::unordered_map`의 키로 사용할 수 있도록 구현되었으며, 해시 함수는 x와 y의 해시 값을 XOR 연산으로 결합합니다.
 
 ### `Engine/Math/Color.h`
 콘솔 텍스트 색상을 정의한 열거형입니다. Windows 콘솔 API의 색상 비트 플래그를 사용하며, `Red = 0x0004`, `Green = 0x0002`, `Blue = 0x0001`, `Intensity = 0x0008` 등의 기본 색상과 이들의 조합으로 `Yellow = Red | Green`, `Cyan = Blue | Green`, `Magenta = Red | Blue`, `White = Red | Green | Blue | Intensity` 등을 정의합니다. 색상은 `CHAR_INFO` 구조체의 Attributes 필드에 적용되어 콘솔 출력 시 텍스트 색상을 결정합니다.

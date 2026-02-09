@@ -2,7 +2,7 @@
 #include <cmath>
 #include <cfloat>
 
-namespace Wanted
+namespace FEClone
 {
 	// A* 경로 탐색 구현
 	void NavigationSystem::FindPath(

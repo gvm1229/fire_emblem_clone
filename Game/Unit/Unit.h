@@ -7,7 +7,7 @@
 #include "Math/Color.h"
 #include <deque>
 
-namespace Wanted
+namespace FEClone
 {
 	// 유닛 진영
 	enum class Faction

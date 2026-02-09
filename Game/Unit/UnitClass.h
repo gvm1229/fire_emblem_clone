@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Wanted
+namespace FEClone
 {
 	// 유닛 클래스 (병과)
 	enum class UnitClass

@@ -9,7 +9,7 @@
 
 // ENGINE_BUILD_DLL이 선언되어 있는지에 따라 분기.
 #if ENGINE_BUILD_DLL
-#define WANTED_API DLLEXPORT
+#define FECLONE_API DLLEXPORT
 #else
-#define WANTED_API DLLIMPORT
+#define FECLONE_API DLLIMPORT
 #endif

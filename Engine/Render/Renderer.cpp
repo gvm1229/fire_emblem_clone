@@ -2,7 +2,7 @@
 #include "ScreenBuffer.h"
 #include "Util/Util.h"
 
-namespace Wanted
+namespace FEClone
 {
 	Renderer::Frame::Frame(int bufferCount)
 	{

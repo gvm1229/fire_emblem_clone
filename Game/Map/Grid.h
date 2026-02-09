@@ -4,7 +4,7 @@
 #include "Tile.h"
 #include <vector>
 
-namespace Wanted
+namespace FEClone
 {
 	// 그리드 클래스 - 맵의 타일들을 관리
 	class Grid

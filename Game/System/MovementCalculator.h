@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-namespace Wanted
+namespace FEClone
 {
 	// 이동 가능 범위를 계산하는 클래스
 	// Dijkstra 알고리즘을 사용하여 지형 비용을 고려한 이동 범위 계산

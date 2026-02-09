@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace Wanted
+namespace FEClone
 {
 	RTTI_DEFINITIONS(BattleLevel)
 

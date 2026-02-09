@@ -3,9 +3,9 @@
 #include "Common/Common.h"
 #include "Math/Vector2.h"
 
-namespace Wanted
+namespace FEClone
 {
-	class WANTED_API Input
+	class FECLONE_API Input
 	{
 		friend class Engine;
 

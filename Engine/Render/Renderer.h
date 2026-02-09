@@ -5,13 +5,13 @@
 #include <Windows.h>
 #include <vector>
 
-namespace Wanted
+namespace FEClone
 {
 	// 콘솔 버퍼를 관리하는 클래스.
 	class ScreenBuffer;
 
 	// 더블 버퍼링을 지원하는 렌더러 클래스.
-	class WANTED_API Renderer
+	class FECLONE_API Renderer
 	{
 		// 프레임 구조체 - 2차원 글자 배열의 항목이 될 구조체.
 		struct Frame

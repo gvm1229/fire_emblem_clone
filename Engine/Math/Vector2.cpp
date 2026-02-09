@@ -1,7 +1,7 @@
 #include "Vector2.h"
 #include <iostream>
 
-namespace Wanted
+namespace FEClone
 {
 	Vector2 Vector2::Zero(0, 0);
 	Vector2 Vector2::One(1, 1);

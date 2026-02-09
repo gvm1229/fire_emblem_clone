@@ -4,7 +4,7 @@
 #include "Level/BattleLevel.h"
 #include "Unit/Unit.h"
 
-using namespace Wanted;
+using namespace FEClone;
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>

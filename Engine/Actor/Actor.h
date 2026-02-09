@@ -4,12 +4,12 @@
 #include "Math/Vector2.h"
 #include "Math/Color.h"
 
-namespace Wanted
+namespace FEClone
 {
 	// 전방 선언.
 	class Level;
 
-	class WANTED_API Actor : public RTTI
+	class FECLONE_API Actor : public RTTI
 	{
 		// RTTI 코드 추가.
 		RTTI_DECLARATIONS(Actor, RTTI)

@@ -3,7 +3,7 @@
 #include "Engine/Engine.h"
 #include <vector>
 
-using namespace Wanted;
+using namespace FEClone;
 
 // 레벨 관리에 사용할 열거형
 enum class State

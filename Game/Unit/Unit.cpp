@@ -1,7 +1,7 @@
 #include "Unit.h"
 #include "Render/Renderer.h"
 
-namespace Wanted
+namespace FEClone
 {
 RTTI_DEFINITIONS(Unit)
 

@@ -200,7 +200,7 @@ IntDir: $(SolutionDir)Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\
 
 #### 전처리기 정의
 ```
-ENGINE_BUILD_DLL: DLL 빌드 모드 활성화 (WANTED_API 매크로에서 __declspec(dllexport) 사용)
+ENGINE_BUILD_DLL: DLL 빌드 모드 활성화 (FECLONE_API 매크로에서 __declspec(dllexport) 사용)
 _DEBUG (Debug 모드): 디버그 빌드
 NDEBUG (Release 모드): 릴리스 빌드
 ```

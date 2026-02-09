@@ -2,7 +2,7 @@
 
 #include "Common/Common.h"
 
-namespace Wanted
+namespace FEClone
 {
 	// 유닛의 기본 스탯 구조체
 	struct UnitStats

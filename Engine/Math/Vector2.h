@@ -4,9 +4,9 @@
 #include <Windows.h>
 #include <functional>
 
-namespace Wanted
+namespace FEClone
 {
-	class WANTED_API Vector2
+	class FECLONE_API Vector2
 	{
 	public:
 		Vector2();
@@ -47,9 +47,9 @@ namespace Wanted
 namespace std
 {
 	template<>
-	struct hash<Wanted::Vector2>
+	struct hash<FEClone::Vector2>
 	{
-		size_t operator()(const Wanted::Vector2& v) const noexcept
+		size_t operator()(const FEClone::Vector2& v) const noexcept
 		{
 			// x와 y를 결합하여 hash 생성
 			return hash<int>()(v.x) ^ (hash<int>()(v.y) << 1);

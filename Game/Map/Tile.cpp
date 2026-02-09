@@ -1,6 +1,6 @@
 #include "Tile.h"
 
-namespace Wanted
+namespace FEClone
 {
 	// 생성자: 지형 타입에 따라 속성 초기화
 	Tile::Tile(int x, int y, TerrainType type)
@@ -52,7 +52,7 @@ namespace Wanted
 		isHealing = true;
 		isWalkable = true;
 		strcpy_s(displayStr, sizeof(displayStr), "♦");  // 성 - 다이아몬드 (UTF-8)
-		displayColor = Wanted::Color::Cyan;
+		displayColor = FEClone::Color::Cyan;
 		break;
 
 	case TerrainType::Village:
@@ -61,7 +61,7 @@ namespace Wanted
 		defenseBonus = 0;
 		isWalkable = true;
 		strcpy_s(displayStr, sizeof(displayStr), "◘");  // 마을 - 역사각형 (UTF-8)
-		displayColor = Wanted::Color::Yellow;
+		displayColor = FEClone::Color::Yellow;
 		break;
 
 	case TerrainType::Water:

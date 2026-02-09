@@ -7,7 +7,7 @@
 #include "Algorithm/NavigationSystem.h"
 #include <vector>
 
-namespace Wanted
+namespace FEClone
 {
 	// 전투 레벨 - Fire Emblem 전투 맵
 	class BattleLevel : public Level
