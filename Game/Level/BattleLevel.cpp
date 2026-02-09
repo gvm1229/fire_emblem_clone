@@ -63,8 +63,8 @@ namespace FEClone
 
 	// 턴 정보 표시 (클래스 멤버 버퍼 사용)
 	const char* phaseStr = isPlayerTurn ? "PLAYER" : "ENEMY";
-	sprintf_s(uiBuffers[10], sizeof(uiBuffers[10]), "Turn:%d Phase:%s", turnCount, phaseStr);
-	Renderer::Get().Submit(uiBuffers[10], Vector2(0, 0), Color::White, 10);
+	sprintf_s(uiBuffers[11], sizeof(uiBuffers[11]), "Turn:%d Phase:%s", turnCount, phaseStr);
+	Renderer::Get().Submit(uiBuffers[11], Vector2(0, 0), Color::White, 10);
 	}
 
 	// 맵 로딩 (간단한 텍스트 파일 형식)
@@ -306,47 +306,55 @@ namespace FEClone
 		if (selectedUnit != nullptr)
 		{
 			const UnitStats& stats = selectedUnit->GetStats();
+			const UnitClass unitClass = selectedUnit->GetUnitClass();
 			
-			if (selectedUnit->GetUnitClass() == UnitClass::Lord)
+			// 유닛 인덱스 표시
+			if (unitClass == UnitClass::Lord)
 			{
 				sprintf_s(uiBuffers[0], sizeof(uiBuffers[0]), "Unit: #%d (Player Unit)", selectedUnit->GetUnitIndex() + 1);
 			}
 			else
 			{
-			// 클래스 멤버 버퍼 사용 (렌더 큐가 포인터를 저장하므로 로컬 변수는 위험)
 				sprintf_s(uiBuffers[0], sizeof(uiBuffers[0]), "Unit: #%d", selectedUnit->GetUnitIndex() + 1);
 			}
-
 			Renderer::Get().Submit(uiBuffers[0], Vector2(panelX, panelY++), Color::White, 10);
 
 			panelY++;
 
+			// HP 표시
 			sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "HP: %d/%d", stats.currentHP, stats.maxHP);
 			Renderer::Get().Submit(uiBuffers[1], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[2], sizeof(uiBuffers[2]), "STR: %d", stats.strength);
+			// 클래스 표시 (전체 이름)
+			sprintf_s(uiBuffers[2], sizeof(uiBuffers[2]), "Class: %s", GetFullUnitClassString(unitClass));
 			Renderer::Get().Submit(uiBuffers[2], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[3], sizeof(uiBuffers[3]), "MAG: %d", stats.magic);
+			panelY++;
+
+			// 스탯 표시
+			sprintf_s(uiBuffers[3], sizeof(uiBuffers[3]), "STR: %d", stats.strength);
 			Renderer::Get().Submit(uiBuffers[3], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[4], sizeof(uiBuffers[4]), "SKL: %d", stats.skill);
+			sprintf_s(uiBuffers[4], sizeof(uiBuffers[4]), "MAG: %d", stats.magic);
 			Renderer::Get().Submit(uiBuffers[4], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[5], sizeof(uiBuffers[5]), "SPD: %d", stats.speed);
+			sprintf_s(uiBuffers[5], sizeof(uiBuffers[5]), "SKL: %d", stats.skill);
 			Renderer::Get().Submit(uiBuffers[5], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[6], sizeof(uiBuffers[6]), "LCK: %d", stats.luck);
+			sprintf_s(uiBuffers[6], sizeof(uiBuffers[6]), "SPD: %d", stats.speed);
 			Renderer::Get().Submit(uiBuffers[6], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[7], sizeof(uiBuffers[7]), "DEF: %d", stats.defense);
+			sprintf_s(uiBuffers[7], sizeof(uiBuffers[7]), "LCK: %d", stats.luck);
 			Renderer::Get().Submit(uiBuffers[7], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[8], sizeof(uiBuffers[8]), "RES: %d", stats.resistance);
+			sprintf_s(uiBuffers[8], sizeof(uiBuffers[8]), "DEF: %d", stats.defense);
 			Renderer::Get().Submit(uiBuffers[8], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[9], sizeof(uiBuffers[9]), "MOV: %d", stats.movement);
+			sprintf_s(uiBuffers[9], sizeof(uiBuffers[9]), "RES: %d", stats.resistance);
 			Renderer::Get().Submit(uiBuffers[9], Vector2(panelX, panelY++), Color::White, 10);
+
+			sprintf_s(uiBuffers[10], sizeof(uiBuffers[10]), "MOV: %d", stats.movement);
+			Renderer::Get().Submit(uiBuffers[10], Vector2(panelX, panelY++), Color::White, 10);
 		}
 		else
 		{
