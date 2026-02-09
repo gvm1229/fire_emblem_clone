@@ -13,6 +13,7 @@ namespace FEClone
 		Blue = FOREGROUND_BLUE,
 		Green = FOREGROUND_GREEN,
 		Red = FOREGROUND_RED,
+		Purple = Red | Blue,
 		White = Blue | Green | Red,
 		Yellow = Red | Green,
 		Cyan = Blue | Green,

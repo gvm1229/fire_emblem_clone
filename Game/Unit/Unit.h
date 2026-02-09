@@ -15,7 +15,6 @@ namespace FEClone
 		Player,     // 아군
 		Enemy,      // 적군
 		Ally,       // 동맹군 (AI가 조종하지만 플레이어 편)
-		Neutral     // 중립
 	};
 
 	// 유닛 상태

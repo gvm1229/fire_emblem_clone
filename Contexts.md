@@ -32,7 +32,7 @@ A* 경로 탐색 알고리즘을 구현한 클래스로, AlgorithmPractice 프�
 2D 좌표를 표현하는 구조체로, `int x`와 `int y` 멤버 변수를 가집니다. 연산자 오버로딩을 통해 벡터 덧셈(`+`), 뺄셈(`-`), 비교(`==`, `!=`) 등을 지원하며, `Distance()` 정적 함수로 두 벡터 간 유클리드 거리를 계산할 수 있습니다. `Zero`, `One`, `Up`, `Down`, `Left`, `Right` 등의 정적 상수를 제공하여 편리하게 사용 가능합니다. `std::hash<FEClone::Vector2>` 특수화를 통해 `std::unordered_map`의 키로 사용할 수 있도록 구현되었으며, 해시 함수는 x와 y의 해시 값을 XOR 연산으로 결합합니다.
 
 ### `Engine/Math/Color.h`
-콘솔 텍스트 색상을 정의한 열거형입니다. Windows 콘솔 API의 색상 비트 플래그를 사용하며, `Red = 0x0004`, `Green = 0x0002`, `Blue = 0x0001`, `Intensity = 0x0008` 등의 기본 색상과 이들의 조합으로 `Yellow = Red | Green`, `Cyan = Blue | Green`, `Magenta = Red | Blue`, `White = Red | Green | Blue | Intensity` 등을 정의합니다. 색상은 `CHAR_INFO` 구조체의 Attributes 필드에 적용되어 콘솔 출력 시 텍스트 색상을 결정합니다.
+콘솔 텍스트 색상을 정의한 열거형입니다. Windows 콘솔 API의 색상 비트 플래그를 사용하며, `Red = 0x0004`, `Green = 0x0002`, `Blue = 0x0001`, `Intensity = 0x0008` 등의 기본 색상과 이들의 조합으로 `Yellow = Red | Green`, `Cyan = Blue | Green`, `Orange = Red | Blue`, `White = Red | Green | Blue | Intensity` 등을 정의합니다. 색상은 `CHAR_INFO` 구조체의 Attributes 필드에 적용되어 콘솔 출력 시 텍스트 색상을 결정합니다.
 
 ### `Engine/Common/RTTI.h`
 런타임 타입 정보(Run-Time Type Information)를 위한 커스텀 시스템입니다. `RTTI_DECLARATIONS` 매크로는 클래스 헤더에서 `TypeIdClass()`, `TypeIdInstance()`, `IsA()`, `As()` 등의 함수를 선언하고, `RTTI_DEFINITIONS` 매크로는 cpp 파일에서 이를 정의합니다(현재는 인라인 구현으로 인해 비어 있음). 이를 통해 C++의 기본 RTTI(`dynamic_cast`, `typeid`)를 대체하여 가볍고 제어 가능한 타입 시스템을 구축하며, 게임 엔진에서 Actor 타입을 런타임에 확인하고 안전하게 캐스팅하는 데 사용됩니다.
@@ -54,7 +54,7 @@ Fire Emblem 전투 맵을 구현한 메인 게임 레벨 클래스입니다. `Gr
 그리드의 각 타일을 나타내는 클래스로, 지형 타입(`TerrainType`)에 따라 이동 비용, 회피/방어 보너스, 체력 회복 여부 등의 속성을 설정합니다. 생성자에서 `switch` 문으로 지형 타입별 특성을 초기화하며, 평지(`.`)는 이동 비용 1, 숲(`♣`)은 이동 비용 2와 회피 +20, 산(`▲`)은 이동 비용 3과 회피 +30, 성(`♦`)은 체력 회복 기능, 물(`≈`)과 벽(`█`)은 통과 불가로 설정됩니다. 각 지형은 고유한 UTF-8 문자(`displayStr`)와 색상(`displayColor`)을 가지며, `GetDisplayString()`과 `GetDisplayColor()` 함수를 통해 렌더링 시 사용됩니다. `HasUnit()` 플래그로 해당 타일에 유닛이 있는지 추적하여 이동 가능 여부 판단에 활용됩니다.
 
 ### `Game/Unit/Unit.h/cpp`
-Fire Emblem의 유닛(캐릭터)을 나타내는 Actor 자식 클래스입니다. `UnitStats` 구조체로 HP, STR, MAG, SKL, SPD, LCK, DEF, RES, MOV 등의 스탯을 관리하고, `Faction`(Player/Enemy/Ally/Neutral)으로 진영을 구분하며, `UnitState`(Idle/Selected/Moving/Acting/Done)로 현재 상태를 추적합니다. `UnitClass`(Lord, Cavalier, Knight, Archer 등)에 따라 표시 문자(`displayStr`)가 결정되며, `SetUnitClass()` 함수로 병과 변경 시 문자도 자동으로 갱신됩니다. `SetPath()` 함수는 이동 경로(`std::deque<Vector2>`)를 받아 저장하고, `UpdateMovement()` 함수는 매 프레임 호출되어 타이머 기반으로 경로를 따라 이동하며 목적지 도착 시 다음 웨이포인트로 전환합니다. `GetDisplayColor()` 함수는 진영과 상태에 따라 색상을 반환하며, Done 상태는 회색으로 표시됩니다. `unitIndex`는 플레이어 유닛의 숫자 키(0~9) 매핑에 사용됩니다.
+Fire Emblem의 유닛(캐릭터)을 나타내는 Actor 자식 클래스입니다. `UnitStats` 구조체로 HP, STR, MAG, SKL, SPD, LCK, DEF, RES, MOV 등의 스탯을 관리하고, `Faction`(Player/Enemy/Ally)으로 진영을 구분하며, `UnitState`(Idle/Selected/Moving/Acting/Done)로 현재 상태를 추적합니다. `UnitClass`(Lord, Cavalier, Knight, Archer 등)에 따라 표시 문자(`displayStr`)가 결정되며, `SetUnitClass()` 함수로 병과 변경 시 문자도 자동으로 갱신됩니다. `SetPath()` 함수는 이동 경로(`std::deque<Vector2>`)를 받아 저장하고, `UpdateMovement()` 함수는 매 프레임 호출되어 타이머 기반으로 경로를 따라 이동하며 목적지 도착 시 다음 웨이포인트로 전환합니다. `GetDisplayColor()` 함수는 진영과 상태에 따라 색상을 반환하며, Done 상태는 회색으로 표시됩니다. `unitIndex`는 플레이어 유닛의 숫자 키(0~9) 매핑에 사용됩니다.
 
 ### `Game/Unit/UnitClass.h`
 유닛의 병과(클래스)를 정의한 열거형과 유틸리티 함수를 제공합니다. `UnitClass` enum은 Lord(주인공), Cavalier(기마병), Knight(중보병), Archer(궁병), Mage(마법사), Pegasus Knight(천마병), Soldier(병사) 등을 포함합니다. `GetUnitClassString()` 함수는 각 병과를 나타내는 단일 문자 UTF-8 문자열을 반환하며, 예를 들어 Lord는 "L", Cavalier는 "C", Knight는 "K"를 반환합니다. 이 문자들은 콘솔 화면에서 유닛을 시각적으로 구분하는 데 사용되며, 향후 멀티라인 ASCII 아트로 확장할 수 있도록 설계되었습니다.

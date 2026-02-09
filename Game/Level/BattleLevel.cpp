@@ -58,8 +58,11 @@ namespace FEClone
 		// 액터(유닛) 렌더링
 		Level::Draw();
 
-		// 스탯 UI 패널
-		DrawStatsPanel();
+	// 스탯 UI 패널
+	DrawStatsPanel();
+
+	// 키보드 툴팁
+	DrawKeyboardTooltip();
 
 	// 턴 정보 표시 (클래스 멤버 버퍼 사용)
 	const char* phaseStr = isPlayerTurn ? "PLAYER" : "ENEMY";
@@ -236,18 +239,17 @@ namespace FEClone
 						oldTile->SetHasUnit(false);
 					}
 
-					// 유닛 이동
+					// 유닛 이동 시작 (경로 설정하면 상태가 Moving으로 변경됨)
 					selectedUnit->SetPath(path);
 
-					// 새 위치 타일 업데이트
+					// 새 위치 타일 업데이트 (목적지)
 					Tile* newTile = grid->GetTile(gridPos);
 					if (newTile != nullptr)
 					{
 						newTile->SetHasUnit(true);
 					}
 
-					// 이동 완료 후 턴 종료
-					selectedUnit->EndTurn();
+					// 주의: EndTurn()은 이동이 완료된 후 UpdateMovement()에서 호출됨
 
 					// 선택 해제
 					selectedUnit = nullptr;
@@ -286,7 +288,16 @@ namespace FEClone
 		{
 			// UI 공간 고려
 			Vector2 renderPos = tile + Vector2(1, 1);
-			Renderer::Get().Submit("·", renderPos, Color::Yellow, 3);  // Middle dot (UTF-8)
+
+			// Lord 유닛은 항상 녹색 (선택 시 제외)
+			if (selectedUnit->GetUnitClass() == UnitClass::Lord)
+			{
+				Renderer::Get().Submit("·", renderPos, Color::Yellow, 3);  // Middle dot (UTF-8)
+			}
+			else // 이외 Player 유닛은 하이라이트 하늘색
+			{
+				Renderer::Get().Submit("·", renderPos, Color::Cyan, 3);  // Middle dot (UTF-8)
+			}
 		}
 	}
 
@@ -295,7 +306,7 @@ namespace FEClone
 	{
 		// 맵에서 5칸 떨어진 위치에 패널 배치
 		int panelX = (grid != nullptr) ? grid->GetWidth() + 6 : 22;
-		int panelY = 2;
+		int panelY = 0;
 
 		// 패널 타이틀
 		Renderer::Get().Submit("==================", Vector2(panelX, panelY), Color::White, 10);
@@ -366,6 +377,30 @@ namespace FEClone
 		Renderer::Get().Submit("--------------------", Vector2(0, separatorY), Color::White, 10);
 	}
 
+	// 키보드 툴팁 (하단)
+	void BattleLevel::DrawKeyboardTooltip()
+	{
+		// 맵 아래 충분히 떨어진 위치 (구분선 + 3칸)
+		int separatorY = (grid != nullptr) ? grid->GetHeight() + 2 : 17;
+		int tooltipY = separatorY + 3;  // 구분선 아래 3칸
+		int col1X = 0;  // 첫 번째 열
+		int col2X = 28; // 두 번째 열
+
+		// 첫 번째 열: CONTROLS
+		Renderer::Get().Submit("=== CONTROLS ===", Vector2(col1X, tooltipY), Color::Yellow, 10);
+		Renderer::Get().Submit("[1-9,0] Select Unit", Vector2(col1X, tooltipY + 1), Color::White, 10);
+		Renderer::Get().Submit("[Click] Move Unit", Vector2(col1X, tooltipY + 2), Color::White, 10);
+		Renderer::Get().Submit("[ESC] Deselect", Vector2(col1X, tooltipY + 3), Color::White, 10);
+		Renderer::Get().Submit("[ENTER] End Turn", Vector2(col1X, tooltipY + 4), Color::White, 10);
+
+		// 두 번째 열: UNIT COLORS
+		Renderer::Get().Submit("=== COLORS ===", Vector2(col2X, tooltipY), Color::Yellow, 10);
+		Renderer::Get().Submit("[Yellow] Lord", Vector2(col2X, tooltipY + 1), Color::Yellow, 10);
+		Renderer::Get().Submit("[Blue] Player", Vector2(col2X, tooltipY + 2), Color::Blue, 10);
+		Renderer::Get().Submit("[Red] Enemy", Vector2(col2X, tooltipY + 3), Color::Red, 10);
+		Renderer::Get().Submit("[Cyan] Selected", Vector2(col2X, tooltipY + 4), Color::Cyan, 10);
+	}
+
 	// 입력 처리
 	void BattleLevel::HandleInput()
 	{
@@ -392,48 +427,40 @@ namespace FEClone
 			return;
 		}
 
-		// 마우스 왼쪽 클릭
-		if (Input::Get().GetKeyDown(VK_LBUTTON))
-		{
-			Vector2 mousePos = Input::Get().MousePosition();
-			OnMouseClick(mousePos);
-		}
-
-		// ESC 키 (턴 종료 등)
+		// ESC 키: 유닛 선택 해제
 		if (Input::Get().GetKeyDown(VK_ESCAPE))
 		{
-			// 선택 해제
 			if (selectedUnit != nullptr)
 			{
 				selectedUnit->SetState(UnitState::Idle);
 				selectedUnit = nullptr;
 				reachableTiles.clear();
 			}
+			return;
 		}
 
-		// Enter 키 (턴 종료)
+		// ENTER 키: 턴 종료
 		if (Input::Get().GetKeyDown(VK_RETURN))
 		{
-			// 플레이어 턴 -> 적 턴
+			// 플레이어 턴이면 적 턴으로, 적 턴이면 플레이어 턴으로
+			isPlayerTurn = !isPlayerTurn;
+			
 			if (isPlayerTurn)
 			{
-				// 모든 플레이어 유닛 턴 초기화
+				// 플레이어 턴 시작: 모든 플레이어 유닛 턴 초기화
+				turnCount++;
 				for (Unit* unit : playerUnits)
 				{
 					unit->ResetTurn();
 				}
-				isPlayerTurn = false;
 			}
-			// 적 턴 -> 플레이어 턴
 			else
 			{
-				// 모든 적 유닛 턴 초기화
+				// 적 턴 시작: 모든 적 유닛 턴 초기화
 				for (Unit* unit : enemyUnits)
 				{
 					unit->ResetTurn();
 				}
-				isPlayerTurn = true;
-				turnCount++;
 			}
 
 			// 선택 해제
@@ -443,6 +470,15 @@ namespace FEClone
 				selectedUnit = nullptr;
 				reachableTiles.clear();
 			}
+			return;
+		}
+
+		// 마우스 왼쪽 클릭으로 유닛 이동
+		if (Input::Get().GetMouseButtonDown(0))  // 0 = 왼쪽 버튼
+		{
+			Vector2 mousePos = Input::Get().MousePosition();
+			OnMouseClick(mousePos);
+			return;
 		}
 	}
 }

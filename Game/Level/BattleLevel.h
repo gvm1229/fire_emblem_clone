@@ -42,11 +42,14 @@ namespace FEClone
 		// 이동 가능 범위 하이라이트
 		void DrawMovementRange();
 
-		// 스탯 UI 패널
-		void DrawStatsPanel();
+	// 스탯 UI 패널
+	void DrawStatsPanel();
 
-		// 입력 처리
-		void HandleInput();
+	// 키보드 툴팁 (하단)
+	void DrawKeyboardTooltip();
+
+	// 입력 처리
+	void HandleInput();
 
 private:
 	Grid* grid;                                 // 맵 그리드
