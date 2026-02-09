@@ -7,7 +7,7 @@ using namespace Wanted;
 
 class GameLevel : public Level
 {
-	// RTTI µî·Ï.
+	// RTTI ë“±ë¡.
 	RTTI_DECLARATIONS(GameLevel, Level)
 
 public:
@@ -19,23 +19,23 @@ private:
 	virtual void Tick(float deltaTime) override;
 	virtual void Draw() override;
 
-	// Ãæµ¹ ÆÇÁ¤ Ã³¸® ÇÔ¼ö.
+	// ì¶©ëŒ íŒì • ì²˜ë¦¬ í•¨ìˆ˜.
 	void ProcessCollisionPlayerBulletAndEnemy();
 	void ProcessCollisionPlayerAndEnemyBullet();
 
-	// Á¡¼ö º¸¿©ÁÖ´Â ÇÔ¼ö.
+	// ì ìˆ˜ ë³´ì—¬ì£¼ëŠ” í•¨ìˆ˜.
 	void ShowScore();
 
 private:
-	// Á¡¼ö º¯¼ö.
+	// ì ìˆ˜ ë³€ìˆ˜.
 	int score = 0;
 
-	// ÇÃ·¹ÀÌ¾î°¡ Á×¾ú´ÂÁö È®ÀÎ.
+	// í”Œë ˆì´ì–´ê°€ ì£½ì—ˆëŠ”ì§€ í™•ì¸.
 	bool isPlayerDead = false;
 
-	// ÇÃ·¹ÀÌ¾î°¡ Á×Àº À§Ä¡ (Draw¿¡¼­ Ã³¸®ÇÏ±â À§ÇØ Tick¿¡¼­ ÀúÀå).
+	// í”Œë ˆì´ì–´ê°€ ì£½ì€ ìœ„ì¹˜ (Drawì—ì„œ ì²˜ë¦¬í•˜ê¸° ìœ„í•´ Tickì—ì„œ ì €ì¥).
 	Vector2 playerDeadPosition;
 
-	// Á¡¼ö ¹®ÀÚ¿­.
+	// ì ìˆ˜ ë¬¸ìì—´.
 	char scoreString[128] = {};
 };

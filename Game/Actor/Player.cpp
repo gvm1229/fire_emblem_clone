@@ -9,12 +9,12 @@ Player::Player()
 	: super("<=A=>", Vector2::Zero, Color::Green),
 	fireMode(FireMode::OneShot)
 {
-	// »ı¼º À§Ä¡ ¼³Á¤.
+	// ìƒì„± ìœ„ì¹˜ ì„¤ì •.
 	int xPosition = (Engine::Get().GetWidth() / 2) - (width / 2);
 	int yPosition = Engine::Get().GetHeight() - 2;
 	SetPosition(Vector2(xPosition, yPosition));
 
-	// Å¸ÀÌ¸Ó ¸ñÇ¥ ½Ã°£ ¼³Á¤.
+	// íƒ€ì´ë¨¸ ëª©í‘œ ì‹œê°„ ì„¤ì •.
 	timer.SetTargetTime(fireInterval);
 }
 
@@ -26,18 +26,18 @@ void Player::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);
 
-	// Á¾·á Ã³¸®.
+	// ì¢…ë£Œ ì²˜ë¦¬.
 	if (Input::Get().GetKeyDown(VK_ESCAPE))
 	{
-		// °ÔÀÓ Á¾·á.
+		// ê²Œì„ ì¢…ë£Œ.
 		QuitGame();
 	}
 
-	// °æ°ú ½Ã°£ ¾÷µ¥ÀÌÆ®.
+	// ê²½ê³¼ ì‹œê°„ ì—…ë°ì´íŠ¸.
 	//elapsedTime += deltaTime;
 	timer.Tick(deltaTime);
 
-	// ÁÂ¿ì ¹æÇâÅ° ÀÔ·ÂÃ³¸®.
+	// ì¢Œìš° ë°©í–¥í‚¤ ì…ë ¥ì²˜ë¦¬.
 	if (Input::Get().GetKey(VK_LEFT))
 	{
 		MoveLeft();
@@ -47,7 +47,7 @@ void Player::Tick(float deltaTime)
 		MoveRight();
 	}
 
-	// ½ºÆäÀÌ½º Å°¸¦ È°¿ëÇØ Åº¾à ¹ß»ç.
+	// ìŠ¤í˜ì´ìŠ¤ í‚¤ë¥¼ í™œìš©í•´ íƒ„ì•½ ë°œì‚¬.
 	if (fireMode == FireMode::OneShot)
 	{
 		if (Input::Get().GetKeyDown(VK_SPACE))
@@ -63,7 +63,7 @@ void Player::Tick(float deltaTime)
 		}
 	}
 
-	// ¹ß»ç ¸ğµå ÀüÈ¯.
+	// ë°œì‚¬ ëª¨ë“œ ì „í™˜.
 	if (Input::Get().GetKeyDown('R'))
 	{
 		int mode = static_cast<int>(fireMode);
@@ -74,10 +74,10 @@ void Player::Tick(float deltaTime)
 
 void Player::MoveRight()
 {
-	// ¿À¸¥ÂÊ ÀÌµ¿ Ã³¸®.
+	// ì˜¤ë¥¸ìª½ ì´ë™ ì²˜ë¦¬.
 	position.x += 1;
 
-	// ÁÂÇ¥ °Ë»ç.
+	// ì¢Œí‘œ ê²€ì‚¬.
 	// "<-=A=->"
 	if (position.x + width > Engine::Get().GetWidth())
 	{
@@ -87,10 +87,10 @@ void Player::MoveRight()
 
 void Player::MoveLeft()
 {
-	// ¿ŞÂÊ ÀÌµ¿ Ã³¸®.
+	// ì™¼ìª½ ì´ë™ ì²˜ë¦¬.
 	position.x -= 1;
 
-	// ÁÂÇ¥ °Ë»ç.
+	// ì¢Œí‘œ ê²€ì‚¬.
 	if (position.x < 0)
 	{
 		position.x = 0;
@@ -99,35 +99,35 @@ void Player::MoveLeft()
 
 void Player::Fire()
 {
-	// °æ°ú ½Ã°£ ÃÊ±âÈ­.
+	// ê²½ê³¼ ì‹œê°„ ì´ˆê¸°í™”.
 	//elapsedTime = 0.0f;
 	timer.Reset();
 
-	// À§Ä¡ ¼³Á¤.
+	// ìœ„ì¹˜ ì„¤ì •.
 	Vector2 bulletPosition(
 		position.x + (width / 2), 
 		position.y
 	);
 
-	// ¾×ÅÍ »ı¼º.
+	// ì•¡í„° ìƒì„±.
 	GetOwner()->AddNewActor(new PlayerBullet(bulletPosition));
 }
 
 void Player::FireInterval()
 {
-	// ¹ß»ç °¡´É ¿©ºÎ È®ÀÎ.
+	// ë°œì‚¬ ê°€ëŠ¥ ì—¬ë¶€ í™•ì¸.
 	if (!CanShoot())
 	{
 		return;
 	}
 
-	// ¹ß»ç.
+	// ë°œì‚¬.
 	Fire();
 }
 
 bool Player::CanShoot() const
 {
-	// °æ°ú ½Ã°£ È®ÀÎ.
-	// ¹ß»ç °£°İº¸´Ù ´õ ¸¹ÀÌ Èê·¶´ÂÁö.
+	// ê²½ê³¼ ì‹œê°„ í™•ì¸.
+	// ë°œì‚¬ ê°„ê²©ë³´ë‹¤ ë” ë§ì´ í˜ë €ëŠ”ì§€.
 	return timer.IsTimeOut();
 }

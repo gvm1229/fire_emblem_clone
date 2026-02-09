@@ -3,8 +3,8 @@
 #include "Util/Util.h"
 #include "Level/Level.h"
 
-// Àû »ý¼ºÇÒ ¶§ »ç¿ëÇÒ ±ÛÀÚ °ª.
-// ¿©±â¿¡¼­ staticÀº private.
+// ì  ìƒì„±í•  ë•Œ ì‚¬ìš©í•  ê¸€ìž ê°’.
+// ì—¬ê¸°ì—ì„œ staticì€ private.
 static const char* enemyType[] =
 {
 	";:^:;",
@@ -16,7 +16,7 @@ static const char* enemyType[] =
 
 EnemySpawner::EnemySpawner()
 {
-	// Àû »ý¼º Å¸ÀÌ¸Ó ¼³Á¤.
+	// ì  ìƒì„± íƒ€ì´ë¨¸ ì„¤ì •.
 	timer.SetTargetTime(Util::RandomRange(2.0f, 3.0f));
 }
 
@@ -29,30 +29,30 @@ void EnemySpawner::Tick(float deltaTime)
 
 void EnemySpawner::SpawnEnemy(float deltaTime)
 {
-	// Å¸ÀÌ¸Ó ¾÷µ¥ÀÌÆ®.
+	// íƒ€ì´ë¨¸ ì—…ë°ì´íŠ¸.
 	timer.Tick(deltaTime);
 
-	// °æ°ú ½Ã°£ È®ÀÎ.
+	// ê²½ê³¼ ì‹œê°„ í™•ì¸.
 	if (!timer.IsTimeOut())
 	{
 		return;
 	}
 
-	// Å¸ÀÌ¸Ó ÃÊ±âÈ­.
+	// íƒ€ì´ë¨¸ ì´ˆê¸°í™”.
 	timer.Reset();
 
-	// Àû»ý¼º.
-	// Àû °³¼ö ÆÄ¾Ç.
+	// ì ìƒì„±.
+	// ì  ê°œìˆ˜ íŒŒì•….
 	static int length 
 		= sizeof(enemyType) / sizeof(enemyType[0]);
 
-	// ·£´ý ÀÎµ¦½º.
+	// ëžœë¤ ì¸ë±ìŠ¤.
 	int index = Util::Random(0, length - 1);
 
-	// »ý¼º y À§Ä¡.
+	// ìƒì„± y ìœ„ì¹˜.
 	int yPosition = Util::Random(1, 10);
 
-	// Àû »ý¼º ¿äÃ».
+	// ì  ìƒì„± ìš”ì²­.
 	GetOwner()->AddNewActor(
 		new Enemy(enemyType[index], yPosition)
 	);

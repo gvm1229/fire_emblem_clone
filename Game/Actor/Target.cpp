@@ -3,6 +3,6 @@
 Target::Target(const Vector2& position)
 	: super("T", position, Color::Green)
 {
-	// ±×¸®±â ¿ì¼±¼øÀ§ ¼³Á¤.
+	// ê·¸ë¦¬ê¸° ìš°ì„ ìˆœìœ„ ì„¤ì •.
 	sortingOrder = 3;
 }

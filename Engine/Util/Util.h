@@ -6,10 +6,10 @@
 
 using namespace Wanted;
 
-// ÇïÆÛ(Helper) ±â´É Á¦°ø.
+// í—¬í¼(Helper) ê¸°ëŠ¥ ì œê³µ.
 namespace Util
 {
-	// ÄÜ¼Ö Ä¿¼­ À§Ä¡ ÀÌµ¿(¼³Á¤)ÇÏ´Â ÇÔ¼ö.
+	// ì½˜ì†” ì»¤ì„œ ìœ„ì¹˜ ì´ë™(ì„¤ì •)í•˜ëŠ” í•¨ìˆ˜.
 	inline void SetConsolePosition(const Vector2& position)
 	{
 		SetConsoleCursorPosition(
@@ -18,7 +18,7 @@ namespace Util
 		);
 	}
 
-	// ÄÜ¼Ö ÅØ½ºÆ® ¼³Á¤ ÇÔ¼ö.
+	// ì½˜ì†” í…ìŠ¤íŠ¸ ì„¤ì • í•¨ìˆ˜.
 	inline void SetConsoleTextColor(Color color)
 	{
 		SetConsoleTextAttribute(
@@ -27,10 +27,10 @@ namespace Util
 		);
 	}
 
-	// Ä¿¼­ ²ô±â.
+	// ì»¤ì„œ ë„ê¸°.
 	inline void TurnOffCursor()
 	{
-		// Ä¿¼­ ²ô±â.
+		// ì»¤ì„œ ë„ê¸°.
 		CONSOLE_CURSOR_INFO info = {};
 		GetConsoleCursorInfo(
 			GetStdHandle(STD_OUTPUT_HANDLE),
@@ -44,10 +44,10 @@ namespace Util
 		);
 	}
 
-	// Ä¿¼­ ÄÑ±â.
+	// ì»¤ì„œ ì¼œê¸°.
 	inline void TurnOnCursor()
 	{
-		// Ä¿¼­ ²ô±â.
+		// ì»¤ì„œ ë„ê¸°.
 		CONSOLE_CURSOR_INFO info = {};
 		GetConsoleCursorInfo(
 			GetStdHandle(STD_OUTPUT_HANDLE),
@@ -63,21 +63,21 @@ namespace Util
 
 	inline void SetRandomSeed()
 	{
-		// ½Ã°£ °ªÀ» ·£´ı Á¾ÀÚ°ªÀ¸·Î ¼³Á¤.
+		// ì‹œê°„ ê°’ì„ ëœë¤ ì¢…ìê°’ìœ¼ë¡œ ì„¤ì •.
 		srand(static_cast<unsigned int>(time(nullptr)));
 	}
 
-	// Á¤¼ö ³­¼ö ÇÔ¼ö.
+	// ì •ìˆ˜ ë‚œìˆ˜ í•¨ìˆ˜.
 	inline int Random(int min, int max)
 	{
 		int diff = (max - min) + 1;
 		return ((diff * rand()) / (RAND_MAX + 1)) + min;
 	}
 
-	// ºÎµ¿¼Ò¼öÁ¡ ³­¼ö ÇÔ¼ö.
+	// ë¶€ë™ì†Œìˆ˜ì  ë‚œìˆ˜ í•¨ìˆ˜.
 	inline float RandomRange(float min, float max)
 	{
-		// 0~1»çÀÌÀÇ float ±â¹İ ·£´ı °ª.
+		// 0~1ì‚¬ì´ì˜ float ê¸°ë°˜ ëœë¤ ê°’.
 		float random
 			= static_cast<float>(rand())
 			/ static_cast<float>(RAND_MAX);
@@ -86,7 +86,7 @@ namespace Util
 		return (random * diff) + min;
 	}
 
-	// ¾î¶² °ªÀ» µÎ ¼ö »çÀÌ·Î °íÁ¤ÇÒ ¶§ »ç¿ëÇÏ´Â ÇÔ¼ö.
+	// ì–´ë–¤ ê°’ì„ ë‘ ìˆ˜ ì‚¬ì´ë¡œ ê³ ì •í•  ë•Œ ì‚¬ìš©í•˜ëŠ” í•¨ìˆ˜.
 	template<typename T>
 	T Clamp(T value, T min, T max)
 	{
@@ -103,7 +103,7 @@ namespace Util
 	}
 }
 
-// ¸Ş¸ğ¸® Á¤¸® ÇÔ¼ö.
+// ë©”ëª¨ë¦¬ ì •ë¦¬ í•¨ìˆ˜.
 template<typename T>
 void SafeDelete(T*& t)
 {

@@ -6,7 +6,7 @@ namespace Wanted
 {
 	Renderer::Frame::Frame(int bufferCount)
 	{
-		// ¹è¿­ »ı¼º ¹× ÃÊ±âÈ­.
+		// ë°°ì—´ ìƒì„± ë° ì´ˆê¸°í™”.
 		charInfoArray = new CHAR_INFO[bufferCount];
 		memset(charInfoArray, 0, sizeof(CHAR_INFO) * bufferCount);
 
@@ -24,8 +24,8 @@ namespace Wanted
 
 	void Renderer::Frame::Clear(const Vector2& screenSize)
 	{
-		// 2Â÷¿ø ¹è¿­·Î ´Ù·ç´Â 1Â÷¿ø ¹è¿­À» ¼øÈ¸ÇÏ¸é¼­
-		// ºó ¹®ÀÚ(' ')¸¦ ¼³Á¤.
+		// 2ì°¨ì› ë°°ì—´ë¡œ ë‹¤ë£¨ëŠ” 1ì°¨ì› ë°°ì—´ì„ ìˆœíšŒí•˜ë©´ì„œ
+		// ë¹ˆ ë¬¸ì(' ')ë¥¼ ì„¤ì •.
 		const int width = screenSize.x;
 		const int height = screenSize.y;
 
@@ -33,15 +33,15 @@ namespace Wanted
 		{
 			for (int x = 0; x < width; ++x)
 			{
-				// ¹è¿­ ÀÎµ¦½º ±¸ÇÏ±â.
+				// ë°°ì—´ ì¸ë±ìŠ¤ êµ¬í•˜ê¸°.
 				const int index = (y * width) + x;
 
-				// ±ÛÀÚ °ª ¹× ¼Ó¼º ¼³Á¤.
+				// ê¸€ì ê°’ ë° ì†ì„± ì„¤ì •.
 				CHAR_INFO& info = charInfoArray[index];
 				info.Char.AsciiChar = ' ';
 				info.Attributes = 0;
 
-				// ±×¸®±â ¿ì¼±¼øÀ§ ÃÊ±âÈ­.
+				// ê·¸ë¦¬ê¸° ìš°ì„ ìˆœìœ„ ì´ˆê¸°í™”.
 				sortingOrderArray[index] = -1;
 			}
 		}
@@ -49,7 +49,7 @@ namespace Wanted
 
 	// -------------- Frame -------------- //
 
-	// Á¤Àû º¯¼ö ÃÊ±âÈ­.
+	// ì •ì  ë³€ìˆ˜ ì´ˆê¸°í™”.
 	Renderer* Renderer::instance = nullptr;
 
 	Renderer::Renderer(const Vector2& screenSize)
@@ -57,21 +57,21 @@ namespace Wanted
 	{
 		instance = this;
 
-		// ÇÁ·¹ÀÓ °´Ã¼ »ı¼º.
+		// í”„ë ˆì„ ê°ì²´ ìƒì„±.
 		const int bufferCount = screenSize.x * screenSize.y;
 		frame = new Frame(bufferCount);
 
-		// ÇÁ·¹ÀÓ ÃÊ±âÈ­.
+		// í”„ë ˆì„ ì´ˆê¸°í™”.
 		frame->Clear(screenSize);
 
-		// ÀÌÁß ¹öÆÛ °´Ã¼ »ı¼º ¹× ÃÊ±âÈ­.
+		// ì´ì¤‘ ë²„í¼ ê°ì²´ ìƒì„± ë° ì´ˆê¸°í™”.
 		screenBuffers[0] = new ScreenBuffer(screenSize);
 		screenBuffers[0]->Clear();
 
 		screenBuffers[1] = new ScreenBuffer(screenSize);
 		screenBuffers[1]->Clear();
 
-		// È°¼ºÈ­ ¹öÆÛ ¼³Á¤.
+		// í™œì„±í™” ë²„í¼ ì„¤ì •.
 		Present();
 	}
 
@@ -86,38 +86,38 @@ namespace Wanted
 
 	void Renderer::Draw()
 	{
-		// È­¸é Áö¿ì±â.
+		// í™”ë©´ ì§€ìš°ê¸°.
 		Clear();
 
-		// ÀüÁ¦Á¶°Ç: ·¹º§ÀÇ ¸ğµç ¾×ÅÍ°¡ ·»´õ·¯¿¡ submit À» ¿Ï·á
-		// ·»´õ Å¥ ¼øÈ¸ÇÏ¸é¼­ ÇÁ·¹ÀÓ Ã¤¿ì±â (2Â÷¿ø ¹è¿­¿¡¼­ °è»ê)
+		// ì „ì œì¡°ê±´: ë ˆë²¨ì˜ ëª¨ë“  ì•¡í„°ê°€ ë Œë”ëŸ¬ì— submit ì„ ì™„ë£Œ
+		// ë Œë” í ìˆœíšŒí•˜ë©´ì„œ í”„ë ˆì„ ì±„ìš°ê¸° (2ì°¨ì› ë°°ì—´ì—ì„œ ê³„ì‚°)
 		for (const RenderCommand& command : renderQueue)
 		{
-			// È­¸é¿¡ ±×¸± ÅØ½ºÆ®°¡ ¾øÀ¸¸é °Ç³Ê¶Ü.
+			// í™”ë©´ì— ê·¸ë¦´ í…ìŠ¤íŠ¸ê°€ ì—†ìœ¼ë©´ ê±´ë„ˆëœ€.
 			if (!command.text)
 			{
 				continue;
 			}
 
-			// ¼¼·Î ±âÁØ È­¸é ¹ş¾î³µ´ÂÁö È®ÀÎ.
+			// ì„¸ë¡œ ê¸°ì¤€ í™”ë©´ ë²—ì–´ë‚¬ëŠ”ì§€ í™•ì¸.
 			if (command.position.y < 0
 				|| command.position.y >= screenSize.y)
 			{
 				continue;
 			}
 
-			// È­¸é¿¡ ±×¸± ¹®ÀÚ¿­ ±æÀÌ.
+			// í™”ë©´ì— ê·¸ë¦´ ë¬¸ìì—´ ê¸¸ì´.
 			const int length = static_cast<int>(strlen(command.text));
 
-			// ¾È±×·Áµµ µÇ¸é °Ç³Ê¶Ü.
+			// ì•ˆê·¸ë ¤ë„ ë˜ë©´ ê±´ë„ˆëœ€.
 			if (length <= 0)
 			{
 				continue;
 			}
 
-			// xÁÂÇ¥ ±âÁØÀ¸·Î È­¸é¿¡¼­ ¹ş¾î³µ´ÂÁö È®ÀÎ.
-			// À§Ä¡´Â ¿ŞÂÊ ±âÁØ: "abcde"
-			// length ¿¡¼­ 1 »©´Â ÀÌÀ¯´Â index °í·Á Â÷¿ø
+			// xì¢Œí‘œ ê¸°ì¤€ìœ¼ë¡œ í™”ë©´ì—ì„œ ë²—ì–´ë‚¬ëŠ”ì§€ í™•ì¸.
+			// ìœ„ì¹˜ëŠ” ì™¼ìª½ ê¸°ì¤€: "abcde"
+			// length ì—ì„œ 1 ë¹¼ëŠ” ì´ìœ ëŠ” index ê³ ë ¤ ì°¨ì›
 			const int startX = command.position.x;
 			const int endX = command.position.x + length - 1;
 
@@ -126,48 +126,48 @@ namespace Wanted
 				continue;
 			}
 
-			// ½ÃÀÛ À§Ä¡.
+			// ì‹œì‘ ìœ„ì¹˜.
 			const int visibleStart = startX < 0 ? 0 : startX;
-			// È­¸é ¹ş¾î³µ´ÂÁö Ã¼Å©ÇÏ°í Á¦ÇÑ ¼³Á¤
+			// í™”ë©´ ë²—ì–´ë‚¬ëŠ”ì§€ ì²´í¬í•˜ê³  ì œí•œ ì„¤ì •
 			const int visibleEnd
 				= endX >= screenSize.x ? screenSize.x - 1 : endX;
 
-			// ¹®ÀÚ¿­ ¼³Á¤.
+			// ë¬¸ìì—´ ì„¤ì •.
 			for (int x = visibleStart; x <= visibleEnd; ++x)
 			{
-				// ¹®ÀÚ¿­ ¾ÈÀÇ ¹®ÀÚ ÀÎµ¦½º.
+				// ë¬¸ìì—´ ì•ˆì˜ ë¬¸ì ì¸ë±ìŠ¤.
 				const int sourceIndex = x - startX;
 
-				// ÇÁ·¹ÀÓ (2Â÷¿ø ¹®ÀÚ ¹è¿­) ÀÎµ¦½º.
+				// í”„ë ˆì„ (2ì°¨ì› ë¬¸ì ë°°ì—´) ì¸ë±ìŠ¤.
 				const int index
 					= (command.position.y * screenSize.x) + x;
 
-				// ±×¸®±â ¿ì¼±¼øÀ§ ºñ±³.
+				// ê·¸ë¦¬ê¸° ìš°ì„ ìˆœìœ„ ë¹„êµ.
 				if (frame->sortingOrderArray[index]
 					> command.sortingOrder)
 				{
 					continue;
 				}
 
-				// µ¥ÀÌÅÍ ±â·Ï.
+				// ë°ì´í„° ê¸°ë¡.
 				frame->charInfoArray[index].Char.AsciiChar
 					= command.text[sourceIndex];
 				frame->charInfoArray[index].Attributes
 					= (WORD)command.color;
 
-				// ¿ì¼±¼øÀ§ ¾÷µ¥ÀÌÆ®.
+				// ìš°ì„ ìˆœìœ„ ì—…ë°ì´íŠ¸.
 				frame->sortingOrderArray[index]
 					= command.sortingOrder;
 			}
 		}
 
-		// ±×¸®±â.
+		// ê·¸ë¦¬ê¸°.
 		GetCurrentBuffer()->Draw(frame->charInfoArray);
 
-		// ¹öÆÛ ±³È¯.
+		// ë²„í¼ êµí™˜.
 		Present();
 
-		// ·»´õ Å¥ ºñ¿ì±â.
+		// ë Œë” í ë¹„ìš°ê¸°.
 		renderQueue.clear();
 	}
 
@@ -190,11 +190,11 @@ namespace Wanted
 
 	void Renderer::Clear()
 	{
-		// È­¸é Áö¿ì±â.
-		// 1. ÇÁ·¹ÀÓ(2Â÷¿ø ¹è¿­ µ¥ÀÌÅÍ) Áö¿ì±â.
+		// í™”ë©´ ì§€ìš°ê¸°.
+		// 1. í”„ë ˆì„(2ì°¨ì› ë°°ì—´ ë°ì´í„°) ì§€ìš°ê¸°.
 		frame->Clear(screenSize);
 
-		// 2. ÄÜ¼Ö ¹öÆÛ Áö¿ì±â.
+		// 2. ì½˜ì†” ë²„í¼ ì§€ìš°ê¸°.
 		GetCurrentBuffer()->Clear();
 	}
 
@@ -204,7 +204,7 @@ namespace Wanted
 		Color color,
 		int sortingOrder)
 	{
-		// ·»´õ µ¥ÀÌÅÍ »ı¼º ÈÄ Å¥¿¡ Ãß°¡.
+		// ë Œë” ë°ì´í„° ìƒì„± í›„ íì— ì¶”ê°€.
 		RenderCommand command = {};
 		command.text = text;
 		command.position = position;
@@ -223,10 +223,10 @@ namespace Wanted
 
 	void Renderer::Present()
 	{
-		// ¹öÆÛ ±³È¯.
+		// ë²„í¼ êµí™˜.
 		SetConsoleActiveScreenBuffer(GetCurrentBuffer()->GetBuffer());
 
-		// ÀÎµ¦½º ±³Ã¼.
+		// ì¸ë±ìŠ¤ êµì²´.
 		currentBufferIndex = 1 - currentBufferIndex;
 	}
 

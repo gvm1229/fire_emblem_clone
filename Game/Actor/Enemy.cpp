@@ -8,12 +8,12 @@
 Enemy::Enemy(const char* image, int yPosition)
 	: super(image)
 {
-	// ·£´ı (¿À¸¥ÂÊ ¶Ç´Â ¿ŞÂÊÀ¸·Î ÀÌµ¿ÇÒÁö °áÁ¤).
+	// ëœë¤ (ì˜¤ë¥¸ìª½ ë˜ëŠ” ì™¼ìª½ìœ¼ë¡œ ì´ë™í• ì§€ ê²°ì •).
 	int random = Util::Random(1, 10);
 
 	if (random % 2 == 0)
 	{
-		// È­¸é ¿À¸¥ÂÊ¿¡¼­ »ı¼º. "(oOo)"
+		// í™”ë©´ ì˜¤ë¥¸ìª½ì—ì„œ ìƒì„±. "(oOo)"
 		direction = MoveDirection::Left;
 		xPosition = static_cast<float>(
 			Engine::Get().GetWidth() - width - 1
@@ -21,17 +21,17 @@ Enemy::Enemy(const char* image, int yPosition)
 	}
 	else
 	{
-		// È­¸é ¿ŞÂÊ¿¡¼­ »ı¼º.
+		// í™”ë©´ ì™¼ìª½ì—ì„œ ìƒì„±.
 		direction = MoveDirection::Right;
 		xPosition = 0.0f;
 	}
 
-	// ÀÌµ¿ ¹æÇâ¿¡ µû¸¥ Àû À§Ä¡ ¼³Á¤.
+	// ì´ë™ ë°©í–¥ì— ë”°ë¥¸ ì  ìœ„ì¹˜ ì„¤ì •.
 	SetPosition(
 		Vector2(static_cast<int>(xPosition), yPosition)
 	);
 
-	// ¹ß»ç Å¸ÀÌ¸Ó ¸ñÇ¥ ½Ã°£ ¼³Á¤.
+	// ë°œì‚¬ íƒ€ì´ë¨¸ ëª©í‘œ ì‹œê°„ ì„¤ì •.
 	timer.SetTargetTime(Util::RandomRange(1.0f, 3.0f));
 }
 
@@ -43,45 +43,45 @@ void Enemy::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);
 
-	// ÀÌµ¿ Ã³¸®.
+	// ì´ë™ ì²˜ë¦¬.
 	float dir
 		= direction == MoveDirection::Left ? -1.0f : 1.0f;
 	xPosition = xPosition + moveSpeed * dir * deltaTime;
 
-	// ÁÂÇ¥ °Ë»ç.
-	// È­¸é ¿ŞÂÊÀ» ¿ÏÀüÈ÷ ¹ş¾î³µÀ¸¸é.
+	// ì¢Œí‘œ ê²€ì‚¬.
+	// í™”ë©´ ì™¼ìª½ì„ ì™„ì „íˆ ë²—ì–´ë‚¬ìœ¼ë©´.
 	if (xPosition + width < 0)
 	{
 		Destroy();
 		return;
 	}
 
-	// È­¸é ¿À¸¥ÂÊÀ» ¿ÏÀüÈ÷ ¹ş¾î³µÀ¸¸é.
+	// í™”ë©´ ì˜¤ë¥¸ìª½ì„ ì™„ì „íˆ ë²—ì–´ë‚¬ìœ¼ë©´.
 	if (xPosition > Engine::Get().GetWidth() - 1)
 	{
 		Destroy();
 		return;
 	}
 
-	// À§Ä¡ ¼³Á¤.
+	// ìœ„ì¹˜ ì„¤ì •.
 	SetPosition(Vector2(
 		static_cast<int>(xPosition),
 		position.y
 	));
 
-	// ¹ß»ç Å¸ÀÌ¸Ó ¾÷µ¥ÀÌÆ®.
+	// ë°œì‚¬ íƒ€ì´ë¨¸ ì—…ë°ì´íŠ¸.
 	timer.Tick(deltaTime);
 	if (!timer.IsTimeOut())
 	{
 		return;
 	}
 
-	// Å¸ÀÌ¸Ó ¸®¼Â.
+	// íƒ€ì´ë¨¸ ë¦¬ì…‹.
 	timer.Reset();
 
-	// Åº¾à ¹ß»ç.
+	// íƒ„ì•½ ë°œì‚¬.
 
-	// Todo: (Àû Åº¾à Å¬·¡½º ±¸Çö ÇÊ¿ä)Åº¾à ¹ß»ç.
+	// Todo: (ì  íƒ„ì•½ í´ë˜ìŠ¤ êµ¬í˜„ í•„ìš”)íƒ„ì•½ ë°œì‚¬.
 	GetOwner()->AddNewActor(new EnemyBullet(
 		Vector2(position.x + width / 2, position.y),
 		Util::RandomRange(10.0f, 20.0f)
@@ -90,9 +90,9 @@ void Enemy::Tick(float deltaTime)
 
 void Enemy::OnDamaged()
 {
-	// ¾×ÅÍ Á¦°Å.
+	// ì•¡í„° ì œê±°.
 	Destroy();
 
-	// ÀÌÆåÆ® »ı¼º (Àç»ıÀ» À§ÇØ).
+	// ì´í™íŠ¸ ìƒì„± (ì¬ìƒì„ ìœ„í•´).
 	GetOwner()->AddNewActor(new EnemyDestroyEffect(position));
 }

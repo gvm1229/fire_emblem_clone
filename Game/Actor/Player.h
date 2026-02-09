@@ -7,7 +7,7 @@ using namespace Wanted;
 
 class Player : public Actor
 {
-	// ¹ß»ç ¸ğµå.
+	// ë°œì‚¬ ëª¨ë“œ.
 	enum class FireMode
 	{
 		None = -1,
@@ -24,28 +24,28 @@ public:
 private:
 	virtual void Tick(float deltaTime) override;
 
-	// ¿À¸¥ÂÊÀ¸·Î ÀÌµ¿ÇÏ´Â ÇÔ¼ö.
+	// ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™í•˜ëŠ” í•¨ìˆ˜.
 	void MoveRight();
 	
-	// ¿ŞÂÊÀ¸·Î ÀÌµ¿ÇÏ´Â ÇÔ¼ö.
+	// ì™¼ìª½ìœ¼ë¡œ ì´ë™í•˜ëŠ” í•¨ìˆ˜.
 	void MoveLeft();
 
-	// Åº¾à ¹ß»ç ÇÔ¼ö.
+	// íƒ„ì•½ ë°œì‚¬ í•¨ìˆ˜.
 	void Fire();
 
-	// ¿¬¼Ó ¹ß»ç ÇÔ¼ö.
+	// ì—°ì† ë°œì‚¬ í•¨ìˆ˜.
 	void FireInterval();
 
-	// ¹ß»ç °¡´É¿©ºÎ È®ÀÎ ÇÔ¼ö.
+	// ë°œì‚¬ ê°€ëŠ¥ì—¬ë¶€ í™•ì¸ í•¨ìˆ˜.
 	bool CanShoot() const;
 
 private:
-	// ¹ß»ç ¸ğµå.
+	// ë°œì‚¬ ëª¨ë“œ.
 	FireMode fireMode = FireMode::None;
 
-	// Å¸ÀÌ¸Ó º¯¼ö.
+	// íƒ€ì´ë¨¸ ë³€ìˆ˜.
 	Timer timer;
 
-	// ¿¬»ç ½Ã°£ °£°İ.
+	// ì—°ì‚¬ ì‹œê°„ ê°„ê²©.
 	float fireInterval = 0.2f;
 };

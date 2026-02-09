@@ -5,9 +5,9 @@
 #include "Util/Timer.h"
 
 /*
-* ÀÛ¼ºÀÚ: Àå¼¼À±.
-* EnemyDestroyEffect Å¬·¡½º.
-* Enemy°¡ Á×¾úÀ» ¶§ Á×À½ È¿°ú¸¦ Àç»ıÇÒ ¶§ »ı¼ºÇÏ´Â ¾×ÅÍ.
+* ì‘ì„±ì: ì¥ì„¸ìœ¤.
+* EnemyDestroyEffect í´ë˜ìŠ¤.
+* Enemyê°€ ì£½ì—ˆì„ ë•Œ ì£½ìŒ íš¨ê³¼ë¥¼ ì¬ìƒí•  ë•Œ ìƒì„±í•˜ëŠ” ì•¡í„°.
 */
 
 using namespace Wanted;
@@ -16,7 +16,7 @@ class EnemyDestroyEffect : public Actor
 {
 	RTTI_DECLARATIONS(EnemyDestroyEffect, Actor)
 
-		// ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌÆåÆ® ÇÁ·¹ÀÓ ±¸Á¶Ã¼.
+		// ì• ë‹ˆë©”ì´ì…˜ ì´í™íŠ¸ í”„ë ˆì„ êµ¬ì¡°ì²´.
 		struct EffectFrame
 	{
 		EffectFrame(
@@ -25,7 +25,7 @@ class EnemyDestroyEffect : public Actor
 			Color color = Color::Red)
 			: playTime(playTime), color(color)
 		{
-			// ¹®ÀÚ¿­ ¼³Á¤.
+			// ë¬¸ìì—´ ì„¤ì •.
 			size_t length = strlen(frame) + 1;
 			this->frame = new char[length];
 			strcpy_s(this->frame, length, frame);
@@ -36,13 +36,13 @@ class EnemyDestroyEffect : public Actor
 			SafeDeleteArray(frame);
 		}
 
-		// ¹®ÀÚ¿­ º¯¼ö (È­¸é¿¡ º¸¿©ÁÙ ¹®ÀÚ¿­).
+		// ë¬¸ìì—´ ë³€ìˆ˜ (í™”ë©´ì— ë³´ì—¬ì¤„ ë¬¸ìì—´).
 		char* frame = nullptr;
 
-		// Àç»ı ½Ã°£.
+		// ì¬ìƒ ì‹œê°„.
 		float playTime = 0.0f;
 
-		// »ö»ó.
+		// ìƒ‰ìƒ.
 		Color color = Color::White;
 	};
 
@@ -54,13 +54,13 @@ public:
 
 private:
 
-	// ½ÃÄö½º ¹®ÀÚ¿­ ¼ö(¹è¿­ ¿ø¼Ò ¼ö).
+	// ì‹œí€€ìŠ¤ ë¬¸ìì—´ ìˆ˜(ë°°ì—´ ì›ì†Œ ìˆ˜).
 	int effectSequenceCount = 0;
 
-	// ÇöÀç º¸¿©Áö´Â ½ÃÄö½º ÀÎµ¦½º.
+	// í˜„ì¬ ë³´ì—¬ì§€ëŠ” ì‹œí€€ìŠ¤ ì¸ë±ìŠ¤.
 	int currentSequenceIndex = 0;
 
-	// ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı¿¡ »ç¿ëÇÒ Å¸ÀÌ¸Ó.
-	// ½ÃÄö½º »çÀÌ¿¡ ½Ã°£ °è»ê¿ë.
+	// ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒì— ì‚¬ìš©í•  íƒ€ì´ë¨¸.
+	// ì‹œí€€ìŠ¤ ì‚¬ì´ì— ì‹œê°„ ê³„ì‚°ìš©.
 	Timer timer;
 };

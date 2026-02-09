@@ -2,16 +2,16 @@
 
 #include "Common/RTTI.h"
 
-// STL(Standard Template Library - C++¿¡¼­ ±âº» Á¦°ø).
-// Å©±â°¡ ¾Ë¾Æ¼­ º¯°æµÇ´Â ¹è¿­.
+// STL(Standard Template Library - C++ì—ì„œ ê¸°ë³¸ ì œê³µ).
+// í¬ê¸°ê°€ ì•Œì•„ì„œ ë³€ê²½ë˜ëŠ” ë°°ì—´.
 #include <vector>
 
 namespace Wanted
 {
-	// Àü¹æ ¼±¾ğ.
+	// ì „ë°© ì„ ì–¸.
 	class Actor;
 
-	// ´ã´ç ÀÓ¹«: ·¹º§¿¡ ÀÖ´Â ¸ğµç ¾×ÅÍ(¹°Ã¼) °ü¸®.
+	// ë‹´ë‹¹ ì„ë¬´: ë ˆë²¨ì— ìˆëŠ” ëª¨ë“  ì•¡í„°(ë¬¼ì²´) ê´€ë¦¬.
 	class WANTED_API Level : public RTTI
 	{
 		RTTI_DECLARATIONS(Level, RTTI)
@@ -20,22 +20,22 @@ namespace Wanted
 		Level();
 		virtual ~Level();
 
-		// °ÔÀÓ ÇÃ·¹ÀÌ ÀÌº¥Æ®.
+		// ê²Œì„ í”Œë ˆì´ ì´ë²¤íŠ¸.
 		virtual void BeginPlay();
 		virtual void Tick(float deltaTime);
 		virtual void Draw();
 
-		// ¾×ÅÍ Ãß°¡ ÇÔ¼ö.
+		// ì•¡í„° ì¶”ê°€ í•¨ìˆ˜.
 		void AddNewActor(Actor* newActor);
 
-		// ¾×ÅÍ Ãß°¡/Á¦°Å Ã³¸® ÇÔ¼ö.
+		// ì•¡í„° ì¶”ê°€/ì œê±° ì²˜ë¦¬ í•¨ìˆ˜.
 		void ProcessAddAndDestroyActors();
 
 	protected:
-		// ¾×ÅÍ ¹è¿­.
+		// ì•¡í„° ë°°ì—´.
 		std::vector<Actor*> actors;
 
-		// ½ÇÇà Áß¿¡ Ãß°¡ ¿äÃ»µÈ ¾×ÅÍÀÇ ¹è¿­.
+		// ì‹¤í–‰ ì¤‘ì— ì¶”ê°€ ìš”ì²­ëœ ì•¡í„°ì˜ ë°°ì—´.
 		std::vector<Actor*> addRequestedActors;
 	};
 }

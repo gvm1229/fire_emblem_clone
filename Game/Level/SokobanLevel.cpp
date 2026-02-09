@@ -1,4 +1,4 @@
-﻿#include "SokobanLevel.h"
+#include "SokobanLevel.h"
 #include "Actor/Player.h"
 #include "Actor/Wall.h"
 #include "Actor/Ground.h"

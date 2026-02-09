@@ -2,13 +2,13 @@
 
 #include "Math/Vector2.h"
 
-// ÇÃ·¹ÀÌ¾î°¡ ÀÌµ¿ÇÒ À§Ä¡¸¦ ÆÇ´ÜÇØÁÖ´Â ÀÎÅÍÆäÀÌ½º
+// í”Œë ˆì´ì–´ê°€ ì´ë™í•  ìœ„ì¹˜ë¥¼ íŒë‹¨í•´ì£¼ëŠ” ì¸í„°í˜ì´ìŠ¤
 class ICanPlayerMove
 {
 public:
-	// ÇÃ·¹ÀÌ¾î°¡ ÀÌµ¿ °¡´ÉÇÑÁö ¹®ÀÇÇÒ ¶§ »ç¿ëÇÒ ÇÔ¼ö
-	// playerPosition: ÇÃ·¹ÀÌ¾îÀÇ ÇöÀç À§Ä¡
-	// nextPosition: ÇÃ·¹ÀÌ¾î°¡ ÀÌµ¿ÇÏ·Á´Â À§Ä¡
+	// í”Œë ˆì´ì–´ê°€ ì´ë™ ê°€ëŠ¥í•œì§€ ë¬¸ì˜í•  ë•Œ ì‚¬ìš©í•  í•¨ìˆ˜
+	// playerPosition: í”Œë ˆì´ì–´ì˜ í˜„ì¬ ìœ„ì¹˜
+	// nextPosition: í”Œë ˆì´ì–´ê°€ ì´ë™í•˜ë ¤ëŠ” ìœ„ì¹˜
 	virtual bool CanMove(
 		const Wanted::Vector2& playerPosition,
 		const Wanted::Vector2& nextPosition

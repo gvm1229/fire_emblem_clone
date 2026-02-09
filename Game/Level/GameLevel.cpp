@@ -10,13 +10,13 @@
 
 GameLevel::GameLevel()
 {
-	// Player ¾×ÅÍ Ãß°¡.
+	// Player ì•¡í„° ì¶”ê°€.
 	AddNewActor(new Player());
 
-	// Àû »ı¼º±â Ãß°¡.
+	// ì  ìƒì„±ê¸° ì¶”ê°€.
 	AddNewActor(new EnemySpawner());
 
-	// Test: ¸¶¿ì½º Å×½ºÅÍ Ãß°¡.
+	// Test: ë§ˆìš°ìŠ¤ í…ŒìŠ¤í„° ì¶”ê°€.
 	AddNewActor(new MouseTester());
 }
 
@@ -28,7 +28,7 @@ void GameLevel::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);
 
-	// Ãæµ¹ ÆÇÁ¤ Ã³¸®.
+	// ì¶©ëŒ íŒì • ì²˜ë¦¬.
 	ProcessCollisionPlayerBulletAndEnemy();
 	ProcessCollisionPlayerAndEnemyBullet();
 }
@@ -39,33 +39,33 @@ void GameLevel::Draw()
 
 	if (isPlayerDead)
 	{
-		// ÇÃ·¹ÀÌ¾î Á×À½ ¸Ş½ÃÁö Renderer¿¡ Á¦Ãâ.
+		// í”Œë ˆì´ì–´ ì£½ìŒ ë©”ì‹œì§€ Rendererì— ì œì¶œ.
 		Renderer::Get().Submit("!Dead!", playerDeadPosition);
 
-		// Á¡¼ö º¸¿©ÁÖ±â.
+		// ì ìˆ˜ ë³´ì—¬ì£¼ê¸°.
 		ShowScore();
 
-		// È­¸é¿¡ ¹Ù·Î Ç¥½Ã.
+		// í™”ë©´ì— ë°”ë¡œ í‘œì‹œ.
 		Renderer::Get().PresentImmediately();
 
-		// ÇÁ·Î±×·¥ Á¤Áö.
+		// í”„ë¡œê·¸ë¨ ì •ì§€.
 		Sleep(2000);
 
-		// °ÔÀÓ Á¾·á.
+		// ê²Œì„ ì¢…ë£Œ.
 		Engine::Get().QuitEngine();
 	}
 
-	// Á¡¼ö º¸¿©ÁÖ±â.
+	// ì ìˆ˜ ë³´ì—¬ì£¼ê¸°.
 	ShowScore();
 }
 
 void GameLevel::ProcessCollisionPlayerBulletAndEnemy()
 {
-	// ÇÃ·¹ÀÌ¾î Åº¾à°ú Àû ¾×ÅÍ ÇÊÅÍ¸µ.
+	// í”Œë ˆì´ì–´ íƒ„ì•½ê³¼ ì  ì•¡í„° í•„í„°ë§.
 	std::vector<Actor*> bullets;
 	std::vector<Enemy*> enemies;
 
-	// ¾×ÅÍ ÇÊÅÍ¸µ.
+	// ì•¡í„° í•„í„°ë§.
 	for (Actor* const actor : actors)
 	{
 		if (actor->IsTypeOf<PlayerBullet>())
@@ -80,24 +80,24 @@ void GameLevel::ProcessCollisionPlayerBulletAndEnemy()
 		}
 	}
 
-	// ÆÇÁ¤ ¾ÈÇØµµ µÇ´ÂÁö È®ÀÎ.
+	// íŒì • ì•ˆí•´ë„ ë˜ëŠ”ì§€ í™•ì¸.
 	if (bullets.size() == 0 || enemies.size() == 0)
 	{
 		return;
 	}
 
-	// Ãæµ¹ ÆÇÁ¤.
+	// ì¶©ëŒ íŒì •.
 	for (Actor* const bullet : bullets)
 	{
 		for (Enemy* const enemy : enemies)
 		{
-			// AABB °ãÄ§ ÆÇÁ¤.
+			// AABB ê²¹ì¹¨ íŒì •.
 			if (bullet->TestIntersect(enemy))
 			{
 				enemy->OnDamaged();
 				bullet->Destroy();
 
-				// Á¡¼ö Ãß°¡.
+				// ì ìˆ˜ ì¶”ê°€.
 				score += 1;
 				continue;
 			}
@@ -107,11 +107,11 @@ void GameLevel::ProcessCollisionPlayerBulletAndEnemy()
 
 void GameLevel::ProcessCollisionPlayerAndEnemyBullet()
 {
-	// ¾×ÅÍ ÇÊÅÍ¸µÀ» À§ÇÑ º¯¼ö.
+	// ì•¡í„° í•„í„°ë§ì„ ìœ„í•œ ë³€ìˆ˜.
 	Player* player = nullptr;
 	std::vector<Actor*> bullets;
 
-	// ¾×ÅÍ ÇÊÅÍ¸µ.
+	// ì•¡í„° í•„í„°ë§.
 	for (Actor* const actor : actors)
 	{
 		if (!player && actor->IsTypeOf<Player>())
@@ -126,24 +126,24 @@ void GameLevel::ProcessCollisionPlayerAndEnemyBullet()
 		}
 	}
 
-	// ÆÇÁ¤ Ã³¸® ¾ÈÇØµµ µÇ´ÂÁö È®ÀÎ.
+	// íŒì • ì²˜ë¦¬ ì•ˆí•´ë„ ë˜ëŠ”ì§€ í™•ì¸.
 	if (bullets.size() == 0 || !player)
 	{
 		return;
 	}
 
-	// Ãæµ¹ ÆÇÁ¤.
+	// ì¶©ëŒ íŒì •.
 	for (Actor* const bullet : bullets)
 	{
 		if (bullet->TestIntersect(player))
 		{
-			// ÇÃ·¹ÀÌ¾î Á×À½ ¼³Á¤.
+			// í”Œë ˆì´ì–´ ì£½ìŒ ì„¤ì •.
 			isPlayerDead = true;
 
-			// Á×Àº À§Ä¡ ÀúÀå.
+			// ì£½ì€ ìœ„ì¹˜ ì €ì¥.
 			playerDeadPosition = player->GetPosition();
 
-			// ¾×ÅÍ Á¦°Å Ã³¸®.
+			// ì•¡í„° ì œê±° ì²˜ë¦¬.
 			player->Destroy();
 			bullet->Destroy();
 			break;

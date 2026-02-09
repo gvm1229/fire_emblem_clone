@@ -6,16 +6,16 @@
 
 using namespace Wanted;
 
-// ¸Ş´º ¾ÆÀÌÅÛ ±¸Á¶Ã¼
+// ë©”ë‰´ ì•„ì´í…œ êµ¬ì¡°ì²´
 struct MenuItem
 {
-	// ¸Ş´º ¼±ÅÃµÆÀ» ¶§ ½ÇÇàµÉ ÇÔ¼öÀÇ Å¸ÀÔ (ÇÔ¼ö Æ÷ÀÎÅÍ)
+	// ë©”ë‰´ ì„ íƒëì„ ë•Œ ì‹¤í–‰ë  í•¨ìˆ˜ì˜ íƒ€ì… (í•¨ìˆ˜ í¬ì¸í„°)
 	using OnSelected = void (*)();
 
 	MenuItem(const char* text, OnSelected onSelected)
 		: onSelected(onSelected)
 	{
-		// ÅØ½ºÆ® º¹»ç
+		// í…ìŠ¤íŠ¸ ë³µì‚¬
 		size_t length = strlen(text) + 1;
 		this->text = new char[length];
 		strcpy_s(this->text, length, text);
@@ -30,10 +30,10 @@ struct MenuItem
 		}
 	}
 
-	// ¸Ş´º ÅØ½ºÆ®
+	// ë©”ë‰´ í…ìŠ¤íŠ¸
 	char* text = nullptr;
 
-	// ¸Ş´º ¼±ÅÃµÆÀ» ¶§ ½ÇÇàµÉ ·ÎÁ÷
+	// ë©”ë‰´ ì„ íƒëì„ ë•Œ ì‹¤í–‰ë  ë¡œì§
 	OnSelected onSelected = nullptr;
 };
 
@@ -45,20 +45,20 @@ public:
 	MenuLevel();
 	~MenuLevel();
 
-	// ÀÌº¥Æ® ÇÔ¼ö ¿À¹ö¶óÀÌµå
+	// ì´ë²¤íŠ¸ í•¨ìˆ˜ ì˜¤ë²„ë¼ì´ë“œ
 	virtual void Tick(float deltaTime) override;
 	virtual void Draw() override;
 
 private:
-	// ÇöÀç È°¼ºÈ­µÈ ¸Ş´º ¾ÆÀÌÅÛ ÀÎµ¦½º
+	// í˜„ì¬ í™œì„±í™”ëœ ë©”ë‰´ ì•„ì´í…œ ì¸ë±ìŠ¤
 	int currentIndex = 0;
 
-	// ¼±ÅÃµÈ ¾ÆÀÌÅÛÀÇ »ö»ó
+	// ì„ íƒëœ ì•„ì´í…œì˜ ìƒ‰ìƒ
 	Color selectedColor = Color::Green;
 
-	// ¼±ÅÃµÇÁö ¾ÊÀº ¾ÆÀÌÅÛÀÇ »ö»ó
+	// ì„ íƒë˜ì§€ ì•Šì€ ì•„ì´í…œì˜ ìƒ‰ìƒ
 	Color unselectedColor = Color::White;
 
-	// ¸Ş´º ¾ÆÀÌÅÛ ¹è¿­
+	// ë©”ë‰´ ì•„ì´í…œ ë°°ì—´
 	std::vector<MenuItem*> items;
 };

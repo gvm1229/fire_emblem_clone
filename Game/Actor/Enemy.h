@@ -9,7 +9,7 @@ class Enemy : public Actor
 {
 	RTTI_DECLARATIONS(Enemy, Actor)
 
-	// ÀÌµ¿ ¹æÇâ ¿­°ÅÇü.
+	// ì´ë™ ë°©í–¥ ì—´ê±°í˜•.
 	enum class MoveDirection
 	{
 		None = -1,
@@ -24,17 +24,17 @@ public:
 	// Tick.
 	virtual void Tick(float deltaTime) override;
 
-	// ´ë¹ÌÁö ¹Ş¾ÒÀ» ¶§ Ã³¸®ÇÒ ÇÔ¼ö.
+	// ëŒ€ë¯¸ì§€ ë°›ì•˜ì„ ë•Œ ì²˜ë¦¬í•  í•¨ìˆ˜.
 	void OnDamaged();
 
 private:
-	// ÀÌµ¿ ¹æÇâ ¿­°ÅÇü.
+	// ì´ë™ ë°©í–¥ ì—´ê±°í˜•.
 	MoveDirection direction = MoveDirection::None;
 
-	// ÁÂ¿ì ÀÌµ¿ Ã³¸®¸¦ À§ÇÑ º¯¼ö.
+	// ì¢Œìš° ì´ë™ ì²˜ë¦¬ë¥¼ ìœ„í•œ ë³€ìˆ˜.
 	float xPosition = 0.0f;
 	float moveSpeed = 5.0f;
 
-	// ¹ß»ç Å¸ÀÌ¸Ó.
+	// ë°œì‚¬ íƒ€ì´ë¨¸.
 	Timer timer;
 };

@@ -4,68 +4,68 @@
 
 #include <iostream>
 
-// Á¤Àû º¯¼ö º°µµ·Î ÃÊ±âÈ­
+// ì •ì  ë³€ìˆ˜ ë³„ë„ë¡œ ì´ˆê¸°í™”
 Game* Game::instance = nullptr;
 
 Game::Game()
 {
 	instance = this;
 
-	// µÎ ·¹º§ »ı¼º ¹× ¹è¿­¿¡ Ãß°¡.
+	// ë‘ ë ˆë²¨ ìƒì„± ë° ë°°ì—´ì— ì¶”ê°€.
 	levels.emplace_back(new SokobanLevel());
 	levels.emplace_back(new MenuLevel());
 
-	// ½ÃÀÛ »óÅÂ(·¹º§) ¼³Á¤.
+	// ì‹œì‘ ìƒíƒœ(ë ˆë²¨) ì„¤ì •.
 	state = State::GamePlay;
 
-	// °ÔÀÓ ½ÃÀÛ ½Ã È°¼ºÈ­ÇÒ ·¹º§ ¼³Á¤.
+	// ê²Œì„ ì‹œì‘ ì‹œ í™œì„±í™”í•  ë ˆë²¨ ì„¤ì •.
 	mainLevel = levels[0];
 }
 
 Game::~Game()
 {
-	// Áßº¹ Á¦°Å ¹æÁö
+	// ì¤‘ë³µ ì œê±° ë°©ì§€
 	mainLevel = nullptr;
 	
-	// ¸ğµç ·¹º§ »èÁ¦
+	// ëª¨ë“  ë ˆë²¨ ì‚­ì œ
 	for (Level*& level : levels)
 	{
 		delete level;
 		level = nullptr;
 	}
 
-	// ¹è¿­ Á¤¸®
+	// ë°°ì—´ ì •ë¦¬
 	levels.clear();
 }
 
 void Game::ToggleMenu()
 {
-	// È­¸é Áö¿ì±â
-	// system Àº ÄÜ¼Ö ¸í·É¾î ½ÇÇà ÇÔ¼ö, "cls" ¸í·É¾î ½ÇÇà
+	// í™”ë©´ ì§€ìš°ê¸°
+	// system ì€ ì½˜ì†” ëª…ë ¹ì–´ ì‹¤í–‰ í•¨ìˆ˜, "cls" ëª…ë ¹ì–´ ì‹¤í–‰
 	// cls -> clear screen
 	system("cls");
 
-	// º¯°æÇÒ ÀÎµ¦½º °Ô»ê
-	// ÇöÀç È°¼º ·¹º§ ÀÎµ¦½º°¡ 1ÀÌ¸é -> 0À¸·Î
-	// ÇöÀç È°¼º ·¹º§ ÀÎµ¦½º°¡ 0ÀÌ¸é -> 1À¸·Î
-	// ¸¶¹ıÀÇ °ø½Ä - (1-x) -> OneMinus, Shader
-	int stateIndex = (int)state; // C½ºÅ¸ÀÏ, ³Ê¹« ¸í¹éÇÏ±â ¶§¹®, ±×·¸Áö¸¸ º¸ÅëÀº static_cast.
+	// ë³€ê²½í•  ì¸ë±ìŠ¤ ê²Œì‚°
+	// í˜„ì¬ í™œì„± ë ˆë²¨ ì¸ë±ìŠ¤ê°€ 1ì´ë©´ -> 0ìœ¼ë¡œ
+	// í˜„ì¬ í™œì„± ë ˆë²¨ ì¸ë±ìŠ¤ê°€ 0ì´ë©´ -> 1ìœ¼ë¡œ
+	// ë§ˆë²•ì˜ ê³µì‹ - (1-x) -> OneMinus, Shader
+	int stateIndex = (int)state; // CìŠ¤íƒ€ì¼, ë„ˆë¬´ ëª…ë°±í•˜ê¸° ë•Œë¬¸, ê·¸ë ‡ì§€ë§Œ ë³´í†µì€ static_cast.
 	int nextState = 1 - stateIndex; // one - x
-	state = (State)nextState;	// static_cast ·Î ¿ø·¡´Â.
+	state = (State)nextState;	// static_cast ë¡œ ì›ë˜ëŠ”.
 
-	// ¸ŞÀÎ ·¹º§ º¯°æ
+	// ë©”ì¸ ë ˆë²¨ ë³€ê²½
 	mainLevel = levels[static_cast<int>(state)];
 }
 
 Game& Game::Get()
 {
-	// ¿¹¿Ü Ã³¸®.
+	// ì˜ˆì™¸ ì²˜ë¦¬.
 	if (!instance)
 	{
 		std::cerr << "Game::Get() - instance is null\n";
 		__debugbreak();
 	}
 
-	// Á¤Àû º¯¼ö ¹İÈ¯.
+	// ì •ì  ë³€ìˆ˜ ë°˜í™˜.
 	return *instance;
 }

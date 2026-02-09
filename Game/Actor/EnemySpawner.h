@@ -18,6 +18,6 @@ private:
 	void SpawnEnemy(float deltaTime);
 
 private:
-	// »ı¼º Å¸ÀÌ¸Ó.
+	// ìƒì„± íƒ€ì´ë¨¸.
 	Timer timer;
 };

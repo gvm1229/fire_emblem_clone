@@ -12,11 +12,11 @@ class SokobanLevel
 public:
 	SokobanLevel();
 
-	// ÀÌº¥Æ® ÇÔ¼ö ¿À¹ö¶óÀÌµå.
+	// ì´ë²¤íŠ¸ í•¨ìˆ˜ ì˜¤ë²„ë¼ì´ë“œ.
 	virtual void Draw() override;
 
 private:
-	// °ÔÀÓ¿¡¼­ »ç¿ëÇÒ ¸ÊÀ» ·ÎµåÇÏ´Â ÇÔ¼ö.
+	// ê²Œì„ì—ì„œ ì‚¬ìš©í•  ë§µì„ ë¡œë“œí•˜ëŠ” í•¨ìˆ˜.
 	void LoadMap(const char* filename);
 
 	// Inherited via ICanPlayerMove
@@ -24,13 +24,13 @@ private:
 		const Wanted::Vector2& playerPosition,
 		const Wanted::Vector2& nextPosition) override;
 
-	// °ÔÀÓ Å¬¸®¾î È®ÀÎ ÇÔ¼ö
+	// ê²Œì„ í´ë¦¬ì–´ í™•ì¸ í•¨ìˆ˜
 	bool CheckGameClear();
 
 private:
-	// È¹µæÇØ¾ßÇÏ´Â ¸ñÇ¥ Á¡¼ö
+	// íšë“í•´ì•¼í•˜ëŠ” ëª©í‘œ ì ìˆ˜
 	int targetScore = 0;
 
-	// °ÔÀÓ Å¬¸®¾î ¿©ºÎ¸¦ ¾Ë·ÁÁÖ´Â º¯¼ö
+	// ê²Œì„ í´ë¦¬ì–´ ì—¬ë¶€ë¥¼ ì•Œë ¤ì£¼ëŠ” ë³€ìˆ˜
 	bool isGameClear = false;
 };

@@ -18,9 +18,9 @@ private:
 	virtual void Tick(float deltaTime) override;
 
 private:
-	// ÀÌµ¿ Ã³¸®¸¦ À§ÇÑ º¯¼ö.
-	float moveSpeed = 0.0f; // ÀÌÈÄ ·£´ıÀ¸·Î Ã³¸® ¿¹Á¤
+	// ì´ë™ ì²˜ë¦¬ë¥¼ ìœ„í•œ ë³€ìˆ˜.
+	float moveSpeed = 0.0f; // ì´í›„ ëœë¤ìœ¼ë¡œ ì²˜ë¦¬ ì˜ˆì •
 
-	// y ÀÌµ¿ À§Ä¡ Ã³¸®¸¦ À§ÇÑ float º¯¼ö.
+	// y ì´ë™ ìœ„ì¹˜ ì²˜ë¦¬ë¥¼ ìœ„í•œ float ë³€ìˆ˜.
 	float yPosition = 0.0f;
 };

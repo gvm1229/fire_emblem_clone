@@ -14,21 +14,21 @@ void PlayerBullet::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);
 
-	// À§·Î ÀÌµ¿ Ã³¸®. ÃÊ´ÜÀ§·Î ÀÌµ¿.
+	// ìœ„ë¡œ ì´ë™ ì²˜ë¦¬. ì´ˆë‹¨ìœ„ë¡œ ì´ë™.
 	yPosition -= moveSpeed * deltaTime;
 
-	// ÁÂÇ¥ °Ë»ç.
+	// ì¢Œí‘œ ê²€ì‚¬.
 	if (yPosition < 0.0f)
 	{
-		// »èÁ¦ Ã³¸®.
+		// ì‚­ì œ ì²˜ë¦¬.
 		Destroy();
 		return;
 	}
 
-	// ¾×ÅÍÀÇ À§Ä¡·Î º¯È¯.
+	// ì•¡í„°ì˜ ìœ„ì¹˜ë¡œ ë³€í™˜.
 	Vector2 newPosition = GetPosition();
 	newPosition.y = static_cast<int>(yPosition);
 	
-	// À§Ä¡ °»½Å.
+	// ìœ„ì¹˜ ê°±ì‹ .
 	SetPosition(newPosition);
 }

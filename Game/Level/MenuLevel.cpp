@@ -7,21 +7,21 @@
 
 MenuLevel::MenuLevel()
 {
-	// ¸Ş´º ¾ÆÀÌÅÛ »ı¼º
+	// ë©”ë‰´ ì•„ì´í…œ ìƒì„±
 	items.emplace_back(new MenuItem(
 		"Resume Game",
-		[]() // ¶÷´Ù
+		[]() // ëŒë‹¤
 		{
-			// ¸Ş´º Åä±Û ÇÔ¼ö È£Ãâ
+			// ë©”ë‰´ í† ê¸€ í•¨ìˆ˜ í˜¸ì¶œ
 			Game::Get().ToggleMenu();
 		}
 	));
 
 	items.emplace_back(new MenuItem(
 		"Quit Game",
-		[]() // ¶÷´Ù
+		[]() // ëŒë‹¤
 		{
-			// °ÔÀÓ Á¾·á
+			// ê²Œì„ ì¢…ë£Œ
 			Game::Get().QuitEngine();
 		}
 	));
@@ -29,14 +29,14 @@ MenuLevel::MenuLevel()
 
 MenuLevel::~MenuLevel()
 {
-	// ¸Ş´º ¾ÆÀÌÅÛ Á¦°Å
+	// ë©”ë‰´ ì•„ì´í…œ ì œê±°
 	for (MenuItem*& item : items)
 	{
 		delete item;
 		item = nullptr;
 	}
 
-	// µ¿Àû ¹è¿­ ÃÊ±âÈ­
+	// ë™ì  ë°°ì—´ ì´ˆê¸°í™”
 	items.clear();
 }
 
@@ -44,54 +44,54 @@ void MenuLevel::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);
 
-	// ¹è¿­ ±æÀÌ
+	// ë°°ì—´ ê¸¸ì´
 	static int length = static_cast<int>(items.size());
 
-	// ÀÔ·Â Ã³¸® (¹æÇâÅ° À§/¾Æ·¡, Enter, Esc)
+	// ì…ë ¥ ì²˜ë¦¬ (ë°©í–¥í‚¤ ìœ„/ì•„ë˜, Enter, Esc)
 	if (Input::Get().GetKeyDown(VK_UP))
 	{
-		// ÀÎµ¦½º µ¹¸®±â (À§ ¹æÇâÀ¸·Î)
+		// ì¸ë±ìŠ¤ ëŒë¦¬ê¸° (ìœ„ ë°©í–¥ìœ¼ë¡œ)
 		currentIndex = (currentIndex - 1 + length) % length;
 	}
 
 	if (Input::Get().GetKeyDown(VK_DOWN))
 	{
-		// ÀÎµ¦½º µ¹¸®±â
+		// ì¸ë±ìŠ¤ ëŒë¦¬ê¸°
 		currentIndex = (currentIndex + 1) % length;
 	}
 
 	if (Input::Get().GetKeyDown(VK_RETURN))
 	{
-		// ¸Ş´º ¾ÆÀÌÅÛÀÌ ÀúÀåÇÑ ÇÔ¼ö Æ÷ÀÎÅÍ È£Ãâ
+		// ë©”ë‰´ ì•„ì´í…œì´ ì €ì¥í•œ í•¨ìˆ˜ í¬ì¸í„° í˜¸ì¶œ
 		items[currentIndex]->onSelected();
 	}
 
 	if (Input::Get().GetKeyDown(VK_ESCAPE))
 	{
-		// ¸Ş´º Åä±Û
+		// ë©”ë‰´ í† ê¸€
 		Game::Get().ToggleMenu();
 
-		// ÀÎµ¦½º ÃÊ±âÈ­
+		// ì¸ë±ìŠ¤ ì´ˆê¸°í™”
 		currentIndex = 0;
 	}
 }
 
 void MenuLevel::Draw()
 {
-	//// ¸Ş´º Á¦¸ñ Ãâ·Â
+	//// ë©”ë‰´ ì œëª© ì¶œë ¥
 	//Util::SetConsolePosition(Vector2::Zero);
 	//Util::SetConsoleTextColor(Color::White);
 
-	//// ÅØ½ºÆ® Ãâ·Â
+	//// í…ìŠ¤íŠ¸ ì¶œë ¥
 	//std::cout << "Sokoban Game\n\n";
 
-	// ·»´õ·¯¿¡°Ô ÀÚ·á Á¦Ãâ
+	// ë Œë”ëŸ¬ì—ê²Œ ìë£Œ ì œì¶œ
 	Renderer::Get().Submit("Sokoban Game", Vector2::Zero);
 
-	// ¸Ş´º ¾ÆÀÌÅÛ Ãâ·Â
+	// ë©”ë‰´ ì•„ì´í…œ ì¶œë ¥
 	for (int ix = 0; ix < static_cast<int>(items.size()); ++ix)
 	{
-		// ¾ÆÀÌÅÛ »ö»ó È®ÀÎ (¼±ÅÃµÆ´ÂÁö ¿©ºÎ)
+		// ì•„ì´í…œ ìƒ‰ìƒ í™•ì¸ (ì„ íƒëëŠ”ì§€ ì—¬ë¶€)
 		Color textColor =
 			(ix == currentIndex) ? selectedColor : unselectedColor;
 
@@ -101,10 +101,10 @@ void MenuLevel::Draw()
 			textColor
 		);
 
-		// »ö»ó ¼³Á¤
+		// ìƒ‰ìƒ ì„¤ì •
 		//Util::SetConsoleTextColor(textColor);
 
-		// ÅØ½ºÆ® Ãâ·Â
+		// í…ìŠ¤íŠ¸ ì¶œë ¥
 		//std::cout << items[ix]->text << "\n";
 	}
 }

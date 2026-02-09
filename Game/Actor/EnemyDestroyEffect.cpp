@@ -1,7 +1,7 @@
 #include "EnemyDestroyEffect.h"
 #include "Engine/Engine.h"
 
-// È¿°ú Àç»ı¿¡ »ç¿ëÇÒ ¹®ÀÚ¿­ ½ÃÄö½º (ÀÏÁ¾ÀÇ ¾Ö´Ï¸ŞÀÌ¼Ç ÇÁ·¹ÀÓ).
+// íš¨ê³¼ ì¬ìƒì— ì‚¬ìš©í•  ë¬¸ìì—´ ì‹œí€€ìŠ¤ (ì¼ì¢…ì˜ ì• ë‹ˆë©”ì´ì…˜ í”„ë ˆì„).
 static const EnemyDestroyEffect::EffectFrame sequence[] =
 {
 	EnemyDestroyEffect::EffectFrame("  @  ", 0.08f, Color::Red),
@@ -16,18 +16,18 @@ EnemyDestroyEffect::EnemyDestroyEffect(const Vector2& position)
 {
 	int effectFrameImageLength = 6;
 
-	// x À§Ä¡ °íÁ¤.
+	// x ìœ„ì¹˜ ê³ ì •.
 	this->position.x = position.x < 0 ? effectFrameImageLength + position.x : position.x;
 	this->position.x = position.x + effectFrameImageLength > Engine::Get().GetWidth() ?
 		position.x - effectFrameImageLength : position.x;
 
-	// ¾Ö´Ï¸ŞÀÌ¼Ç ½ÃÄö½º °³¼ö ±¸ÇÏ±â.
+	// ì• ë‹ˆë©”ì´ì…˜ ì‹œí€€ìŠ¤ ê°œìˆ˜ êµ¬í•˜ê¸°.
 	effectSequenceCount = sizeof(sequence) / sizeof(sequence[0]);
 
-	// ´ÙÀ½ ¾Ö´Ï¸ŞÀÌ¼Ç±îÁö ´ë±âÇÒ ½Ã°£.
+	// ë‹¤ìŒ ì• ë‹ˆë©”ì´ì…˜ê¹Œì§€ ëŒ€ê¸°í•  ì‹œê°„.
 	timer.SetTargetTime(sequence[0].playTime);
 
-	// »ö»ó ¼³Á¤.
+	// ìƒ‰ìƒ ì„¤ì •.
 	color = sequence[0].color;
 }
 
@@ -35,33 +35,33 @@ void EnemyDestroyEffect::Tick(float deltaTime)
 {
 	super::Tick(deltaTime);
 
-	// ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ıÀ» À§ÇÑ Å¸ÀÌ¸Ó ¾÷µ¥ÀÌÆ®.
+	// ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒì„ ìœ„í•œ íƒ€ì´ë¨¸ ì—…ë°ì´íŠ¸.
 	timer.Tick(deltaTime);
 	if (!timer.IsTimeOut())
 	{
 		return;
 	}
 
-	// ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı ³¡³µ´ÂÁö È®ÀÎ.
-	// ³¡³µÀ¸¸é »èÁ¦.
+	// ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ ëë‚¬ëŠ”ì§€ í™•ì¸.
+	// ëë‚¬ìœ¼ë©´ ì‚­ì œ.
 	if (currentSequenceIndex == effectSequenceCount - 1)
 	{
 		Destroy();
 		return;
 	}
 
-	// Å¸ÀÌ¸Ó ¸®¼Â.
+	// íƒ€ì´ë¨¸ ë¦¬ì…‹.
 	timer.Reset();
 
-	// ÀÌÆåÆ® ÇÁ·¹ÀÓ ¾÷µ¥ÀÌÆ®.
+	// ì´í™íŠ¸ í”„ë ˆì„ ì—…ë°ì´íŠ¸.
 	++currentSequenceIndex;
 
-	// ´ÙÀ½ ½ÃÄö½º¿¡¼­ Àç»ıÇÒ ½Ã°£À¸·Î Å¸ÀÌ¸Ó Àç¼³Á¤.
+	// ë‹¤ìŒ ì‹œí€€ìŠ¤ì—ì„œ ì¬ìƒí•  ì‹œê°„ìœ¼ë¡œ íƒ€ì´ë¨¸ ì¬ì„¤ì •.
 	timer.SetTargetTime(sequence[currentSequenceIndex].playTime);
 
-	// ¾Ö´Ï¸ŞÀÌ¼Ç ÇÁ·¹ÀÓ¿¡ »ç¿ëÇÒ ¹®ÀÚ¿­À» ¾×ÅÍ¿¡ º¹»ç.
+	// ì• ë‹ˆë©”ì´ì…˜ í”„ë ˆì„ì— ì‚¬ìš©í•  ë¬¸ìì—´ì„ ì•¡í„°ì— ë³µì‚¬.
 	ChangeImage(sequence[currentSequenceIndex].frame);
 
-	// »ö»ó ¼³Á¤.
+	// ìƒ‰ìƒ ì„¤ì •.
 	color = sequence[currentSequenceIndex].color;
 };
