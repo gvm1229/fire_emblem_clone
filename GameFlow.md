@@ -35,25 +35,25 @@ int main()
     // 6. 맵 로딩
     battleLevel->LoadMap("Assets/BattleMap.txt");
     
-    // 7. 플레이어 유닛 생성 및 배치
+    // 7. 플레이어 유닛 생성 및 배치 (근접만: Lord, Cavalier, Soldier)
     Unit* lord = new Unit(UnitClass::Lord);
     battleLevel->AddUnit(lord, Vector2(1, 1), Faction::Player, 0);
     
     Unit* cavalier = new Unit(UnitClass::Cavalier);
     battleLevel->AddUnit(cavalier, Vector2(3, 1), Faction::Player, 1);
     
-    Unit* archer = new Unit(UnitClass::Archer);
-    battleLevel->AddUnit(archer, Vector2(5, 1), Faction::Player, 2);
+    Unit* soldier = new Unit(UnitClass::Soldier);
+    battleLevel->AddUnit(soldier, Vector2(5, 1), Faction::Player, 2);
     
-    // 8. 적 유닛 생성 및 배치
+    // 8. 적 유닛 생성 및 배치 (근접만, 인덱스 0~2로 Z,X,C 키 매핑)
     Unit* enemySoldier1 = new Unit(UnitClass::Soldier);
-    battleLevel->AddUnit(enemySoldier1, Vector2(10, 10), Faction::Enemy);
+    battleLevel->AddUnit(enemySoldier1, Vector2(10, 10), Faction::Enemy, 0);
     
     Unit* enemySoldier2 = new Unit(UnitClass::Soldier);
-    battleLevel->AddUnit(enemySoldier2, Vector2(11, 10), Faction::Enemy);
+    battleLevel->AddUnit(enemySoldier2, Vector2(11, 10), Faction::Enemy, 1);
     
-    Unit* enemyArcher = new Unit(UnitClass::Archer);
-    battleLevel->AddUnit(enemyArcher, Vector2(12, 10), Faction::Enemy);
+    Unit* enemySoldier3 = new Unit(UnitClass::Soldier);
+    battleLevel->AddUnit(enemySoldier3, Vector2(12, 10), Faction::Enemy, 2);
     
     // 9. 레벨 설정
     engine.SetNewLevel(battleLevel);
@@ -86,8 +86,8 @@ int main()
 - 지형 정보(평지, 숲, 산, 성, 물, 벽 등)를 Grid에 설정
 
 **7-8단계: 유닛 배치**
-- 플레이어 유닛 3개 (Lord, Cavalier, Archer)
-- 적 유닛 3개 (Soldier x2, Archer x1)
+- 플레이어 유닛 3개 (Lord, Cavalier, Soldier) — 근접만 사용
+- 적 유닛 3개 (Soldier), 인덱스 0, 1, 2 부여 (Z, X, C 키로 스탯 보기)
 - `AddUnit()` 함수로 그리드 위치, 진영, 유닛 인덱스 설정
 
 **9단계: 레벨 설정**
@@ -827,7 +827,14 @@ if (nextLevel)
 
 ## 5. 입력 처리 흐름 (BattleLevel::HandleInput())
 
-### 유닛 선택 및 턴 종료 (키보드 입력)
+### 유닛 선택·적 선택·턴 종료 (키보드 입력)
+
+- **1~9, 0**: 플레이어 유닛 선택(이동·공격용). 플레이어 턴일 때만 유효. 선택 시 이동 범위 재계산, `selectedEnemy` 해제.
+- **Z, X, C, V, B, N, M, ,, ., /**: 적 유닛 선택(스탯 보기용, 인덱스 0~9). 선택 시 해당 적의 스탯이 우측 패널에 표시되며, `selectedUnit`이 있으면 해제.
+- **ESC**: `selectedUnit`·`selectedEnemy` 모두 해제.
+- **SPACE**: 턴 강제 전환(플레이어 턴 ↔ 적 턴), 선택 해제, 유닛 상태 초기화(ResetTurn).
+- **마우스 클릭**: 선택된 플레이어 유닛이 있을 때만 `OnMouseClick()` 호출(이동 또는 적 클릭 공격).
+- `gameOver`일 때는 Tick 앞단에서 return하므로 HandleInput()이 호출되지 않음.
 
 ```cpp
 void BattleLevel::HandleInput()
@@ -1157,7 +1164,47 @@ void NavigationSystem::ConstructPath(Node goalNode, const Vector2& start,
 
 ---
 
-## 6. 프로그램 종료
+## 6. 전투 및 게임 종료 흐름
+
+### 6.1 전투 발생 조건
+
+- **플레이어**: 선택된 아군 유닛이 있을 때, **적이 있는 타일**을 마우스로 클릭하면 전투가 발생합니다.
+  - 클릭한 타일이 **적과 인접**하면 → 즉시 `PerformCombat(selectedUnit, clickedEnemy)` 호출 후 해당 유닛 턴 종료.
+  - 적이 **인접하지 않지만** 이동 범위 안에 **적에게 인접한 빈 타일**이 있으면 → 그 타일로 경로 이동을 시키고, `unitPendingAttack`·`attackTarget`을 설정. 이동이 끝나면 `ProcessPendingAttackAfterMove()`에서 `PerformCombat()` 호출 후 턴 종료.
+- **적**: `EnemyAI::RunAI()`에서 플레이어 유닛에 **인접해 있으면** `performCombat(enemy, playerUnit)` 콜백으로 공격한 뒤 턴 종료. 인접하지 않으면 이동 가능한 플레이어 인접 타일로 이동합니다.
+
+### 6.2 PerformCombat() 및 데미지
+
+- 데미지 1회분 = `max(0, 공격자 STR - 방어자 DEF)`.
+- 공격자 SPD > 방어자 SPD 이면 **2회 타격**, 아니면 1회.
+- 방어자에게 `TakeDamage(총 데미지)` 적용. 전투 불능이 되면 타일·리스트에서 제거 후 `Destroy()` 호출.
+- **전투 로그**는 이벤트 로그에 세그먼트별 색상(아군 유닛명, 적 유닛명, 데미지 수치 등)으로 기록됩니다.
+
+### 6.3 게임 종료 조건 검사
+
+- `PerformCombat()` 안에서 유닛이 전투 불능이 되면, 그 직후 `CheckEndConditions()`를 호출합니다.
+- **아군 패배**: `playerUnits`가 비었거나, 살아 있는 아군 중 **로드(UnitClass::Lord)** 가 없음.
+- **적군 패배**: `enemyUnits`가 비어 있음.
+- 조건이 만족되면 `TriggerGameOver(승리 진영)`을 호출합니다.
+
+### 6.4 TriggerGameOver() 동작
+
+1. `gameOver = true`, `gameOverWinner` 설정.
+2. 모든 플레이어/적 유닛에 대해 해당 타일에서 `SetHasUnit(false)` 후 `Destroy()` 호출, `playerUnits`·`enemyUnits` 비우기.
+3. `selectedUnit`, `selectedEnemy`, `unitPendingAttack`, `attackTarget` 등을 `nullptr`로, `reachableTiles` 비우기.
+4. 벽이 아닌 모든 타일을 `SetTile(..., Plain)`으로 평지화.
+5. 이후 **Tick()** 에서는 맨 앞에 `if (gameOver) return;`으로 입력·AI·턴 로직을 수행하지 않음. **Draw()** 에서는 그리드만 그리고, 유닛은 그리지 않으며, 맵 중앙에 "PLAYER VICTORY" 또는 "ENEMY VICTORY"를 진영 색상으로 표시. 게임 루프는 계속 돌아가며 화면은 결과 안내용으로 유지됩니다.
+
+### 6.5 게임 종료 시 크래시 방지
+
+- `PerformCombat()` → `CheckEndConditions()` → `TriggerGameOver()`가 호출된 뒤, **호출한 쪽**으로 복귀했을 때 이미 `unitPendingAttack`·`selectedUnit` 등이 `nullptr`이므로, 이 포인터를 사용하지 않도록 해야 합니다.
+- `ProcessPendingAttackAfterMove()`에서는 `PerformCombat()` 호출 직후 **`if (gameOver) return;`** 으로 `unitPendingAttack->EndTurn()` 등에 들어가지 않도록 합니다.
+- `OnMouseClick()`에서 인접 적을 눌러 공격한 분기에서는 `PerformCombat()` 호출 직후 **`if (gameOver) return;`** 으로 `selectedUnit->EndTurn()` 등에 들어가지 않도록 합니다.  
+자세한 원인과 수정 내용은 **DEBUG.md**의 "게임 종료 시 크래시" 항목을 참고하세요.
+
+---
+
+## 7. 프로그램 종료
 
 ### 종료 트리거
 
@@ -1236,7 +1283,7 @@ BattleLevel::~BattleLevel()
 
 ---
 
-## 7. 핵심 데이터 흐름 요약
+## 8. 핵심 데이터 흐름 요약
 
 ### 렌더링 파이프라인
 
@@ -1324,7 +1371,7 @@ movementPath.empty() ? → state = UnitState::Idle
 
 ---
 
-## 8. 성능 최적화 포인트
+## 9. 성능 최적화 포인트
 
 ### 1. 고정 프레임레이트
 - `deltaTime >= oneFrameTime` 체크로 불필요한 업데이트 방지
@@ -1349,7 +1396,7 @@ movementPath.empty() ? → state = UnitState::Idle
 
 ---
 
-## 9. 디버깅 팁
+## 10. 디버깅 팁
 
 ### 메모리 누수 체크
 ```cpp
@@ -1388,12 +1435,13 @@ Fire Emblem Clone은 다음과 같은 흐름으로 실행됩니다:
 3. **렌더링**: Submit → renderQueue → UTF-8→UTF-16 변환 → CHAR_INFO → WriteConsoleOutputW → 화면 출력
    - 2x2 멀티라인 ASCII 아트로 각 타일과 유닛 표현
    - 렌더링 우선순위: 지형(7) < 하이라이트(9) < 유닛(10)
-4. **입력 처리**: 키보드/마우스 상태 체크 → 유닛 선택(1~9,0 키) → 이동 범위 계산(Dijkstra) → 마우스 클릭으로 경로 탐색(A*) → 이동 애니메이션 → 턴 종료(SPACE)
+4. **입력 처리**: 플레이어 유닛 선택(1~9,0) → 이동 범위 계산(Dijkstra) → 마우스 클릭으로 이동 또는 적 클릭으로 인접 시 공격/이동 후 공격. 적 유닛 스탯 보기(Z,X,C,V,B,N,M,쉼표,마침표,슬래시). 턴 종료(SPACE). 게임 종료 시에는 Tick에서 로직 생략.
    - 화면 좌표 ↔ 그리드 좌표 변환 (2x2 고려)
-5. **UI 시스템**: 
+5. **전투·종료**: 인접 공격만 지원, STR/DEF/SPD 기반 데미지·2회 타격. 아군 전멸 또는 로드 전투 불능 → 적군 승리, 적 전멸 → 아군 승리. TriggerGameOver 시 맵 정리 후 승리 문구만 표시.
+6. **UI 시스템**: 
    - 스탯 패널 (우측, uiBuffers 사용)
    - 키보드 툴팁 (하단, 2열 레이아웃)
-   - 턴 정보 표시
-6. **종료**: Shutdown → 소멸자 연쇄 호출 → 메모리 정리
+   - 턴 정보 표시, 맵과 툴팁 사이에 종료 조건 안내(아군/적군 패배 조건)
+7. **종료**: Shutdown → 소멸자 연쇄 호출 → 메모리 정리
 
 각 시스템은 싱글톤 패턴, 이벤트 시스템, 지연 처리, 더블 버퍼링, 렌더링 우선순위 등의 설계 패턴으로 안정적이고 효율적으로 동작합니다.

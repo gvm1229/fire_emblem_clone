@@ -42,10 +42,10 @@ A* 경로 탐색 알고리즘을 구현한 클래스로, AlgorithmPractice 프�
 ## Game 폴더 - Fire Emblem 게임 로직
 
 ### `Game/Main.cpp`
-프로그램의 진입점으로, `main()` 함수에서 Engine 인스턴스를 생성하고 게임 루프를 시작합니다. 콘솔 코드 페이지를 UTF-8로 설정(`SetConsoleOutputCP`, `SetConsoleCP`)하고 가상 터미널 시퀀스를 활성화하여 유니코드 박스 문자가 올바르게 표시되도록 합니다. `BattleLevel` 인스턴스를 생성하여 엔진에 등록하고, 맵 파일(`Assets/BattleMap.txt`)을 로드합니다. 초기 유닛 3개(Lord, Cavalier, Archer)를 플레이어 진영으로, 2개(Soldier, Archer)를 적 진영으로 생성하여 맵의 특정 위치에 배치한 후, 엔진의 `Run()` 함수를 호출하여 게임을 시작합니다.
+프로그램의 진입점으로, `main()` 함수에서 Engine 인스턴스를 생성하고 게임 루프를 시작합니다. 콘솔 코드 페이지를 UTF-8로 설정하고 가상 터미널 시퀀스를 활성화하여 유니코드 박스 문자가 올바르게 표시되도록 합니다. `BattleLevel` 인스턴스를 생성하여 엔진에 등록하고, 맵 파일(`Assets/BattleMap.txt`)을 로드합니다. **근접 유닛만** 사용하며(Lord, Cavalier, Soldier), 궁수/마법사는 데이터만 있고 맵에는 배치하지 않습니다. 플레이어 유닛 3개와 적 유닛 3개(Soldier)를 각각 인덱스 0, 1, 2로 부여하여 맵에 배치한 후, 엔진의 `Run()` 함수를 호출하여 게임을 시작합니다.
 
 ### `Game/Level/BattleLevel.h/cpp`
-Fire Emblem 전투 맵을 구현한 메인 게임 레벨 클래스입니다. `Grid` 객체를 통해 지형 정보를 관리하고, `playerUnits`와 `enemyUnits` 벡터로 아군과 적군 유닛을 분리 관리합니다. `LoadMap()` 함수는 텍스트 파일에서 맵 크기와 지형 데이터를 읽어 Grid를 초기화합니다. `HandleInput()` 함수는 1~9, 0 숫자 키(1번 키가 첫 번째 유닛)로 플레이어 유닛을 선택하고, 마우스 클릭으로 이동 목적지를 지정하며, ESC 키로 선택 해제, SPACE 키로 턴 종료를 처리합니다. 유닛 선택 시 `MovementCalculator`를 사용하여 이동 가능 범위를 계산하고, 이동 명령 시 `NavigationSystem`으로 최적 경로를 생성하여 유닛에 전달합니다. `DrawGrid()`는 각 타일을 2x2 멀티라인 ASCII 아트로 렌더링하며(그리드 좌표 x,y → 화면 좌표 x*2+1, y*2+1), `DrawMovementRange()`는 이동 가능 타일을 노란색/청록색 점으로 하이라이트하고, `DrawStatsPanel()`은 선택된 유닛의 스탯(HP, Class, STR~MOV)을 우측 패널에 표시합니다. `DrawKeyboardTooltip()`은 화면 하단에 2열 레이아웃으로 조작법과 색상 정보를 표시합니다. `uiBuffers[12][64]` 배열을 사용하여 동적 텍스트의 메모리 수명을 보장하며, 턴 관리 시스템(`isPlayerTurn`, `turnCount`)을 통해 플레이어와 적의 턴을 구분합니다.
+Fire Emblem 전투 맵을 구현한 메인 게임 레벨 클래스입니다. `Grid` 객체로 지형을 관리하고, `playerUnits`·`enemyUnits`로 아군/적군을 분리 관리합니다. `LoadMap()`으로 텍스트 맵을 로드하고, `HandleInput()`은 **1~9, 0**으로 플레이어 유닛 선택, **Z,X,C,V,B,N,M,쉼표,마침표,슬래시**로 적 유닛 선택(스탯 보기용), 마우스 클릭으로 이동·공격, ESC로 선택 해제, SPACE로 턴 종료를 처리합니다. **전투 시스템**: 인접 타일에서만 공격 가능하며, 적을 클릭하면 인접 시 즉시 `PerformCombat()`, 비인접이면 이동 가능한 인접 타일로 경로 이동 후 자동 공격합니다. 데미지는 (공격자 STR - 방어자 DEF), 공격자 SPD가 더 크면 2회 타격입니다. **적 AI**(`EnemyAI`)는 인접 시 플레이어 유닛을 공격하고, 그렇지 않으면 이동 범위 내 플레이어 인접 타일로 이동합니다. **게임 종료**: `CheckEndConditions()`로 아군 전멸 또는 로드 전투 불능 시 적군 승리, 적군 전멸 시 아군 승리로 판정합니다. `TriggerGameOver()`에서 모든 유닛 제거·파괴, 벽을 제외한 맵을 평지로 초기화하고, `gameOver` 시 Tick에서는 로직을 건너뛰고 Draw에서 맵 중앙에 승리 진영 문구(PLAYER VICTORY / ENEMY VICTORY)를 진영 색상으로 표시합니다. **이벤트 로그**는 세그먼트별 색상(유닛명·지형명·데미지·턴 종료 등)을 지원하며, `DrawEndConditions()`로 맵과 툴팁 사이에 아군/적군 패배 조건을 진영 색상으로 표시합니다. `DrawStatsPanel()`은 선택된 플레이어 또는 적 유닛의 스탯·지형 정보를 표시하고, `DrawKeyboardTooltip()`으로 조작법과 색상 설명을 띄웁니다.
 
 ### `Game/Map/Grid.h/cpp`
 2D 그리드 맵을 관리하는 클래스로, `std::vector<std::vector<Tile*>>`로 타일 배열을 저장합니다. 생성자에서 주어진 너비와 높이만큼 Tile 객체를 동적 할당하여 초기화하며, 소멸자에서 모든 Tile을 안전하게 삭제합니다. `GetTile()` 함수는 x, y 좌표 또는 Vector2로 특정 타일을 반환하고, `SetTile()` 함수는 특정 위치의 지형 타입을 변경합니다. `IsValidPosition()` 함수는 주어진 좌표가 그리드 범위 내에 있는지 확인하며, `IsWalkable()` 함수는 해당 타일이 이동 가능하고 유닛이 없는지 검사합니다. `GenerateNavigationMap()` 함수는 NavigationSystem을 위해 bool 2D 배열을 생성하여, true는 이동 가능, false는 장애물을 나타냅니다.
@@ -60,7 +60,10 @@ Fire Emblem의 유닛(캐릭터)을 나타내는 Actor 자식 클래스입니다
 유닛의 병과(클래스)를 정의한 열거형과 유틸리티 함수를 제공합니다. `UnitClass` enum은 Lord(주인공), Cavalier(기마병), Knight(중보병), Archer(궁병), Mage(마법사), Fighter(전사), Soldier(병사), Mercenary(용병), Thief(도적), Cleric(성직자) 등을 포함합니다. `GetUnitClassString()` 함수는 각 병과를 나타내는 단일 문자 UTF-8 문자열을 반환하며(Lord는 "L", Cavalier는 "C" 등), 2x2 멀티라인 렌더링 시 모든 셀에 동일한 문자가 표시됩니다. `GetFullUnitClassString()` 함수는 스탯 패널 표시용으로 전체 클래스 이름("Lord", "Cavalier", "Archer" 등)을 반환하여 플레이어가 병과를 명확하게 인식할 수 있도록 합니다.
 
 ### `Game/Unit/UnitStats.h`
-유닛의 전투 스탯을 담는 구조체입니다. `maxHP`와 `currentHP`로 체력을 관리하며, `strength`(물리 공격력), `magic`(마법 공격력), `skill`(명중률/필살률), `speed`(공격 순서/회피), `luck`(필살 회피), `defense`(물리 방어), `resistance`(마법 방어), `movement`(이동력) 등의 스탯을 int 타입으로 저장합니다. 이 값들은 전투 시스템에서 데미지 계산, 명중 판정, 회피 판정 등에 사용되며, 지형 보너스와 결합하여 최종 전투 결과를 결정합니다. 현재는 기본값을 생성자에서 초기화하며, 향후 레벨업이나 아이템 시스템으로 확장 가능합니다.
+유닛의 전투 스탯을 담는 구조체입니다. `maxHP`·`currentHP`로 체력을 관리하며, `strength`(물리 공격력), `defense`(물리 방어), `speed`(2회 타격 여부) 등이 전투에서 사용됩니다. `TakeDamage()`로 피격 시 currentHP가 감소하며, 0 이하가 되면 `IsAlive()`가 false가 되어 전투 불능·게임 종료 조건 판정에 사용됩니다.
+
+### `Game/AI/EnemyAI.h/cpp`
+적 유닛의 행동을 처리하는 AI 클래스입니다. `RunAI()`에서 플레이어 유닛에 **인접해 있으면** `performCombat` 콜백으로 한 유닛을 공격한 뒤 턴 종료하고, 그렇지 않으면 `MovementCalculator`·`NavigationSystem`으로 플레이어 유닛 인접 타일 중 이동 가능한 타일을 목표로 경로를 찾아 이동합니다. 이동 시 `onEnemyMoved(enemy, pathCount, terrainType)` 콜백으로 이벤트 로그용 정보를 전달하며, BattleLevel에서 진영별 색상으로 "Enemy Unit #N moved X tiles to …" 형식의 로그를 남깁니다.
 
 ### `Game/System/MovementCalculator.h/cpp`
 유닛의 이동 가능 범위를 계산하는 클래스로, Dijkstra 알고리즘을 사용합니다. `CalculateReachableTiles()` 함수는 시작 위치, 최대 이동력, Grid를 입력받아 도달 가능한 모든 타일을 `std::vector<Vector2>`로 반환합니다. `std::priority_queue`를 사용하여 비용이 낮은 타일부터 탐색하며, 각 타일의 이동 비용(`Tile::GetMovementCost()`)을 누적하여 최대 이동력을 초과하지 않는 범위 내에서 모든 도달 가능 타일을 찾습니다. 4방향 이동만 지원하며, 유닛이 있거나 통과 불가능한 타일은 제외합니다. `costMap`에 각 위치까지의 실제 이동 비용을 저장하여 `GetMovementCostTo()` 함수로 조회할 수 있으며, 이는 유닛이 실제로 이동할 수 있는 거리와 경로를 판단하는 데 활용됩니다.
@@ -86,13 +89,14 @@ Fire Emblem의 유닛(캐릭터)을 나타내는 Actor 자식 클래스입니다
 
 ## 핵심 게임 플레이 흐름
 
-1. **초기화**: `Main.cpp`에서 Engine 생성 → BattleLevel 생성 및 맵 로드 → 유닛 배치(Lord는 스탯 50% 강화)
-2. **게임 루프**: Engine이 매 프레임 `BeginPlay()` → `Tick()` → `Draw()` 호출
-3. **입력 처리**: `Input`이 키보드/마우스 상태 갱신 → BattleLevel의 `HandleInput()`이 유닛 선택/이동/턴 종료 처리
-4. **유닛 선택**: 숫자 키(1~9, 0) 입력 → `SelectUnitByIndex()` → MovementCalculator로 이동 범위 계산 → `reachableTiles` 갱신
-5. **유닛 이동**: 마우스 클릭 → 화면 좌표를 그리드 좌표로 변환(÷2) → `OnMouseClick()` → NavigationSystem으로 경로 생성 → Unit에 경로 설정 및 상태 Moving → `UpdateMovement()`로 타이머 기반 애니메이션 → 이동 완료 시 상태 Done
-6. **렌더링**: `DrawGrid()`로 지형을 2x2로 표시(Priority 7) → `DrawMovementRange()`로 이동 가능 타일 하이라이트(Priority 9) → 각 Unit의 `Draw()`로 유닛 2x2 표시(Priority 10) → `DrawStatsPanel()`로 스탯 UI 출력 → `DrawKeyboardTooltip()`로 조작법 표시 → Renderer가 renderQueue 처리 → ScreenBuffer로 더블 버퍼링 출력
-7. **턴 전환**: SPACE 키 → 플레이어 턴 ↔ 적 턴 전환 → 모든 유닛 상태 초기화(Done → Idle)
+1. **초기화**: `Main.cpp`에서 Engine 생성 → BattleLevel 생성 및 맵 로드 → 근접 유닛만 배치(Lord, Cavalier, Soldier / 적 Soldier×3, 인덱스 0~2)
+2. **게임 루프**: Engine이 매 프레임 `BeginPlay()` → `Tick()` → `Draw()` 호출. `gameOver` 시 Tick에서는 입력·AI·턴 로직 생략.
+3. **입력 처리**: `HandleInput()` — 1~9,0으로 플레이어 유닛 선택, Z,X,C,…,./ 로 적 유닛 선택(스탯 보기), ESC로 선택 해제, SPACE로 턴 종료.
+4. **유닛 선택·이동·공격**: 플레이어 유닛 선택 시 이동 범위 계산. 마우스 클릭 시 빈 타일이면 이동, **적 타일이면** 인접 시 즉시 `PerformCombat()`, 비인접이면 이동 가능한 적 인접 타일로 경로 이동 후 `ProcessPendingAttackAfterMove()`에서 공격.
+5. **전투**: `PerformCombat(attacker, defender)` — 데미지 = max(0, STR−DEF), SPD 우위 시 2회 타격. 피격 유닛 `TakeDamage()`, 전투 불능 시 타일·리스트에서 제거 후 `Destroy()`, `CheckEndConditions()` 호출.
+6. **게임 종료**: 아군 전멸 또는 로드 전투 불능 → 적군 승리. 적군 전멸 → 아군 승리. `TriggerGameOver()`에서 유닛 전원 제거·파괴, 맵(벽 제외) 평지로 초기화. 이후 Draw에서 맵 중앙에 "PLAYER VICTORY" / "ENEMY VICTORY" 진영 색상 표시.
+7. **렌더링**: `DrawGrid()` → 이동 범위 하이라이트 → `Level::Draw()`(유닛, gameOver 시 생략) → 게임 종료 시 승리 문구만, 아니면 스탯·이벤트 로그·종료 조건 문구·툴팁·턴 정보.
+8. **턴 전환**: SPACE 또는 아군 전원 행동 완료 시 플레이어 턴 종료 → 적 턴. 적 전원 행동 완료 시 적 턴 종료 → 플레이어 턴.
 
 ---
 
@@ -108,6 +112,8 @@ Fire Emblem의 유닛(캐릭터)을 나타내는 Actor 자식 클래스입니다
 - **Dijkstra 이동 범위**: 지형 비용을 고려한 Dijkstra 알고리즘으로 이동 가능 영역 계산
 - **지형 시스템**: 각 타일이 이동 비용, 회피/방어 보너스, 체력 회복 등의 속성을 가지며 고유한 2x2 ASCII 아트로 표현
 - **턴제 시스템**: 플레이어/적 턴 구분 및 유닛 상태 관리(Idle/Selected/Moving/Done), SPACE 키로 턴 전환
+- **전투·종료 조건**: 인접 공격만 지원, STR/DEF/SPD 기반 데미지·2회 타격. 아군 전멸 또는 로드 전투 불능 시 적군 승리, 적 전멸 시 아군 승리. 게임 종료 시 맵 정리 후 승리 문구만 표시하고 루프는 유지
+- **이벤트 로그 색상**: 로그 항목을 (문자열, 색상) 세그먼트로 저장하여 유닛명·지형명·데미지·턴 종료 등을 진영별·항목별로 색상 구분
 - **좌표 변환 시스템**: 그리드 좌표(논리적) ↔ 화면 좌표(물리적) 변환, 2x2 렌더링 고려
-- **UI 버퍼 관리**: `uiBuffers[12][64]` 배열로 동적 텍스트의 메모리 수명 보장
-- **마우스 입력**: 콘솔 마우스 이벤트로 유닛 이동 명령, 화면 좌표를 그리드 좌표로 자동 변환
+- **UI 버퍼 관리**: `uiBuffers[16][64]` 등으로 동적 텍스트의 메모리 수명 보장
+- **마우스 입력**: 콘솔 마우스 이벤트로 유닛 이동·적 클릭 공격, 화면 좌표를 그리드 좌표로 자동 변환

@@ -177,3 +177,69 @@ Submit에 넘기는 문자열이 **실제로 그릴 때까지 유효하도록**,
   - 멤버 변수 `unitNumberDisplay[2]` 추가.
 - **Game/Unit/Unit.cpp**  
   - `Draw()` 에서 지역 버퍼 `numberStr` 제거, `unitNumberDisplay` 에 쓰고 그 포인터를 Submit에 전달.
+
+---
+
+## 게임 종료 시 크래시 (해결됨)
+
+### 1. 현상
+
+전투로 아군 또는 적군이 전멸(또는 로드 전투 불능)이 되어 게임 종료 조건이 만족될 때, `TriggerGameOver()`가 호출된 직후 **프로그램이 크래시**하는 현상이 있었습니다.
+
+---
+
+### 2. 원인: 게임 종료 처리 후 이미 널로 만든 포인터 사용
+
+`TriggerGameOver()` 안에서는 다음을 수행합니다.
+
+- 모든 플레이어/적 유닛에 대해 타일에서 유닛 제거, `Destroy()` 호출
+- `playerUnits`, `enemyUnits` 벡터 비우기
+- **`selectedUnit`, `unitPendingAttack`, `attackTarget` 등을 `nullptr`로 설정**
+
+그런데 `TriggerGameOver()`는 **전투 중**에 호출됩니다. 예를 들어:
+
+- **이동 후 공격**: `ProcessPendingAttackAfterMove()` → `PerformCombat()` → (적 전멸 등으로) `CheckEndConditions()` → `TriggerGameOver()`  
+  이때 `TriggerGameOver()`가 `unitPendingAttack`과 `attackTarget`을 `nullptr`로 만듭니다.
+- **함수 반환 순서**: `TriggerGameOver()` 반환 → `CheckEndConditions()` 반환 → `PerformCombat()` 반환 → **`ProcessPendingAttackAfterMove()`로 복귀**
+- `ProcessPendingAttackAfterMove()`에서는 그다음에 **`unitPendingAttack->EndTurn()`** 을 호출합니다.  
+  이미 `unitPendingAttack`은 `nullptr`이므로 **null 포인터 역참조**로 크래시가 발생합니다.
+
+비슷하게, **인접 적을 클릭해 공격**할 때 `OnMouseClick()` 안에서 `PerformCombat()` 호출 후 게임 종료가 되면, `selectedUnit`이 `TriggerGameOver()`에서 `nullptr`로 바뀐 뒤 같은 프레임에 `selectedUnit->EndTurn()`을 호출하게 되어 크래시가 날 수 있습니다.
+
+즉, **게임 종료 시 포인터를 먼저 널로 만들었는데, 그 포인터를 아직 사용하는 코드 경로가 남아 있었던 것**이 원인입니다.
+
+---
+
+### 3. 해결 방법
+
+`PerformCombat()`(및 그 안에서 호출되는 `CheckEndConditions()` / `TriggerGameOver()`)를 호출한 **직후**, 해당 포인터를 쓰기 전에 **게임 종료 여부를 확인**하고, 종료되었으면 더 이상 진행하지 않습니다.
+
+- **ProcessPendingAttackAfterMove()**  
+  `PerformCombat(unitPendingAttack, attackTarget)` 호출 직후  
+  **`if (gameOver) return;`**  
+  을 넣어, 게임 종료 시 `unitPendingAttack->EndTurn()` 등에 진입하지 않도록 합니다.
+- **OnMouseClick()** (인접 적 클릭 시 즉시 공격하는 분기)  
+  `PerformCombat(selectedUnit, clickedEnemy)` 호출 직후  
+  **`if (gameOver) return;`**  
+  을 넣어, 게임 종료 시 `selectedUnit->EndTurn()` 등에 진입하지 않도록 합니다.
+
+이렇게 하면 `TriggerGameOver()`에서 포인터를 널로 만든 뒤에도, 그 포인터를 사용하는 코드가 실행되지 않아 크래시가 사라집니다.
+
+---
+
+### 4. 추가로 적용한 안전 처리
+
+- **Draw()**  
+  - `gameOver`일 때는 적 유닛 루프(색상 갱신)를 돌지 않도록 `if (!gameOver)` 로 감쌌습니다.  
+  - 게임 종료 시에는 유닛 액터를 그리지 않도록 `if (!gameOver)` 일 때만 `Level::Draw()`를 호출하여, 파괴 예정인 유닛을 그리지 않습니다.
+- 게임 종료 후에도 **엔진 루프는 계속 돌아가며**, 입력·AI·턴 로직만 `Tick()` 앞단의 `if (gameOver) return;` 으로 건너뜁니다.  
+  화면에는 정리된 맵과 승리 문구만 남겨 두어, 플레이어에게 결과를 보여 줍니다.
+
+---
+
+### 5. 수정된 파일
+
+- **Game/Level/BattleLevel.cpp**  
+  - `ProcessPendingAttackAfterMove()`: `PerformCombat()` 호출 직후 `if (gameOver) return;` 추가.  
+  - `OnMouseClick()` (인접 적 공격 분기): `PerformCombat()` 호출 직후 `if (gameOver) return;` 추가.  
+  - `Draw()`: `gameOver`일 때 적 유닛 루프 생략, `gameOver`일 때 `Level::Draw()` 생략.
