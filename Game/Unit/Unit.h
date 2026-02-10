@@ -45,13 +45,13 @@ namespace FEClone
 		UnitStats& GetStats() { return stats; }
 		const UnitStats& GetStats() const { return stats; }
 
-	// 진영 관련
-	Faction GetFaction() const { return faction; }
-	void SetFaction(Faction newFaction) { faction = newFaction; }
+		// 진영 관련
+		Faction GetFaction() const { return faction; }
+		void SetFaction(Faction newFaction) { faction = newFaction; }
 
-	// 클래스 관련
-	UnitClass GetUnitClass() const { return unitClass; }
-	void SetUnitClass(UnitClass newClass);
+		// 클래스 관련
+		UnitClass GetUnitClass() const { return unitClass; }
+		void SetUnitClass(UnitClass newClass);
 
 
 		// 상태 관련
@@ -72,29 +72,29 @@ namespace FEClone
 		void ResetTurn() { state = UnitState::Idle; }
 		bool HasActedThisTurn() const { return state == UnitState::Done; }
 
-	// 렌더링 정보
-	const char* GetDisplayString() const { return displayStr; }
-	void SetDisplayString(const char* str);
-	Color GetDisplayColor() const;
+		// 렌더링 정보
+		const char* GetDisplayString() const { return displayStr; }
+		void SetDisplayString(const char* str);
+		Color GetDisplayColor() const;
 
 		// 숫자 키 인덱스 (플레이어 유닛만 사용: 0~9)
 		int GetUnitIndex() const { return unitIndex; }
 		void SetUnitIndex(int index) { unitIndex = index; }
 
-private:
-	UnitStats stats;                // 유닛 스탯
-	Faction faction;                // 진영
-	UnitClass unitClass;            // 병과
-	UnitState state;                // 현재 상태
-	Vector2 gridPosition;           // 그리드 상의 위치
+	private:
+		UnitStats stats;                // 유닛 스탯
+		Faction faction;                // 진영
+		UnitClass unitClass;            // 병과
+		UnitState state;                // 현재 상태
+		Vector2 gridPosition;           // 그리드 상의 위치
 
 		// 이동 관련
 		std::deque<Vector2> movementPath;  // 이동 경로
 		float moveSpeed;                   // 이동 속도 (타일/초)
 		float moveTimer;                   // 이동 타이머
 
-	// 렌더링 정보 (멀티라인 ASCII 대비)
-	char displayStr[8];                // UTF-8 문자열 (최대 4바이트 + null)
-	int unitIndex;                     // 숫자 키 인덱스 (-1이면 미할당)
+		// 렌더링 정보 (멀티라인 ASCII 대비)
+		char displayStr[8];                // UTF-8 문자열 (최대 4바이트 + null)
+		int unitIndex;                     // 숫자 키 인덱스 (-1이면 미할당)
 	};
 }

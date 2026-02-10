@@ -67,6 +67,6 @@ private:
 	int turnCount;
 
 	// UI 버퍼 (렌더링 시 포인터 저장용)
-	char uiBuffers[12][64];                     // 12개의 UI 텍스트 버퍼
+	char uiBuffers[16][64];                     // 16개의 UI 텍스트 버퍼 (terrain info 추가)
 	};
 }

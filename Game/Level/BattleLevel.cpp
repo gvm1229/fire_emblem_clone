@@ -66,8 +66,8 @@ namespace FEClone
 
 	// 턴 정보 표시 (클래스 멤버 버퍼 사용)
 	const char* phaseStr = isPlayerTurn ? "PLAYER" : "ENEMY";
-	sprintf_s(uiBuffers[11], sizeof(uiBuffers[11]), "Turn:%d Phase:%s", turnCount, phaseStr);
-	Renderer::Get().Submit(uiBuffers[11], Vector2(0, 0), Color::White, 10);
+	sprintf_s(uiBuffers[0], sizeof(uiBuffers[0]), "Turn:%d Phase:%s", turnCount, phaseStr);
+	Renderer::Get().Submit(uiBuffers[0], Vector2(0, 0), Color::White, 10);
 	}
 
 	// 맵 로딩 (간단한 텍스트 파일 형식)
@@ -327,6 +327,22 @@ namespace FEClone
 		}
 	}
 
+	// 지형 타입을 문자열로 변환하는 헬퍼 함수
+	const char* GetTerrainTypeName(TerrainType type)
+	{
+		switch (type)
+		{
+		case TerrainType::Plain:    return "Plain";
+		case TerrainType::Forest:   return "Forest";
+		case TerrainType::Mountain: return "Mountain";
+		case TerrainType::Castle:   return "Castle";
+		case TerrainType::Village:  return "Village";
+		case TerrainType::Water:    return "Water";
+		case TerrainType::Wall:     return "Wall";
+		default:                    return "Unknown";
+		}
+	}
+
 	// 스탯 UI 패널 (오른쪽)
 	void BattleLevel::DrawStatsPanel()
 	{
@@ -348,50 +364,90 @@ namespace FEClone
 			// 유닛 인덱스 표시
 			if (unitClass == UnitClass::Lord)
 			{
-				sprintf_s(uiBuffers[0], sizeof(uiBuffers[0]), "Unit: #%d (Player Unit)", selectedUnit->GetUnitIndex() + 1);
+				sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "Unit: #%d (Player Unit)", selectedUnit->GetUnitIndex() + 1);
 			}
 			else
 			{
-				sprintf_s(uiBuffers[0], sizeof(uiBuffers[0]), "Unit: #%d", selectedUnit->GetUnitIndex() + 1);
+				sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "Unit: #%d", selectedUnit->GetUnitIndex() + 1);
 			}
-			Renderer::Get().Submit(uiBuffers[0], Vector2(panelX, panelY++), Color::White, 10);
+			Renderer::Get().Submit(uiBuffers[1], Vector2(panelX, panelY++), Color::White, 10);
 
 			panelY++;
 
 			// HP 표시
-			sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "HP: %d/%d", stats.currentHP, stats.maxHP);
-			Renderer::Get().Submit(uiBuffers[1], Vector2(panelX, panelY++), Color::White, 10);
+			sprintf_s(uiBuffers[2], sizeof(uiBuffers[2]), "HP: %d/%d", stats.currentHP, stats.maxHP);
+			Renderer::Get().Submit(uiBuffers[2], Vector2(panelX, panelY++), Color::White, 10);
 
 			// 클래스 표시 (전체 이름)
-			sprintf_s(uiBuffers[2], sizeof(uiBuffers[2]), "Class: %s", GetFullUnitClassString(unitClass));
-			Renderer::Get().Submit(uiBuffers[2], Vector2(panelX, panelY++), Color::White, 10);
+			sprintf_s(uiBuffers[3], sizeof(uiBuffers[3]), "Class: %s", GetFullUnitClassString(unitClass));
+			Renderer::Get().Submit(uiBuffers[3], Vector2(panelX, panelY++), Color::White, 10);
 
 			panelY++;
 
 			// 스탯 표시
-			sprintf_s(uiBuffers[3], sizeof(uiBuffers[3]), "STR: %d", stats.strength);
-			Renderer::Get().Submit(uiBuffers[3], Vector2(panelX, panelY++), Color::White, 10);
-
-			sprintf_s(uiBuffers[4], sizeof(uiBuffers[4]), "MAG: %d", stats.magic);
+			sprintf_s(uiBuffers[4], sizeof(uiBuffers[4]), "STR: %d", stats.strength);
 			Renderer::Get().Submit(uiBuffers[4], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[5], sizeof(uiBuffers[5]), "SKL: %d", stats.skill);
+			sprintf_s(uiBuffers[5], sizeof(uiBuffers[5]), "MAG: %d", stats.magic);
 			Renderer::Get().Submit(uiBuffers[5], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[6], sizeof(uiBuffers[6]), "SPD: %d", stats.speed);
+			sprintf_s(uiBuffers[6], sizeof(uiBuffers[6]), "SKL: %d", stats.skill);
 			Renderer::Get().Submit(uiBuffers[6], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[7], sizeof(uiBuffers[7]), "LCK: %d", stats.luck);
+			sprintf_s(uiBuffers[7], sizeof(uiBuffers[7]), "SPD: %d", stats.speed);
 			Renderer::Get().Submit(uiBuffers[7], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[8], sizeof(uiBuffers[8]), "DEF: %d", stats.defense);
+			sprintf_s(uiBuffers[8], sizeof(uiBuffers[8]), "LCK: %d", stats.luck);
 			Renderer::Get().Submit(uiBuffers[8], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[9], sizeof(uiBuffers[9]), "RES: %d", stats.resistance);
+			sprintf_s(uiBuffers[9], sizeof(uiBuffers[9]), "DEF: %d", stats.defense);
 			Renderer::Get().Submit(uiBuffers[9], Vector2(panelX, panelY++), Color::White, 10);
 
-			sprintf_s(uiBuffers[10], sizeof(uiBuffers[10]), "MOV: %d", stats.movement);
+			sprintf_s(uiBuffers[10], sizeof(uiBuffers[10]), "RES: %d", stats.resistance);
 			Renderer::Get().Submit(uiBuffers[10], Vector2(panelX, panelY++), Color::White, 10);
+
+			sprintf_s(uiBuffers[11], sizeof(uiBuffers[11]), "MOV: %d", stats.movement);
+			Renderer::Get().Submit(uiBuffers[11], Vector2(panelX, panelY++), Color::White, 10);
+
+			// 구분선
+			panelY++;
+			Renderer::Get().Submit("------------------", Vector2(panelX, panelY++), Color::White, 10);
+			
+			// 지형 정보 표시
+			Tile* currentTile = grid->GetTile(selectedUnit->GetGridPosition());
+			if (currentTile != nullptr)
+			{
+				Renderer::Get().Submit("  TERRAIN INFO", Vector2(panelX, panelY++), Color::Yellow, 10);
+				Renderer::Get().Submit("------------------", Vector2(panelX, panelY++), Color::White, 10);
+				panelY++;
+
+				// 지형 타입
+				sprintf_s(uiBuffers[12], sizeof(uiBuffers[12]), "Terrain: %s", GetTerrainTypeName(currentTile->GetTerrainType()));
+				Renderer::Get().Submit(uiBuffers[12], Vector2(panelX, panelY++), Color::White, 10);
+
+				panelY++;
+
+				// 지형 보너스
+				Renderer::Get().Submit("Bonuses:", Vector2(panelX, panelY++), Color::Cyan, 10);
+				
+				sprintf_s(uiBuffers[13], sizeof(uiBuffers[13]), "  Avoid: +%d", currentTile->GetAvoidBonus());
+				Renderer::Get().Submit(uiBuffers[13], Vector2(panelX, panelY++), Color::White, 10);
+				
+				sprintf_s(uiBuffers[14], sizeof(uiBuffers[14]), "  Defense: +%d", currentTile->GetDefenseBonus());
+				Renderer::Get().Submit(uiBuffers[14], Vector2(panelX, panelY++), Color::White, 10);
+				
+				// 회복 지형이면 표시
+				if (currentTile->IsHealingTile())
+				{
+					sprintf_s(uiBuffers[15], sizeof(uiBuffers[15]), "  Healing: Yes");
+					Renderer::Get().Submit(uiBuffers[15], Vector2(panelX, panelY++), Color::Green, 10);
+				}
+				else
+				{
+					sprintf_s(uiBuffers[15], sizeof(uiBuffers[15]), "  Healing: No");
+					Renderer::Get().Submit(uiBuffers[15], Vector2(panelX, panelY++), Color::White, 10);
+				}
+			}
 		}
 		else
 		{
