@@ -92,6 +92,7 @@ xcopy ..\Assets $(OutDir)..\Assets\ /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AI\EnemyAI.cpp" />
     <ClCompile Include="Level\BattleLevel.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Map\Grid.cpp" />
@@ -101,6 +102,7 @@ xcopy ..\Assets $(OutDir)..\Assets\ /e /y</Command>
     <ClCompile Include="Util\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AI\EnemyAI.h" />
     <ClInclude Include="Level\BattleLevel.h" />
     <ClInclude Include="Map\Grid.h" />
     <ClInclude Include="Map\Tile.h" />

@@ -29,7 +29,7 @@ namespace FEClone
 			, luck(0)
 			, defense(3)
 			, resistance(0)
-			, movement(5)
+			, movement(3)
 		{
 		}
 	};

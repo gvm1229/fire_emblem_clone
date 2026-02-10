@@ -5,6 +5,7 @@
 #include "Unit/Unit.h"
 #include "System/MovementCalculator.h"
 #include "Algorithm/NavigationSystem.h"
+#include "AI/EnemyAI.h"
 #include <vector>
 
 namespace FEClone
@@ -61,6 +62,7 @@ private:
 
 	MovementCalculator movementCalculator;      // 이동 범위 계산기
 	NavigationSystem navigationSystem;          // 경로 탐색 시스템
+	EnemyAI enemyAI;                            // 적 AI
 
 	// 턴 관리
 	bool isPlayerTurn;

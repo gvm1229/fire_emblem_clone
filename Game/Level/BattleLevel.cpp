@@ -39,6 +39,50 @@ namespace FEClone
 	{
 		Level::Tick(deltaTime);
 
+		// 적 턴: AI 처리
+		if (!isPlayerTurn)
+		{
+			// 이동 중인 적이 있으면 대기
+			bool anyEnemyMoving = false;
+			for (Unit* unit : enemyUnits)
+			{
+				if (unit->IsMoving())
+				{
+					anyEnemyMoving = true;
+					break;
+				}
+			}
+
+			if (!anyEnemyMoving)
+			{
+				// 행동하지 않은 첫 번째 적 찾기
+				Unit* nextEnemy = nullptr;
+				for (Unit* unit : enemyUnits)
+				{
+					if (!unit->HasActedThisTurn())
+					{
+						nextEnemy = unit;
+						break;
+					}
+				}
+
+				if (nextEnemy != nullptr)
+				{
+					enemyAI.RunAI(nextEnemy, playerUnits, grid, movementCalculator, navigationSystem);
+				}
+				else
+				{
+					// 모든 적이 행동 완료 → 플레이어 턴으로 전환
+					isPlayerTurn = true;
+					turnCount++;
+					for (Unit* unit : playerUnits)
+					{
+						unit->ResetTurn();
+					}
+				}
+			}
+		}
+
 		// 입력 처리
 		HandleInput();
 	}
