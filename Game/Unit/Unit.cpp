@@ -146,16 +146,16 @@ void Unit::Draw()
 			return Color::Purple;
 		}
 
-		// Lord 유닛은 기본 마젠타색
-		if (unitClass == UnitClass::Lord)
-		{
-			return Color::Yellow;
-		}
-
 		// 선택 상태면 하늘색
 		if (state == UnitState::Selected)
 		{
 			return Color::Cyan;
+		}
+
+		// Lord 유닛은 기본 노란색
+		if (unitClass == UnitClass::Lord)
+		{
+			return Color::Yellow;
 		}
 
 		// 진영에 따른 색상

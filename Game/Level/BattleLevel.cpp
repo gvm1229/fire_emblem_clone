@@ -287,11 +287,21 @@ namespace FEClone
 					int baseX = x * 2 + 1;
 					int baseY = y * 2 + 1;
 
-					// Render Priority: 7 (Terrain)
-					Renderer::Get().Submit(topLeft, Vector2(baseX, baseY), tile->GetDisplayColor(), 7);
-					Renderer::Get().Submit(topRight, Vector2(baseX + 1, baseY), tile->GetDisplayColor(), 7);
-					Renderer::Get().Submit(bottomLeft, Vector2(baseX, baseY + 1), tile->GetDisplayColor(), 7);
-					Renderer::Get().Submit(bottomRight, Vector2(baseX + 1, baseY + 1), tile->GetDisplayColor(), 7);
+					// Render Priority: 7 (Plain terrain)
+					if (tile->GetTerrainType() == TerrainType::Plain)
+					{
+						Renderer::Get().Submit(topLeft, Vector2(baseX, baseY), tile->GetDisplayColor(), 7);
+						Renderer::Get().Submit(topRight, Vector2(baseX + 1, baseY), tile->GetDisplayColor(), 7);
+						Renderer::Get().Submit(bottomLeft, Vector2(baseX, baseY + 1), tile->GetDisplayColor(), 7);
+						Renderer::Get().Submit(bottomRight, Vector2(baseX + 1, baseY + 1), tile->GetDisplayColor(), 7);
+					}
+					else // Render Priority: 9 (Terrain)
+					{
+						Renderer::Get().Submit(topLeft, Vector2(baseX, baseY), tile->GetDisplayColor(), 9);
+						Renderer::Get().Submit(topRight, Vector2(baseX + 1, baseY), tile->GetDisplayColor(), 9);
+						Renderer::Get().Submit(bottomLeft, Vector2(baseX, baseY + 1), tile->GetDisplayColor(), 9);
+						Renderer::Get().Submit(bottomRight, Vector2(baseX + 1, baseY + 1), tile->GetDisplayColor(), 9);
+					}
 				}
 			}
 		}
@@ -306,24 +316,14 @@ namespace FEClone
 			int baseX = tile.x * 2 + 1;
 			int baseY = tile.y * 2 + 1;
 
-			// Render Priority: 9 (Tile highlights - above items, below units)
-			Color highlightColor;
-			
-			// Lord 유닛은 항상 녹색 (선택 시 제외)
-			if (selectedUnit->GetUnitClass() == UnitClass::Lord)
-			{
-				highlightColor = Color::Yellow;
-			}
-			else // 이외 Player 유닛은 하이라이트 하늘색
-			{
-				highlightColor = Color::Cyan;
-			}
+			// Render Priority: 8 (Tile highlights - below units and non-plain terrains)
+			Color highlightColor = Color::Cyan;
 
 			// 2x2로 하이라이트 렌더링
-			Renderer::Get().Submit("·", Vector2(baseX, baseY), highlightColor, 9);
-			Renderer::Get().Submit("·", Vector2(baseX + 1, baseY), highlightColor, 9);
-			Renderer::Get().Submit("·", Vector2(baseX, baseY + 1), highlightColor, 9);
-			Renderer::Get().Submit("·", Vector2(baseX + 1, baseY + 1), highlightColor, 9);
+			Renderer::Get().Submit("·", Vector2(baseX, baseY), highlightColor, 8);
+			Renderer::Get().Submit("·", Vector2(baseX + 1, baseY), highlightColor, 8);
+			Renderer::Get().Submit("·", Vector2(baseX, baseY + 1), highlightColor, 8);
+			Renderer::Get().Submit("·", Vector2(baseX + 1, baseY + 1), highlightColor, 8);
 		}
 	}
 
