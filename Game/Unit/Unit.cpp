@@ -140,10 +140,16 @@ void Unit::Draw()
 	// 렌더링 색상 반환 (진영 + 상태에 따라)
 	Color Unit::GetDisplayColor() const
 	{
-		// 턴 종료 상태면 마젠타타
+		// 턴 종료 상태: 적은 적 턴일 때만 보라색, 플레이어 턴에는 빨간색 유지
 		if (state == UnitState::Done)
 		{
-			return Color::Purple;
+			if (faction == Faction::Enemy)
+			{
+				if (displayAsEnemyTurn)
+					return Color::Purple;
+				return Color::Red;
+			}
+			return Color::Purple;  // 플레이어/동맹 Done은 항상 보라
 		}
 
 		// 선택 상태면 하늘색

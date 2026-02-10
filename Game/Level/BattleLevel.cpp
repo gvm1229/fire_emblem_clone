@@ -86,11 +86,46 @@ namespace FEClone
 
 		// 입력 처리
 		HandleInput();
+
+		// 플레이어 턴: 모든 플레이어 유닛이 행동 완료하면 자동으로 턴 종료
+		if (isPlayerTurn)
+		{
+			bool allPlayerUnitsDone = true;
+			for (Unit* unit : playerUnits)
+			{
+				if (!unit->HasActedThisTurn())
+				{
+					allPlayerUnitsDone = false;
+					break;
+				}
+			}
+			if (allPlayerUnitsDone && !playerUnits.empty())
+			{
+				isPlayerTurn = false;
+				for (Unit* unit : enemyUnits)
+				{
+					unit->ResetTurn();
+				}
+				if (selectedUnit != nullptr)
+				{
+					selectedUnit->SetState(UnitState::Idle);
+					selectedUnit = nullptr;
+					reachableTiles.clear();
+				}
+				AddLog("PLAYER TURN ENDED");
+			}
+		}
 	}
 
 	// Draw: 렌더링
 	void BattleLevel::Draw()
 	{
+		// 적 유닛 색상: 적 턴일 때만 Done을 보라색으로, 플레이어 턴에는 항상 빨간색
+		for (Unit* unit : enemyUnits)
+		{
+			unit->SetDisplayAsEnemyTurn(!isPlayerTurn);
+		}
+
 		// 그리드 렌더링
 		DrawGrid();
 

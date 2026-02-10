@@ -76,6 +76,8 @@ namespace FEClone
 		const char* GetDisplayString() const { return displayStr; }
 		void SetDisplayString(const char* str);
 		Color GetDisplayColor() const;
+		// 적 턴일 때만 Done 상태를 보라색으로 표시 (플레이어 턴에는 항상 빨간색)
+		void SetDisplayAsEnemyTurn(bool value) { displayAsEnemyTurn = value; }
 
 		// 숫자 키 인덱스 (플레이어 유닛만 사용: 0~9)
 		int GetUnitIndex() const { return unitIndex; }
@@ -96,5 +98,6 @@ namespace FEClone
 		// 렌더링 정보 (멀티라인 ASCII 대비)
 		char displayStr[8];                // UTF-8 문자열 (최대 4바이트 + null)
 		int unitIndex;                     // 숫자 키 인덱스 (-1이면 미할당)
+		bool displayAsEnemyTurn = false;   // true면 적 턴으로 표시 (적 유닛 Done 시 보라색)
 	};
 }
