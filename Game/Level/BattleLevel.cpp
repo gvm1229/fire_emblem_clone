@@ -80,7 +80,7 @@ namespace FEClone
 							sprintf_s(numBuf, sizeof(numBuf), "Enemy Unit #%d", n);
 							AddLog({
 								{ numBuf, Color::Red },
-								{ " moved ", Color::White }, { std::to_string(pathCount), Color::White },
+								{ " moved ", Color::White }, { std::to_string(pathCount), Color::Yellow },
 								{ " tiles to ", Color::White }, { GetTerrainTypeName(terrainType), GetTerrainLogColor(terrainType) }, { ".", Color::White }
 							});
 						},
@@ -349,6 +349,19 @@ namespace FEClone
 
 		if (!defender->IsAlive())
 		{
+			int deadNum = defender->GetUnitIndex() >= 0 ? defender->GetUnitIndex() + 1 : 1;
+			char numBuf[16];
+			if (defender->GetFaction() == Faction::Player)
+			{
+				sprintf_s(numBuf, sizeof(numBuf), "Unit #%d", deadNum);
+				AddLog({{ numBuf, Color::Cyan }, { " was defeated.", Color::Purple }});
+			}
+			else
+			{
+				sprintf_s(numBuf, sizeof(numBuf), "Enemy Unit #%d", deadNum);
+				AddLog({{ numBuf, Color::Red }, { " was defeated.", Color::Purple }});
+			}
+
 			Tile* tile = grid->GetTile(defender->GetGridPosition());
 			if (tile) tile->SetHasUnit(false);
 			if (defender->GetFaction() == Faction::Player)
@@ -488,7 +501,7 @@ namespace FEClone
 					sprintf_s(numBuf, sizeof(numBuf), "Unit #%d", unitNum);
 					AddLog({
 						{ numBuf, Color::Cyan },
-						{ " moved ", Color::White }, { std::to_string(path.size()), Color::White },
+						{ " moved ", Color::White }, { std::to_string(path.size()), Color::Yellow },
 						{ " tiles to ", Color::White }, { terrainName, terrainColor }, { ".", Color::White }
 					});
 					unitPendingAttack = selectedUnit;
@@ -527,7 +540,7 @@ namespace FEClone
 			sprintf_s(numBuf, sizeof(numBuf), "Unit #%d", unitNum);
 			AddLog({
 				{ numBuf, Color::Cyan },
-				{ " moved ", Color::White }, { std::to_string(path.size()), Color::White },
+				{ " moved ", Color::White }, { std::to_string(path.size()), Color::Yellow },
 				{ " tiles to ", Color::White }, { terrainName, terrainColor }, { ".", Color::White }
 			});
 		}
