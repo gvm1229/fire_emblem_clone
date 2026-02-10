@@ -13,6 +13,7 @@ namespace FEClone
 		: Level()
 		, grid(nullptr)
 		, selectedUnit(nullptr)
+		, selectedEnemy(nullptr)
 		, isPlayerTurn(true)
 		, turnCount(1)
 	{
@@ -349,6 +350,9 @@ namespace FEClone
 
 		if (!defender->IsAlive())
 		{
+			if (selectedEnemy == defender)
+				selectedEnemy = nullptr;
+
 			int deadNum = defender->GetUnitIndex() >= 0 ? defender->GetUnitIndex() + 1 : 1;
 			char numBuf[16];
 			if (defender->GetFaction() == Faction::Player)
@@ -415,11 +419,12 @@ namespace FEClone
 					return;
 				}
 
-				// 이전 선택 해제
+				// 이전 선택 해제 (플레이어 유닛 + 적 보기 선택)
 				if (selectedUnit != nullptr)
 				{
 					selectedUnit->SetState(UnitState::Idle);
 				}
+				selectedEnemy = nullptr;
 
 				// 새 유닛 선택
 				selectedUnit = unit;
@@ -434,6 +439,25 @@ namespace FEClone
 					&reachableTiles
 				);
 
+				return;
+			}
+		}
+	}
+
+	void BattleLevel::SelectEnemyByIndex(int index)
+	{
+		for (Unit* unit : enemyUnits)
+		{
+			if (unit->GetUnitIndex() == index && unit->IsAlive())
+			{
+				// Clear player unit selection (viewing enemy only)
+				if (selectedUnit != nullptr)
+				{
+					selectedUnit->SetState(UnitState::Idle);
+					selectedUnit = nullptr;
+					reachableTiles.clear();
+				}
+				selectedEnemy = unit;
 				return;
 			}
 		}
@@ -627,19 +651,25 @@ namespace FEClone
 		Renderer::Get().Submit("==================", Vector2(panelX, panelY + 2), Color::White, 10);
 		panelY += 4;
 
-		if (selectedUnit != nullptr)
+		Unit* infoUnit = selectedUnit != nullptr ? selectedUnit : selectedEnemy;
+		if (infoUnit != nullptr)
 		{
-			const UnitStats& stats = selectedUnit->GetStats();
-			const UnitClass unitClass = selectedUnit->GetUnitClass();
-			
+			const UnitStats& stats = infoUnit->GetStats();
+			const UnitClass unitClass = infoUnit->GetUnitClass();
+			const bool isEnemy = (infoUnit == selectedEnemy);
+
 			// 유닛 인덱스 표시
-			if (unitClass == UnitClass::Lord)
+			if (isEnemy)
 			{
-				sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "Unit: #%d (Player)", selectedUnit->GetUnitIndex() + 1);
+				sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "Enemy Unit: #%d", infoUnit->GetUnitIndex() + 1);
+			}
+			else if (unitClass == UnitClass::Lord)
+			{
+				sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "Unit: #%d (Player)", infoUnit->GetUnitIndex() + 1);
 			}
 			else
 			{
-				sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "Unit: #%d", selectedUnit->GetUnitIndex() + 1);
+				sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "Unit: #%d", infoUnit->GetUnitIndex() + 1);
 			}
 			Renderer::Get().Submit(uiBuffers[1], Vector2(panelX, panelY++), Color::White, 10);
 
@@ -685,7 +715,7 @@ namespace FEClone
 			Renderer::Get().Submit("------------------", Vector2(panelX, panelY++), Color::White, 10);
 			
 			// 지형 정보 표시
-			Tile* currentTile = grid->GetTile(selectedUnit->GetGridPosition());
+			Tile* currentTile = grid->GetTile(infoUnit->GetGridPosition());
 			if (currentTile != nullptr)
 			{
 				Renderer::Get().Submit("  TERRAIN INFO", Vector2(panelX, panelY++), Color::Yellow, 10);
@@ -823,9 +853,10 @@ namespace FEClone
 		// 첫 번째 열: CONTROLS
 		Renderer::Get().Submit("=== CONTROLS ===", Vector2(col1X, tooltipY), Color::Yellow, 10);
 		Renderer::Get().Submit("[1-9,0] Select Unit", Vector2(col1X, tooltipY + 1), Color::White, 10);
-		Renderer::Get().Submit("[Click] Move Unit", Vector2(col1X, tooltipY + 2), Color::White, 10);
-		Renderer::Get().Submit("[ESC] Deselect", Vector2(col1X, tooltipY + 3), Color::White, 10);
-		Renderer::Get().Submit("[SPACE] End Turn", Vector2(col1X, tooltipY + 4), Color::White, 10);
+		Renderer::Get().Submit("[Z,X,C..,./] Enemy", Vector2(col1X, tooltipY + 2), Color::White, 10);
+		Renderer::Get().Submit("[Click] Move Unit", Vector2(col1X, tooltipY + 3), Color::White, 10);
+		Renderer::Get().Submit("[ESC] Deselect", Vector2(col1X, tooltipY + 4), Color::White, 10);
+		Renderer::Get().Submit("[SPACE] End Turn", Vector2(col1X, tooltipY + 5), Color::White, 10);
 
 		// 두 번째 열: UNIT COLORS
 		Renderer::Get().Submit("=== COLORS ===", Vector2(col2X, tooltipY), Color::Yellow, 10);
@@ -862,7 +893,20 @@ namespace FEClone
 			return;
 		}
 
-		// ESC 키: 유닛 선택 해제
+		// Z,X,C,V,B,N,M, Comma, Period, Slash: 적 유닛 선택 (스탯 보기, 인덱스 0~9)
+		{
+			static const int enemyKeys[10] = { 0x5A, 0x58, 0x43, 0x56, 0x42, 0x4E, 0x4D, 0xBC, 0xBE, 0xBF }; // Z,X,C,V,B,N,M, ,, ., /
+			for (int i = 0; i < 10; ++i)
+			{
+				if (Input::Get().GetKeyDown(enemyKeys[i]))
+				{
+					SelectEnemyByIndex(i);
+					return;
+				}
+			}
+		}
+
+		// ESC 키: 유닛/적 선택 해제
 		if (Input::Get().GetKeyDown(VK_ESCAPE))
 		{
 			if (selectedUnit != nullptr)
@@ -871,6 +915,7 @@ namespace FEClone
 				selectedUnit = nullptr;
 				reachableTiles.clear();
 			}
+			selectedEnemy = nullptr;
 			return;
 		}
 
