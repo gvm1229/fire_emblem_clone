@@ -24,7 +24,8 @@ namespace FEClone
 		// grid: 맵 그리드
 		// movementCalculator: 이동 범위 계산기
 		// navigationSystem: 경로 탐색 시스템
-		// onLog: 이동 시 로그 메시지 전달 (nullptr 가능)
+		// onLog: 이동 시 단순 로그 메시지 전달 (nullptr 가능)
+		// onEnemyMoved: 이동 시 (enemy, pathCount, terrainType) 전달해 번호·지형 색상 로그용 (nullptr 가능)
 		// performCombat: 인접 시 공격 실행 (attacker, defender) (nullptr 가능)
 		void RunAI(
 			Unit* enemy,
@@ -33,6 +34,7 @@ namespace FEClone
 			MovementCalculator& movementCalculator,
 			NavigationSystem& navigationSystem,
 			std::function<void(const char*)> onLog = nullptr,
+			std::function<void(Unit* enemy, size_t pathCount, TerrainType terrainType)> onEnemyMoved = nullptr,
 			std::function<void(Unit* attacker, Unit* defender)> performCombat = nullptr
 		);
 

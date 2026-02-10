@@ -74,12 +74,22 @@ namespace FEClone
 				{
 					enemyAI.RunAI(nextEnemy, playerUnits, grid, movementCalculator, navigationSystem,
 						[this](const char* msg) { AddLog(msg); },
+						[this](Unit* enemy, size_t pathCount, TerrainType terrainType) {
+							int n = enemy->GetUnitIndex() >= 0 ? enemy->GetUnitIndex() + 1 : 1;
+							char numBuf[16];
+							sprintf_s(numBuf, sizeof(numBuf), "Enemy Unit #%d", n);
+							AddLog({
+								{ numBuf, Color::Red },
+								{ " moved ", Color::White }, { std::to_string(pathCount), Color::White },
+								{ " tiles to ", Color::White }, { GetTerrainTypeName(terrainType), GetTerrainLogColor(terrainType) }, { ".", Color::White }
+							});
+						},
 						[this](Unit* attacker, Unit* defender) { PerformCombat(attacker, defender); });
 				}
 				else
 				{
 					// 모든 적이 행동 완료 → 플레이어 턴으로 전환
-					AddLog("ENEMY TURN ENDED");
+					AddLog({{ "ENEMY TURN ENDED", Color::Purple }});
 					isPlayerTurn = true;
 					turnCount++;
 					for (Unit* unit : playerUnits)
@@ -120,7 +130,7 @@ namespace FEClone
 					selectedUnit = nullptr;
 					reachableTiles.clear();
 				}
-				AddLog("PLAYER TURN ENDED");
+				AddLog({{ "PLAYER TURN ENDED", Color::Purple }});
 			}
 		}
 	}
@@ -273,6 +283,21 @@ namespace FEClone
 		return (dx == 0 && (dy == 1 || dy == -1)) || (dy == 0 && (dx == 1 || dx == -1));
 	}
 
+	Color BattleLevel::GetTerrainLogColor(TerrainType type)
+	{
+		switch (type)
+		{
+		case TerrainType::Plain:    return Color::White;
+		case TerrainType::Forest:  return Color::Green;
+		case TerrainType::Mountain: return Color::White;
+		case TerrainType::Castle:  return Color::Cyan;
+		case TerrainType::Village: return Color::Yellow;
+		case TerrainType::Water:   return Color::Blue;
+		case TerrainType::Wall:    return Color::White;
+		default: return Color::White;
+		}
+	}
+
 	void BattleLevel::PerformCombat(Unit* attacker, Unit* defender)
 	{
 		if (!attacker || !defender || !attacker->IsAlive() || !defender->IsAlive())
@@ -287,16 +312,40 @@ namespace FEClone
 
 		defender->TakeDamage(totalDamage);
 
-		// 로그: "Unit #1 dealt 3 damage to Enemy Unit #3." / "Enemy Unit #2 dealt 2 damage to Unit #1."
-		char logBuf[96];
 		int attackerNum = attacker->GetUnitIndex() >= 0 ? attacker->GetUnitIndex() + 1 : 1;
 		int defenderNum = defender->GetUnitIndex() >= 0 ? defender->GetUnitIndex() + 1 : 1;
+		char numBuf[16];
 
-		if (attacker->GetFaction() == Faction::Player)
-			sprintf_s(logBuf, sizeof(logBuf), "Unit #%d dealt %d damage to Enemy Unit #%d.", attackerNum, totalDamage, defenderNum);
-		else
-			sprintf_s(logBuf, sizeof(logBuf), "Enemy Unit #%d dealt %d damage to Unit #%d.", attackerNum, totalDamage, defenderNum);
-		AddLog(logBuf);
+		// 플레이어 유닛 Cyan, 적 유닛 Red. 플레이어가 준 대미지 Green, 적이 준 대미지 Red.
+		for (int i = 0; i < hits; ++i)
+		{
+			std::vector<LogSegment> segments;
+			if (attacker->GetFaction() == Faction::Player)
+			{
+				sprintf_s(numBuf, sizeof(numBuf), "Unit #%d", attackerNum);
+				segments.push_back({ numBuf, Color::Cyan });
+				segments.push_back({ " dealt ", Color::White });
+				sprintf_s(numBuf, sizeof(numBuf), "%d", damagePerHit);
+				segments.push_back({ numBuf, Color::Green });
+				segments.push_back({ " damage to ", Color::White });
+				sprintf_s(numBuf, sizeof(numBuf), "Enemy Unit #%d", defenderNum);
+				segments.push_back({ numBuf, Color::Red });
+				segments.push_back({ ".", Color::White });
+			}
+			else
+			{
+				sprintf_s(numBuf, sizeof(numBuf), "Enemy Unit #%d", attackerNum);
+				segments.push_back({ numBuf, Color::Red });
+				segments.push_back({ " dealt ", Color::White });
+				sprintf_s(numBuf, sizeof(numBuf), "%d", damagePerHit);
+				segments.push_back({ numBuf, Color::Red });
+				segments.push_back({ " damage to ", Color::White });
+				sprintf_s(numBuf, sizeof(numBuf), "Unit #%d", defenderNum);
+				segments.push_back({ numBuf, Color::Cyan });
+				segments.push_back({ ".", Color::White });
+			}
+			AddLog(segments);
+		}
 
 		if (!defender->IsAlive())
 		{
@@ -431,11 +480,17 @@ namespace FEClone
 					selectedUnit->SetPath(path);
 					Tile* newTile = grid->GetTile(dest);
 					if (newTile) newTile->SetHasUnit(true);
-					char logBuf[80];
 					int unitNum = selectedUnit->GetUnitIndex() >= 0 ? selectedUnit->GetUnitIndex() + 1 : 1;
-					const char* terrainName = GetTerrainTypeName(newTile ? newTile->GetTerrainType() : TerrainType::Plain);
-					sprintf_s(logBuf, sizeof(logBuf), "Unit #%d moved %zu tiles to %s.", unitNum, path.size(), terrainName);
-					AddLog(logBuf);
+					TerrainType terrainType = newTile ? newTile->GetTerrainType() : TerrainType::Plain;
+					const char* terrainName = GetTerrainTypeName(terrainType);
+					Color terrainColor = newTile ? newTile->GetDisplayColor() : GetTerrainLogColor(terrainType);
+					char numBuf[16];
+					sprintf_s(numBuf, sizeof(numBuf), "Unit #%d", unitNum);
+					AddLog({
+						{ numBuf, Color::Cyan },
+						{ " moved ", Color::White }, { std::to_string(path.size()), Color::White },
+						{ " tiles to ", Color::White }, { terrainName, terrainColor }, { ".", Color::White }
+					});
 					unitPendingAttack = selectedUnit;
 					attackTarget = clickedEnemy;
 					selectedUnit = nullptr;
@@ -465,10 +520,16 @@ namespace FEClone
 		if (newTile) newTile->SetHasUnit(true);
 		{
 			int unitNum = selectedUnit->GetUnitIndex() >= 0 ? selectedUnit->GetUnitIndex() + 1 : 1;
-			const char* terrainName = GetTerrainTypeName(newTile ? newTile->GetTerrainType() : TerrainType::Plain);
-			char logBuf[80];
-			sprintf_s(logBuf, sizeof(logBuf), "Unit #%d moved %zu tiles to %s.", unitNum, path.size(), terrainName);
-			AddLog(logBuf);
+			TerrainType terrainType = newTile ? newTile->GetTerrainType() : TerrainType::Plain;
+			const char* terrainName = GetTerrainTypeName(terrainType);
+			Color terrainColor = newTile ? newTile->GetDisplayColor() : GetTerrainLogColor(terrainType);
+			char numBuf[16];
+			sprintf_s(numBuf, sizeof(numBuf), "Unit #%d", unitNum);
+			AddLog({
+				{ numBuf, Color::Cyan },
+				{ " moved ", Color::White }, { std::to_string(path.size()), Color::White },
+				{ " tiles to ", Color::White }, { terrainName, terrainColor }, { ".", Color::White }
+			});
 		}
 		selectedUnit = nullptr;
 		reachableTiles.clear();
@@ -656,12 +717,11 @@ namespace FEClone
 		Renderer::Get().Submit("--------------------", Vector2(0, separatorY), Color::White, 10);
 	}
 
-	// 이벤트 로그 패널 (유닛 정보 오른쪽). 로그 메시지는 줄 단위로 감싸서 전체 표시.
-	// Submit()은 포인터만 저장하므로, 래핑된 줄은 wrappedLogLines에 보관해 Draw() 완료까지 수명 유지.
+	// 이벤트 로그 패널 (유닛 정보 오른쪽). 세그먼트별 색상 적용, 줄 단위 래핑.
 	void BattleLevel::DrawLogPanel()
 	{
 		int panelX = (grid != nullptr) ? grid->GetWidth() * 2 + 6 : 37;
-		int logX = panelX + 20;  // UNIT INFO 패널 오른쪽에 인접
+		int logX = panelX + 20;
 		int logY = 0;
 
 		Renderer::Get().Submit("======================", Vector2(logX, logY), Color::White, 10);
@@ -670,32 +730,53 @@ namespace FEClone
 		logY += 4;
 
 		wrappedLogLines.clear();
-		const int wrapWidth = 48;  // 한 줄 최대 문자 수 (창 너비에 맞춤)
-		for (const std::string& msg : eventLog)
+		const int wrapWidth = 48;
+		for (const std::vector<LogSegment>& entry : eventLog)
 		{
-			if (msg.empty())
-				continue;
-			size_t pos = 0;
-			while (pos < msg.length())
+			std::vector<LogSegment> currentLine;
+			int currentLen = 0;
+			for (const LogSegment& seg : entry)
 			{
-				size_t remain = msg.length() - pos;
-				size_t len = remain > static_cast<size_t>(wrapWidth)
-					? static_cast<size_t>(wrapWidth) : remain;
-				// 줄 끝 근처에서 공백이 있으면 그곳에서 줄바꿈
-				if (len == static_cast<size_t>(wrapWidth) && pos + len < msg.length())
+				std::string text = seg.first;
+				Color color = seg.second;
+				size_t pos = 0;
+				while (pos < text.size())
 				{
-					size_t lastSpace = msg.rfind(' ', pos + len);
-					if (lastSpace != std::string::npos && lastSpace >= pos)
-						len = lastSpace - pos + 1;
+					int spaceLeft = wrapWidth - currentLen;
+					size_t take = (spaceLeft <= 0 || static_cast<size_t>(spaceLeft) > text.size() - pos)
+						? text.size() - pos
+						: static_cast<size_t>(spaceLeft);
+					if (take == 0)
+					{
+						wrappedLogLines.push_back(currentLine);
+						currentLine.clear();
+						currentLen = 0;
+						continue;
+					}
+					std::string chunk = text.substr(pos, take);
+					currentLine.push_back({ chunk, color });
+					currentLen += static_cast<int>(chunk.size());
+					pos += take;
+					if (currentLen >= wrapWidth)
+					{
+						wrappedLogLines.push_back(currentLine);
+						currentLine.clear();
+						currentLen = 0;
+					}
 				}
-				wrappedLogLines.push_back(msg.substr(pos, len));
-				pos += len;
-				while (pos < msg.length() && msg[pos] == ' ')
-					pos++;
 			}
+			if (!currentLine.empty())
+				wrappedLogLines.push_back(currentLine);
 		}
 		for (size_t i = 0; i < wrappedLogLines.size(); ++i)
-			Renderer::Get().Submit(wrappedLogLines[i].c_str(), Vector2(logX, logY + static_cast<int>(i)), Color::White, 10);
+		{
+			int x = 0;
+			for (const LogSegment& seg : wrappedLogLines[i])
+			{
+				Renderer::Get().Submit(seg.first.c_str(), Vector2(logX + x, logY + static_cast<int>(i)), seg.second, 10);
+				x += static_cast<int>(seg.first.size());
+			}
+		}
 	}
 
 	// 이벤트 로그 추가 (최근 20개 유지)
@@ -703,7 +784,16 @@ namespace FEClone
 	{
 		if (message == nullptr || message[0] == '\0')
 			return;
-		eventLog.push_back(message);
+		eventLog.push_back({{ std::string(message), Color::White }});
+		while (eventLog.size() > static_cast<size_t>(kMaxEventLogEntries))
+			eventLog.pop_front();
+	}
+
+	void BattleLevel::AddLog(const std::vector<LogSegment>& segments)
+	{
+		if (segments.empty())
+			return;
+		eventLog.push_back(segments);
 		while (eventLog.size() > static_cast<size_t>(kMaxEventLogEntries))
 			eventLog.pop_front();
 	}
@@ -789,7 +879,7 @@ namespace FEClone
 			else
 			{
 				// 플레이어가 Space로 턴 종료 → 적 턴 시작
-				AddLog("PLAYER TURN FORCE ENDED");
+				AddLog({{ "PLAYER TURN FORCE ENDED", Color::Purple }});
 				for (Unit* unit : enemyUnits)
 				{
 					unit->ResetTurn();

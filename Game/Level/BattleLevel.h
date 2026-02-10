@@ -6,9 +6,11 @@
 #include "System/MovementCalculator.h"
 #include "Algorithm/NavigationSystem.h"
 #include "AI/EnemyAI.h"
+#include "Math/Color.h"
 #include <vector>
 #include <deque>
 #include <string>
+#include <utility>
 
 namespace FEClone
 {
@@ -53,6 +55,7 @@ namespace FEClone
 
 	// 이벤트 로그 추가 (최근 20개 유지)
 	void AddLog(const char* message);
+	void AddLog(const std::vector<std::pair<std::string, Color>>& segments);
 
 	// 키보드 툴팁 (하단)
 	void DrawKeyboardTooltip();
@@ -67,6 +70,9 @@ namespace FEClone
 
 	// 인접 여부 (4방향)
 	static bool IsAdjacent(const Vector2& a, const Vector2& b);
+
+	// 지형 타입별 로그 색상 (맵 표시와 동일)
+	static Color GetTerrainLogColor(TerrainType type);
 
 	// 전투 실행 (attacker -> defender), 로그 및 사망 처리
 	void PerformCombat(Unit* attacker, Unit* defender);
@@ -97,11 +103,12 @@ private:
 	// UI 버퍼 (렌더링 시 포인터 저장용)
 	char uiBuffers[16][64];                     // 16개의 UI 텍스트 버퍼 (terrain info 추가)
 
-	// 이벤트 로그 (최근 20개)
+	// 이벤트 로그 (최근 20개). 각 항목 = (문자열, 색상) 세그먼트 목록
 	static const int kMaxEventLogEntries = 20;
-	std::deque<std::string> eventLog;
+	using LogSegment = std::pair<std::string, Color>;
+	std::deque<std::vector<LogSegment>> eventLog;
 
-	// 래핑된 로그 줄 (Submit에 넘기는 포인터가 이 수명 동안 유효해야 함)
-	std::vector<std::string> wrappedLogLines;
+	// 래핑된 로그 줄 (Draw 완료까지 수명 유지)
+	std::vector<std::vector<LogSegment>> wrappedLogLines;
 	};
 }

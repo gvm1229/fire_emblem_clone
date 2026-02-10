@@ -25,6 +25,7 @@ namespace FEClone
 		MovementCalculator& movementCalculator,
 		NavigationSystem& navigationSystem,
 		std::function<void(const char*)> onLog,
+		std::function<void(Unit* enemy, size_t pathCount, TerrainType terrainType)> onEnemyMoved,
 		std::function<void(Unit* attacker, Unit* defender)> performCombat)
 	{
 		const Vector2 enemyPos = enemy->GetGridPosition();
@@ -137,8 +138,13 @@ namespace FEClone
 				newTile->SetHasUnit(true);
 			}
 
-			// 로그: Enemy moved X tiles to Terrain
-			if (onLog)
+			// 로그: Enemy Unit #N moved X tiles to Terrain (onEnemyMoved) 또는 단순 메시지 (onLog)
+			if (onEnemyMoved)
+			{
+				TerrainType terrainType = newTile ? newTile->GetTerrainType() : TerrainType::Plain;
+				onEnemyMoved(enemy, path.size(), terrainType);
+			}
+			else if (onLog)
 			{
 				const char* terrainName = GetTerrainTypeName(newTile ? newTile->GetTerrainType() : TerrainType::Plain);
 				char buf[80];
