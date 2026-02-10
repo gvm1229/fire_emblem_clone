@@ -51,7 +51,7 @@ namespace FEClone
 	// 이벤트 로그 패널 (유닛 정보 오른쪽)
 	void DrawLogPanel();
 
-	// 이벤트 로그 추가 (최근 10개 유지)
+	// 이벤트 로그 추가 (최근 20개 유지)
 	void AddLog(const char* message);
 
 	// 키보드 툴팁 (하단)
@@ -79,8 +79,8 @@ private:
 	// UI 버퍼 (렌더링 시 포인터 저장용)
 	char uiBuffers[16][64];                     // 16개의 UI 텍스트 버퍼 (terrain info 추가)
 
-	// 이벤트 로그 (최근 10개)
-	static const int kMaxEventLogEntries = 10;
+	// 이벤트 로그 (최근 20개)
+	static const int kMaxEventLogEntries = 20;
 	std::deque<std::string> eventLog;
 
 	// 래핑된 로그 줄 (Submit에 넘기는 포인터가 이 수명 동안 유효해야 함)

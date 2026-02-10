@@ -439,7 +439,7 @@ namespace FEClone
 			// 유닛 인덱스 표시
 			if (unitClass == UnitClass::Lord)
 			{
-				sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "Unit: #%d (Player Unit)", selectedUnit->GetUnitIndex() + 1);
+				sprintf_s(uiBuffers[1], sizeof(uiBuffers[1]), "Unit: #%d (Player)", selectedUnit->GetUnitIndex() + 1);
 			}
 			else
 			{
@@ -576,7 +576,7 @@ namespace FEClone
 			Renderer::Get().Submit(wrappedLogLines[i].c_str(), Vector2(logX, logY + static_cast<int>(i)), Color::White, 10);
 	}
 
-	// 이벤트 로그 추가 (최근 10개 유지)
+	// 이벤트 로그 추가 (최근 20개 유지)
 	void BattleLevel::AddLog(const char* message)
 	{
 		if (message == nullptr || message[0] == '\0')
