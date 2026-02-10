@@ -59,6 +59,9 @@ namespace FEClone
 		void AddLog(const char* message);
 		void AddLog(const std::vector<std::pair<std::string, Color>>& segments);
 
+		// 종료 조건 표시 (맵과 툴팁 사이)
+		void DrawEndConditions();
+
 		// 키보드 툴팁 (하단)
 		void DrawKeyboardTooltip();
 
@@ -82,6 +85,10 @@ namespace FEClone
 		// 이동 후 공격 대기: 이동 완료 시 공격 실행
 		void ProcessPendingAttackAfterMove();
 
+		// 종료 조건 검사 및 게임 오버 처리
+		void CheckEndConditions();
+		void TriggerGameOver(Faction winner);
+
 	private:
 		Grid* grid;                                 // 맵 그리드
 		std::vector<Unit*> playerUnits;             // 플레이어 유닛 목록
@@ -102,6 +109,10 @@ namespace FEClone
 		// 턴 관리
 		bool isPlayerTurn;
 		int turnCount;
+
+		// 게임 종료 (true면 맵 정리 후 승자 표시)
+		bool gameOver = false;
+		Faction gameOverWinner = Faction::Player;
 
 		// UI 버퍼 (렌더링 시 포인터 저장용)
 		char uiBuffers[16][64];                     // 16개의 UI 텍스트 버퍼 (terrain info 추가)

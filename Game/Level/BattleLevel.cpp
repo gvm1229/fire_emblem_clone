@@ -39,6 +39,7 @@ namespace FEClone
 	void BattleLevel::Tick(float deltaTime)
 	{
 		Level::Tick(deltaTime);
+		if (gameOver) return;
 
 		// 플레이어 턴: 이동 후 공격 대기 처리
 		if (isPlayerTurn)
@@ -139,37 +140,56 @@ namespace FEClone
 	// Draw: 렌더링
 	void BattleLevel::Draw()
 	{
-		// 적 유닛 색상: 적 턴일 때만 Done을 보라색으로, 플레이어 턴에는 항상 빨간색
-		for (Unit* unit : enemyUnits)
+		// 게임 종료가 아니면 적 유닛 색상 갱신 (적 턴일 때만 Done을 보라색으로)
+		if (!gameOver)
 		{
-			unit->SetDisplayAsEnemyTurn(!isPlayerTurn);
+			for (Unit* unit : enemyUnits)
+			{
+				unit->SetDisplayAsEnemyTurn(!isPlayerTurn);
+			}
 		}
 
 		// 그리드 렌더링
 		DrawGrid();
 
-		// 이동 가능 범위 하이라이트
+		// 이동 가능 범위 하이라이트 (게임 종료 시에는 유닛 없음)
 		if (selectedUnit != nullptr)
 		{
 			DrawMovementRange();
 		}
 
-		// 액터(유닛) 렌더링
-		Level::Draw();
+		// 액터(유닛) 렌더링 (게임 종료 시에는 생략하여 파괴 대기 중인 유닛 미표시)
+		if (!gameOver)
+			Level::Draw();
 
-	// 스탯 UI 패널
-	DrawStatsPanel();
-
-	// 이벤트 로그 패널
-	DrawLogPanel();
-
-	// 키보드 툴팁
-	DrawKeyboardTooltip();
-
-	// 턴 정보 표시 (클래스 멤버 버퍼 사용)
-	const char* phaseStr = isPlayerTurn ? "PLAYER" : "ENEMY";
-	sprintf_s(uiBuffers[0], sizeof(uiBuffers[0]), "Turn:%d Phase:%s", turnCount, phaseStr);
-	Renderer::Get().Submit(uiBuffers[0], Vector2(0, 0), Color::White, 10);
+		if (gameOver)
+		{
+			// 승리 진영 문구를 맵 중앙에 표시 (진영별 색상)
+			int w = grid != nullptr ? grid->GetWidth() : 15;
+			int h = grid != nullptr ? grid->GetHeight() : 15;
+			int mapCenterX = (1 + w * 2) / 2;
+			int mapCenterY = (1 + h * 2) / 2;
+			const char* msg = (gameOverWinner == Faction::Player) ? "PLAYER VICTORY" : "ENEMY VICTORY";
+			Color msgColor = (gameOverWinner == Faction::Player) ? Color::Cyan : Color::Red;
+			int len = 0;
+			while (msg[len]) ++len;
+			Renderer::Get().Submit(msg, Vector2(mapCenterX - len / 2, mapCenterY), msgColor, 15);
+		}
+		else
+		{
+			// 스탯 UI 패널
+			DrawStatsPanel();
+			// 이벤트 로그 패널
+			DrawLogPanel();
+			// 종료 조건 (맵과 툴팁 사이)
+			DrawEndConditions();
+			// 키보드 툴팁
+			DrawKeyboardTooltip();
+			// 턴 정보 표시
+			const char* phaseStr = isPlayerTurn ? "PLAYER" : "ENEMY";
+			sprintf_s(uiBuffers[0], sizeof(uiBuffers[0]), "Turn:%d Phase:%s", turnCount, phaseStr);
+			Renderer::Get().Submit(uiBuffers[0], Vector2(0, 0), Color::White, 10);
+		}
 	}
 
 	// 맵 로딩 (간단한 텍스트 파일 형식)
@@ -383,6 +403,78 @@ namespace FEClone
 				}
 			}
 			defender->Destroy();
+			CheckEndConditions();
+		}
+	}
+
+	void BattleLevel::CheckEndConditions()
+	{
+		if (gameOver) return;
+
+		// 아군 패배: 아군 유닛 전멸 또는 로드 전투 불능
+		bool playerDefeated = playerUnits.empty();
+		if (!playerDefeated)
+		{
+			bool lordAlive = false;
+			for (Unit* u : playerUnits)
+			{
+				if (u->IsAlive() && u->GetUnitClass() == UnitClass::Lord)
+				{
+					lordAlive = true;
+					break;
+				}
+			}
+			playerDefeated = !lordAlive;
+		}
+		if (playerDefeated)
+		{
+			TriggerGameOver(Faction::Enemy);
+			return;
+		}
+
+		// 적군 패배: 적 유닛 전멸
+		if (enemyUnits.empty())
+		{
+			TriggerGameOver(Faction::Player);
+		}
+	}
+
+	void BattleLevel::TriggerGameOver(Faction winner)
+	{
+		gameOver = true;
+		gameOverWinner = winner;
+
+		// 그리드에서 모든 유닛 제거 후 파괴
+		for (Unit* u : playerUnits)
+		{
+			Tile* t = grid->GetTile(u->GetGridPosition());
+			if (t) t->SetHasUnit(false);
+			u->Destroy();
+		}
+		for (Unit* u : enemyUnits)
+		{
+			Tile* t = grid->GetTile(u->GetGridPosition());
+			if (t) t->SetHasUnit(false);
+			u->Destroy();
+		}
+		playerUnits.clear();
+		enemyUnits.clear();
+
+		selectedUnit = nullptr;
+		selectedEnemy = nullptr;
+		reachableTiles.clear();
+		unitPendingAttack = nullptr;
+		attackTarget = nullptr;
+
+		// 벽을 제외한 맵 타일을 평지로 초기화
+		for (int y = 0; y < grid->GetHeight(); ++y)
+		{
+			for (int x = 0; x < grid->GetWidth(); ++x)
+			{
+				Tile* t = grid->GetTile(x, y);
+				if (t && t->GetTerrainType() != TerrainType::Wall)
+					grid->SetTile(x, y, TerrainType::Plain);
+			}
 		}
 	}
 
@@ -394,6 +486,7 @@ namespace FEClone
 		if (unitPendingAttack->IsMoving()) return;
 
 		PerformCombat(unitPendingAttack, attackTarget);
+		if (gameOver) return;  // 게임 종료 시 더 이상 접근하지 않음 (TriggerGameOver에서 이미 nullptr 처리됨)
 		unitPendingAttack->EndTurn();
 		unitPendingAttack = nullptr;
 		attackTarget = nullptr;
@@ -450,7 +543,7 @@ namespace FEClone
 		{
 			if (unit->GetUnitIndex() == index && unit->IsAlive())
 			{
-				// Clear player unit selection (viewing enemy only)
+				// 적 보기 선택 시 플레이어 유닛 선택 해제
 				if (selectedUnit != nullptr)
 				{
 					selectedUnit->SetState(UnitState::Idle);
@@ -484,6 +577,7 @@ namespace FEClone
 			if (IsAdjacent(selectedUnit->GetGridPosition(), gridPos))
 			{
 				PerformCombat(selectedUnit, clickedEnemy);
+				if (gameOver) return;  // 게임 종료 시 선택 해제 등은 이미 TriggerGameOver에서 처리됨
 				selectedUnit->EndTurn();
 				selectedUnit = nullptr;
 				reachableTiles.clear();
@@ -598,7 +692,7 @@ namespace FEClone
 					int baseX = x * 2 + 1;
 					int baseY = y * 2 + 1;
 
-					// Render Priority: 7 (Plain terrain)
+					// 렌더 우선순위 7 (평지)
 					if (tile->GetTerrainType() == TerrainType::Plain)
 					{
 						Renderer::Get().Submit(topLeft, Vector2(baseX, baseY), tile->GetDisplayColor(), 7);
@@ -606,7 +700,7 @@ namespace FEClone
 						Renderer::Get().Submit(bottomLeft, Vector2(baseX, baseY + 1), tile->GetDisplayColor(), 7);
 						Renderer::Get().Submit(bottomRight, Vector2(baseX + 1, baseY + 1), tile->GetDisplayColor(), 7);
 					}
-					else // Render Priority: 9 (Terrain)
+					else // 렌더 우선순위 9 (지형)
 					{
 						Renderer::Get().Submit(topLeft, Vector2(baseX, baseY), tile->GetDisplayColor(), 9);
 						Renderer::Get().Submit(topRight, Vector2(baseX + 1, baseY), tile->GetDisplayColor(), 9);
@@ -627,7 +721,7 @@ namespace FEClone
 			int baseX = tile.x * 2 + 1;
 			int baseY = tile.y * 2 + 1;
 
-			// Render Priority: 8 (Tile highlights - below units and non-plain terrains)
+			// 렌더 우선순위 8 (이동 가능 타일 하이라이트)
 			Color highlightColor = Color::Cyan;
 
 			// 2x2로 하이라이트 렌더링
@@ -841,12 +935,20 @@ namespace FEClone
 			eventLog.pop_front();
 	}
 
+	// 종료 조건 표시 (맵과 툴팁 사이, 진영별 색상)
+	void BattleLevel::DrawEndConditions()
+	{
+		int separatorY = (grid != nullptr) ? grid->GetHeight() * 2 + 2 : 32;
+		Renderer::Get().Submit("Player loses: All units defeated OR Lord defeated", Vector2(0, separatorY + 1), Color::Cyan, 10);
+		Renderer::Get().Submit("Enemy loses: All units defeated", Vector2(0, separatorY + 2), Color::Red, 10);
+	}
+
 	// 키보드 툴팁 (하단)
 	void BattleLevel::DrawKeyboardTooltip()
 	{
-		// 맵 아래 충분히 떨어진 위치 (구분선 + 3칸) - 2x2 그리드 고려
+		// 맵 아래 구분선 + 종료 조건 2줄 + 여백 1줄
 		int separatorY = (grid != nullptr) ? grid->GetHeight() * 2 + 2 : 32;
-		int tooltipY = separatorY + 3;  // 구분선 아래 3칸
+		int tooltipY = separatorY + 4;
 		int col1X = 0;  // 첫 번째 열
 		int col2X = 28; // 두 번째 열
 
@@ -877,7 +979,7 @@ namespace FEClone
 		// 0번 키 = 열 번째 유닛 (인덱스 9)
 		for (int i = 1; i <= 9; ++i)
 		{
-			// VK_1 ~ VK_9 (0x31 ~ 0x39)
+			// VK_1 ~ VK_9 (0x31 ~ 0x39) 숫자 키
 			int vkCode = 0x30 + i;
 			if (Input::Get().GetKeyDown(vkCode))
 			{
@@ -895,7 +997,7 @@ namespace FEClone
 
 		// Z,X,C,V,B,N,M, Comma, Period, Slash: 적 유닛 선택 (스탯 보기, 인덱스 0~9)
 		{
-			static const int enemyKeys[10] = { 0x5A, 0x58, 0x43, 0x56, 0x42, 0x4E, 0x4D, 0xBC, 0xBE, 0xBF }; // Z,X,C,V,B,N,M, ,, ., /
+			static const int enemyKeys[10] = { 0x5A, 0x58, 0x43, 0x56, 0x42, 0x4E, 0x4D, 0xBC, 0xBE, 0xBF }; // Z,X,C,V,B,N,M,쉼표,마침표,슬래시
 			for (int i = 0; i < 10; ++i)
 			{
 				if (Input::Get().GetKeyDown(enemyKeys[i]))
