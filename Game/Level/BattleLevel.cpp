@@ -74,6 +74,7 @@ namespace FEClone
 				else
 				{
 					// 모든 적이 행동 완료 → 플레이어 턴으로 전환
+					AddLog("ENEMY TURN ENDED");
 					isPlayerTurn = true;
 					turnCount++;
 					for (Unit* unit : playerUnits)
@@ -665,7 +666,8 @@ namespace FEClone
 			}
 			else
 			{
-				// 적 턴 시작: 모든 적 유닛 턴 초기화
+				// 플레이어가 Space로 턴 종료 → 적 턴 시작
+				AddLog("PLAYER TURN FORCE ENDED");
 				for (Unit* unit : enemyUnits)
 				{
 					unit->ResetTurn();
