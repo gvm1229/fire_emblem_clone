@@ -79,9 +79,13 @@ namespace FEClone
 		// 적 턴일 때만 Done 상태를 보라색으로 표시 (플레이어 턴에는 항상 빨간색)
 		void SetDisplayAsEnemyTurn(bool value) { displayAsEnemyTurn = value; }
 
-		// 숫자 키 인덱스 (플레이어 유닛만 사용: 0~9)
+		// 숫자 키 인덱스 (플레이어/적 유닛 번호: 0~9, 0 = 10번째)
 		int GetUnitIndex() const { return unitIndex; }
 		void SetUnitIndex(int index) { unitIndex = index; }
+
+		// 전투: 피해 적용, 생존 여부
+		void TakeDamage(int damage);
+		bool IsAlive() const { return stats.currentHP > 0; }
 
 	private:
 		UnitStats stats;                // 유닛 스탯
@@ -97,6 +101,7 @@ namespace FEClone
 
 		// 렌더링 정보 (멀티라인 ASCII 대비)
 		char displayStr[8];                // UTF-8 문자열 (최대 4바이트 + null)
+		char unitNumberDisplay[2];         // 우하단 번호용 버퍼 (Submit에 유효한 포인터 전달)
 		int unitIndex;                     // 숫자 키 인덱스 (-1이면 미할당)
 		bool displayAsEnemyTurn = false;   // true면 적 턴으로 표시 (적 유닛 Done 시 보라색)
 	};

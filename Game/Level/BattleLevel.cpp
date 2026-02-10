@@ -39,6 +39,10 @@ namespace FEClone
 	{
 		Level::Tick(deltaTime);
 
+		// 플레이어 턴: 이동 후 공격 대기 처리
+		if (isPlayerTurn)
+			ProcessPendingAttackAfterMove();
+
 		// 적 턴: AI 처리
 		if (!isPlayerTurn)
 		{
@@ -69,7 +73,8 @@ namespace FEClone
 				if (nextEnemy != nullptr)
 				{
 					enemyAI.RunAI(nextEnemy, playerUnits, grid, movementCalculator, navigationSystem,
-						[this](const char* msg) { AddLog(msg); });
+						[this](const char* msg) { AddLog(msg); },
+						[this](Unit* attacker, Unit* defender) { PerformCombat(attacker, defender); });
 				}
 				else
 				{
@@ -103,6 +108,8 @@ namespace FEClone
 			if (allPlayerUnitsDone && !playerUnits.empty())
 			{
 				isPlayerTurn = false;
+				unitPendingAttack = nullptr;
+				attackTarget = nullptr;
 				for (Unit* unit : enemyUnits)
 				{
 					unit->ResetTurn();
@@ -232,6 +239,100 @@ namespace FEClone
 		AddNewActor(unit);
 	}
 
+	Unit* BattleLevel::GetUnitAt(const Vector2& gridPos) const
+	{
+		Unit* u = GetPlayerUnitAt(gridPos);
+		if (u) return u;
+		return GetEnemyAt(gridPos);
+	}
+
+	Unit* BattleLevel::GetEnemyAt(const Vector2& gridPos) const
+	{
+		for (Unit* unit : enemyUnits)
+		{
+			if (unit->IsAlive() && unit->GetGridPosition() == gridPos)
+				return unit;
+		}
+		return nullptr;
+	}
+
+	Unit* BattleLevel::GetPlayerUnitAt(const Vector2& gridPos) const
+	{
+		for (Unit* unit : playerUnits)
+		{
+			if (unit->IsAlive() && unit->GetGridPosition() == gridPos)
+				return unit;
+		}
+		return nullptr;
+	}
+
+	bool BattleLevel::IsAdjacent(const Vector2& a, const Vector2& b)
+	{
+		int dx = a.x - b.x;
+		int dy = a.y - b.y;
+		return (dx == 0 && (dy == 1 || dy == -1)) || (dy == 0 && (dx == 1 || dx == -1));
+	}
+
+	void BattleLevel::PerformCombat(Unit* attacker, Unit* defender)
+	{
+		if (!attacker || !defender || !attacker->IsAlive() || !defender->IsAlive())
+			return;
+
+		int atk = attacker->GetStats().strength;
+		int def = defender->GetStats().defense;
+		int damagePerHit = (atk - def > 0) ? (atk - def) : 0;
+		bool doubleHit = attacker->GetStats().speed > defender->GetStats().speed;
+		int hits = doubleHit ? 2 : 1;
+		int totalDamage = damagePerHit * hits;
+
+		defender->TakeDamage(totalDamage);
+
+		// 로그: "Unit #1 dealt 3 damage to Enemy Unit #3." / "Enemy Unit #2 dealt 2 damage to Unit #1."
+		char logBuf[96];
+		int attackerNum = attacker->GetUnitIndex() >= 0 ? attacker->GetUnitIndex() + 1 : 1;
+		int defenderNum = defender->GetUnitIndex() >= 0 ? defender->GetUnitIndex() + 1 : 1;
+
+		if (attacker->GetFaction() == Faction::Player)
+			sprintf_s(logBuf, sizeof(logBuf), "Unit #%d dealt %d damage to Enemy Unit #%d.", attackerNum, totalDamage, defenderNum);
+		else
+			sprintf_s(logBuf, sizeof(logBuf), "Enemy Unit #%d dealt %d damage to Unit #%d.", attackerNum, totalDamage, defenderNum);
+		AddLog(logBuf);
+
+		if (!defender->IsAlive())
+		{
+			Tile* tile = grid->GetTile(defender->GetGridPosition());
+			if (tile) tile->SetHasUnit(false);
+			if (defender->GetFaction() == Faction::Player)
+			{
+				for (auto it = playerUnits.begin(); it != playerUnits.end(); ++it)
+				{
+					if (*it == defender) { playerUnits.erase(it); break; }
+				}
+			}
+			else
+			{
+				for (auto it = enemyUnits.begin(); it != enemyUnits.end(); ++it)
+				{
+					if (*it == defender) { enemyUnits.erase(it); break; }
+				}
+			}
+			defender->Destroy();
+		}
+	}
+
+	void BattleLevel::ProcessPendingAttackAfterMove()
+	{
+		if (!unitPendingAttack || !attackTarget) return;
+		if (!unitPendingAttack->IsAlive() || !attackTarget->IsAlive()) { unitPendingAttack = nullptr; attackTarget = nullptr; return; }
+		if (unitPendingAttack->GetState() != UnitState::Done) return;
+		if (unitPendingAttack->IsMoving()) return;
+
+		PerformCombat(unitPendingAttack, attackTarget);
+		unitPendingAttack->EndTurn();
+		unitPendingAttack = nullptr;
+		attackTarget = nullptr;
+	}
+
 	// 숫자 키로 유닛 선택
 	void BattleLevel::SelectUnitByIndex(int index)
 	{
@@ -279,77 +380,98 @@ namespace FEClone
 	// 마우스 클릭 처리
 	void BattleLevel::OnMouseClick(const Vector2& mousePos)
 	{
-		// 화면 좌표를 그리드 좌표로 변환 (UI 공간 1칸 + 2x2 그리드 고려)
 		int gridX = (mousePos.x - 1) / 2;
 		int gridY = (mousePos.y - 1) / 2;
 		Vector2 gridPos(gridX, gridY);
 
-		// 유효한 그리드 위치인지 확인
 		if (!grid->IsValidPosition(gridPos))
-		{
 			return;
-		}
 
-		// 유닛이 선택되어 있으면 이동 시도
-		if (selectedUnit != nullptr)
+		if (selectedUnit == nullptr)
+			return;
+
+		Unit* clickedEnemy = GetEnemyAt(gridPos);
+
+		// 클릭한 곳에 적 유닛이 있으면 공격 (인접 시 즉시, 아니면 이동 후 공격)
+		if (clickedEnemy != nullptr)
 		{
-			// 클릭한 위치가 이동 가능한 범위인지 확인
-			bool isReachable = false;
-			for (const Vector2& tile : reachableTiles)
+			if (IsAdjacent(selectedUnit->GetGridPosition(), gridPos))
 			{
-				if (tile == gridPos)
-				{
-					isReachable = true;
-					break;
-				}
+				PerformCombat(selectedUnit, clickedEnemy);
+				selectedUnit->EndTurn();
+				selectedUnit = nullptr;
+				reachableTiles.clear();
+				return;
 			}
 
-			if (isReachable)
+			// 적에게 인접한 타일 중 이동 가능한 타일 찾기
+			static const Vector2 dirs[4] = { Vector2(0,-1), Vector2(1,0), Vector2(0,1), Vector2(-1,0) };
+			Vector2 dest(-1, -1);
+			for (int d = 0; d < 4; ++d)
 			{
-				// A*로 경로 찾기
+				Vector2 adj = gridPos + dirs[d];
+				if (!grid->IsValidPosition(adj) || !grid->IsWalkable(adj))
+					continue;
+				for (const Vector2& r : reachableTiles)
+				{
+					if (r == adj) { dest = adj; break; }
+				}
+				if (dest.x >= 0) break;
+			}
+
+			if (dest.x >= 0)
+			{
 				std::deque<Vector2> path;
 				std::vector<std::vector<bool>> navMap = grid->GenerateNavigationMap();
-				navigationSystem.FindPath(
-					selectedUnit->GetGridPosition(),
-					gridPos,
-					navMap,
-					&path
-				);
-
+				navigationSystem.FindPath(selectedUnit->GetGridPosition(), dest, navMap, &path);
 				if (!path.empty())
 				{
-					// 이전 위치 타일 업데이트
 					Tile* oldTile = grid->GetTile(selectedUnit->GetGridPosition());
-					if (oldTile != nullptr)
-					{
-						oldTile->SetHasUnit(false);
-					}
-
-					// 유닛 이동 시작 (경로 설정하면 상태가 Moving으로 변경됨)
+					if (oldTile) oldTile->SetHasUnit(false);
 					selectedUnit->SetPath(path);
-
-					// 새 위치 타일 업데이트 (목적지)
-					Tile* newTile = grid->GetTile(gridPos);
-					if (newTile != nullptr)
-					{
-						newTile->SetHasUnit(true);
-					}
-
-					// 로그: Unit #N moved X tiles to Terrain
-					{
-						int unitNum = selectedUnit->GetUnitIndex() >= 0 ? selectedUnit->GetUnitIndex() + 1 : 0;
-						const char* terrainName = GetTerrainTypeName(newTile ? newTile->GetTerrainType() : TerrainType::Plain);
-						char logBuf[80];
-						sprintf_s(logBuf, sizeof(logBuf), "Unit #%d moved %zu tiles to %s.", unitNum, path.size(), terrainName);
-						AddLog(logBuf);
-					}
-
-					// 선택 해제
+					Tile* newTile = grid->GetTile(dest);
+					if (newTile) newTile->SetHasUnit(true);
+					char logBuf[80];
+					int unitNum = selectedUnit->GetUnitIndex() >= 0 ? selectedUnit->GetUnitIndex() + 1 : 1;
+					const char* terrainName = GetTerrainTypeName(newTile ? newTile->GetTerrainType() : TerrainType::Plain);
+					sprintf_s(logBuf, sizeof(logBuf), "Unit #%d moved %zu tiles to %s.", unitNum, path.size(), terrainName);
+					AddLog(logBuf);
+					unitPendingAttack = selectedUnit;
+					attackTarget = clickedEnemy;
 					selectedUnit = nullptr;
 					reachableTiles.clear();
 				}
 			}
+			return;
 		}
+
+		// 빈 타일로 이동
+		bool isReachable = false;
+		for (const Vector2& tile : reachableTiles)
+		{
+			if (tile == gridPos) { isReachable = true; break; }
+		}
+		if (!isReachable) return;
+
+		std::deque<Vector2> path;
+		std::vector<std::vector<bool>> navMap = grid->GenerateNavigationMap();
+		navigationSystem.FindPath(selectedUnit->GetGridPosition(), gridPos, navMap, &path);
+		if (path.empty()) return;
+
+		Tile* oldTile = grid->GetTile(selectedUnit->GetGridPosition());
+		if (oldTile) oldTile->SetHasUnit(false);
+		selectedUnit->SetPath(path);
+		Tile* newTile = grid->GetTile(gridPos);
+		if (newTile) newTile->SetHasUnit(true);
+		{
+			int unitNum = selectedUnit->GetUnitIndex() >= 0 ? selectedUnit->GetUnitIndex() + 1 : 1;
+			const char* terrainName = GetTerrainTypeName(newTile ? newTile->GetTerrainType() : TerrainType::Plain);
+			char logBuf[80];
+			sprintf_s(logBuf, sizeof(logBuf), "Unit #%d moved %zu tiles to %s.", unitNum, path.size(), terrainName);
+			AddLog(logBuf);
+		}
+		selectedUnit = nullptr;
+		reachableTiles.clear();
 	}
 
 	// 그리드 렌더링 (멀티라인 ASCII - 2x2)

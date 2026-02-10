@@ -17,24 +17,29 @@ namespace FEClone
 	{
 	}
 
-	// 적 AI 실행: 플레이어 유닛에 인접한 타일로 이동 시도
+	// 적 AI 실행: 인접 시 공격, 아니면 플레이어 쪽으로 이동
 	void EnemyAI::RunAI(
 		Unit* enemy,
 		const std::vector<Unit*>& playerUnits,
 		Grid* grid,
 		MovementCalculator& movementCalculator,
 		NavigationSystem& navigationSystem,
-		std::function<void(const char*)> onLog)
+		std::function<void(const char*)> onLog,
+		std::function<void(Unit* attacker, Unit* defender)> performCombat)
 	{
-		// 이미 플레이어 유닛에 인접해 있으면 이동하지 않고 턴 종료
 		const Vector2 enemyPos = enemy->GetGridPosition();
+
+		// 플레이어 유닛에 인접해 있으면 공격 후 턴 종료
 		for (Unit* playerUnit : playerUnits)
 		{
+			if (!playerUnit->IsAlive()) continue;
 			const Vector2 playerPos = playerUnit->GetGridPosition();
 			int dx = enemyPos.x - playerPos.x;
 			int dy = enemyPos.y - playerPos.y;
 			if ((dx == 0 && (dy == 1 || dy == -1)) || (dy == 0 && (dx == 1 || dx == -1)))
 			{
+				if (performCombat)
+					performCombat(enemy, playerUnit);
 				enemy->EndTurn();
 				return;
 			}

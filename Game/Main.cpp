@@ -39,28 +39,25 @@ int main()
 		return 1;
 	}
 
-	// 플레이어 유닛 추가 (최대 10개, 숫자 키 0~9)
-	// 로드 (주인공)
+	// 플레이어 유닛 추가 (근접만: Lord, Cavalier, Soldier. 궁수/마법사는 데이터만 있고 미사용)
 	Unit* lord = new Unit(UnitClass::Lord);
 	battleLevel->AddUnit(lord, Vector2(1, 1), Faction::Player, 0);
 
-	// 기병
 	Unit* cavalier = new Unit(UnitClass::Cavalier);
 	battleLevel->AddUnit(cavalier, Vector2(3, 1), Faction::Player, 1);
 
-	// 궁수
-	Unit* archer = new Unit(UnitClass::Archer);
-	battleLevel->AddUnit(archer, Vector2(5, 1), Faction::Player, 2);
+	Unit* soldier = new Unit(UnitClass::Soldier);
+	battleLevel->AddUnit(soldier, Vector2(5, 1), Faction::Player, 2);
 
-	// 적 유닛 추가
+	// 적 유닛 추가 (근접만, 번호 부여)
 	Unit* enemySoldier1 = new Unit(UnitClass::Soldier);
-	battleLevel->AddUnit(enemySoldier1, Vector2(10, 10), Faction::Enemy);
+	battleLevel->AddUnit(enemySoldier1, Vector2(10, 10), Faction::Enemy, 0);
 
 	Unit* enemySoldier2 = new Unit(UnitClass::Soldier);
-	battleLevel->AddUnit(enemySoldier2, Vector2(11, 10), Faction::Enemy);
+	battleLevel->AddUnit(enemySoldier2, Vector2(11, 10), Faction::Enemy, 1);
 
-	Unit* enemyArcher = new Unit(UnitClass::Archer);
-	battleLevel->AddUnit(enemyArcher, Vector2(12, 10), Faction::Enemy);
+	Unit* enemySoldier3 = new Unit(UnitClass::Soldier);
+	battleLevel->AddUnit(enemySoldier3, Vector2(12, 10), Faction::Enemy, 2);
 
 	// 레벨 설정 및 실행
 	engine.SetNewLevel(battleLevel);

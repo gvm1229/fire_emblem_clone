@@ -120,3 +120,60 @@ while (pos < msg.length())
   - 멤버 변수 `wrappedLogLines` 추가.
 - **Game/Level/BattleLevel.cpp**  
   - `DrawLogPanel()` 에서 래핑된 줄을 `wrappedLogLines` 에 채운 뒤, 그 벡터의 `.c_str()` 만 Submit에 전달하도록 변경.
+
+---
+
+## 유닛 번호(맵 표시)가 깨져 보이는 현상 (해결됨)
+
+### 1. 현상
+
+맵 위 유닛을 2x2 문자 블록으로 그릴 때, **우하단 칸에 표시하는 유닛 번호**(1~9, 0)가 깨지거나 쓰레기 문자가 보이는 문제가 있었습니다.  
+(char와 int 변환 오류로 오해하기 쉬우나, 원인은 아래와 같습니다.)
+
+---
+
+### 2. 원인: 로그 패널과 같은 “댕글링 포인터”
+
+`Renderer::Submit(const char* text, ...)` 는 **포인터만** 저장하고, 실제 그리기는 나중에 `Renderer::Draw()` 에서 일괄 수행합니다.
+
+유닛 번호를 그릴 때 다음과 같이 **함수 안의 지역 변수** 버퍼를 넘기고 있었습니다.
+
+```cpp
+void Unit::Draw()
+{
+    // ...
+    char numberStr[2] = { '0', '\0' };   // ← 지역 변수 (Draw() 안에서만 유효)
+    if (useNumberInCorner)
+        numberStr[0] = (unitIndex == 9) ? '0' : static_cast<char>('1' + unitIndex);
+    // ...
+    Renderer::Get().Submit(numberStr, Vector2(...), color, 10);  // ← 주소만 저장
+}  // ← 함수가 끝나면 numberStr 소멸 → 그 주소는 댕글링 포인터
+```
+
+- `numberStr` 은 **Draw()가 끝날 때** 소멸합니다.
+- Submit 시점에는 유효한 문자열이 있지만, **실제로 그리는 시점**에는 그 메모리가 이미 없어져 있어, 렌더러가 읽을 때 쓰레기 값이 나와 번호가 깨져 보였습니다.
+
+즉, **char vs int 타입 문제가 아니라**, “잠깐만 유효한 지역 버퍼의 주소를 Submit에 넘겨서, 나중에 그릴 때는 이미 없어진 메모리를 가리키는 **댕글링 포인터**” 문제입니다.
+
+---
+
+### 3. 해결 방법
+
+Submit에 넘기는 문자열이 **실제로 그릴 때까지 유효하도록**, **유닛 객체의 멤버 변수**에 번호용 버퍼를 두고 그 주소를 넘깁니다.
+
+- **Unit.h**  
+  - `char unitNumberDisplay[2];` 멤버 추가. (유닛이 살아 있는 동안 유효.)
+- **Unit.cpp Draw()**  
+  - `numberStr` 대신 `unitNumberDisplay` 에 번호 문자를 채운 뒤,  
+  - `Renderer::Get().Submit(unitNumberDisplay, ...)` 로 전달.
+
+이렇게 하면 Submit이 저장하는 포인터가 **Unit 객체의 멤버**를 가리키므로, `Draw()` 가 끝난 뒤에도 그 주소는 유효하고, 렌더러가 그릴 때 올바른 문자가 표시됩니다.
+
+---
+
+### 4. 수정된 파일
+
+- **Game/Unit/Unit.h**  
+  - 멤버 변수 `unitNumberDisplay[2]` 추가.
+- **Game/Unit/Unit.cpp**  
+  - `Draw()` 에서 지역 버퍼 `numberStr` 제거, `unitNumberDisplay` 에 쓰고 그 포인터를 Submit에 전달.

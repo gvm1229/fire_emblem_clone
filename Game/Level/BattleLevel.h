@@ -60,6 +60,20 @@ namespace FEClone
 	// 입력 처리
 	void HandleInput();
 
+	// 그리드 위치의 유닛 반환 (플레이어/적)
+	Unit* GetUnitAt(const Vector2& gridPos) const;
+	Unit* GetEnemyAt(const Vector2& gridPos) const;
+	Unit* GetPlayerUnitAt(const Vector2& gridPos) const;
+
+	// 인접 여부 (4방향)
+	static bool IsAdjacent(const Vector2& a, const Vector2& b);
+
+	// 전투 실행 (attacker -> defender), 로그 및 사망 처리
+	void PerformCombat(Unit* attacker, Unit* defender);
+
+	// 이동 후 공격 대기: 이동 완료 시 공격 실행
+	void ProcessPendingAttackAfterMove();
+
 private:
 	Grid* grid;                                 // 맵 그리드
 	std::vector<Unit*> playerUnits;             // 플레이어 유닛 목록
@@ -67,6 +81,10 @@ private:
 
 	Unit* selectedUnit;                         // 현재 선택된 유닛
 	std::vector<Vector2> reachableTiles;        // 이동 가능한 타일 목록
+
+	// 이동 후 공격 (플레이어가 적을 클릭해 이동한 뒤 자동 공격)
+	Unit* unitPendingAttack = nullptr;
+	Unit* attackTarget = nullptr;
 
 	MovementCalculator movementCalculator;      // 이동 범위 계산기
 	NavigationSystem navigationSystem;          // 경로 탐색 시스템

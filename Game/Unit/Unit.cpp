@@ -62,26 +62,45 @@ Unit::Unit(UnitClass unitClass)
 		}
 	}
 
-// Draw: 유닛 렌더링 (2x2 멀티라인)
-void Unit::Draw()
-{
-	// Actor::Draw()는 호출하지 않음 (position 대신 gridPosition 사용)
+	// Draw: 유닛 렌더링 (2x2 멀티라인). Lord 제외하고 우하단에 유닛 번호 표시
+	void Unit::Draw()
+	{
+		// Actor::Draw()는 호출하지 않음 (position 대신 gridPosition 사용)
 
-	// 그리드 위치를 2x2 화면 좌표로 변환
-	int baseX = gridPosition.x * 2 + 1;
-	int baseY = gridPosition.y * 2 + 1;
+		int baseX = gridPosition.x * 2 + 1;
+		int baseY = gridPosition.y * 2 + 1;
 
-	// 유닛을 2x2로 렌더링 (중앙에 문자 표시)
-	// Render Priority: 10 (Unit - highest priority)
-	Color color = GetDisplayColor();
-	
-	// 상단
-	Renderer::Get().Submit(displayStr, Vector2(baseX, baseY), color, 10);
-	Renderer::Get().Submit(displayStr, Vector2(baseX + 1, baseY), color, 10);
-	// 하단
-	Renderer::Get().Submit(displayStr, Vector2(baseX, baseY + 1), color, 10);
-	Renderer::Get().Submit(displayStr, Vector2(baseX + 1, baseY + 1), color, 10);
-}
+		Color color = GetDisplayColor();
+		// Render Priority: 10 (Unit - highest priority)
+
+		// Lord는 4칸 모두 클래스 문자; 그 외는 우하단만 번호
+		bool useNumberInCorner = (unitClass != UnitClass::Lord && unitIndex >= 0);
+		unitNumberDisplay[0] = '0';
+		unitNumberDisplay[1] = '\0';
+		if (useNumberInCorner)
+		{
+			unitNumberDisplay[0] = (unitIndex == 9) ? '0' : static_cast<char>('1' + unitIndex);
+		}
+
+		// 상단
+		Renderer::Get().Submit(displayStr, Vector2(baseX, baseY), color, 10);
+		Renderer::Get().Submit(displayStr, Vector2(baseX + 1, baseY), color, 10);
+		// 하단 좌, 우하단
+		Renderer::Get().Submit(displayStr, Vector2(baseX, baseY + 1), color, 10);
+		if (useNumberInCorner)
+			Renderer::Get().Submit(unitNumberDisplay, Vector2(baseX + 1, baseY + 1), color, 10);
+		else
+			Renderer::Get().Submit(displayStr, Vector2(baseX + 1, baseY + 1), color, 10);
+	}
+
+	void Unit::TakeDamage(int damage)
+	{
+		if (damage <= 0)
+			return;
+		stats.currentHP -= damage;
+		if (stats.currentHP < 0)
+			stats.currentHP = 0;
+	}
 
 	// 이동 경로 설정
 	void Unit::SetPath(const std::deque<Vector2>& newPath)
