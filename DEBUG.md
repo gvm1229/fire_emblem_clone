@@ -180,6 +180,7 @@ Submit에 넘기는 문자열이 **실제로 그릴 때까지 유효하도록**,
 
 ---
 
+<<<<<<< Updated upstream
 ## 게임 종료 시 크래시 (해결됨)
 
 ### 1. 현상
@@ -243,3 +244,32 @@ Submit에 넘기는 문자열이 **실제로 그릴 때까지 유효하도록**,
   - `ProcessPendingAttackAfterMove()`: `PerformCombat()` 호출 직후 `if (gameOver) return;` 추가.  
   - `OnMouseClick()` (인접 적 공격 분기): `PerformCombat()` 호출 직후 `if (gameOver) return;` 추가.  
   - `Draw()`: `gameOver`일 때 적 유닛 루프 생략, `gameOver`일 때 `Level::Draw()` 생략.
+=======
+## 프로젝트 진행 중 겪었던 어려움 (요약)
+
+1. **콘솔 UTF-8/유니코드 출력**  
+   CP437·wchar_t 시도 시 문자가 깨짐. 해결: 문자열은 UTF-8 `char*`로 유지하고, Renderer에서 `MultiByteToWideChar`로 UTF-16 변환 후 `WriteConsoleOutputW` 사용. 콘솔 코드 페이지 및 가상 터미널 설정 필요.
+
+2. **유닛 스탯 패널 일부 미표시**  
+   `DrawStatsPanel`에서 지역 변수 버퍼 포인터를 `Renderer::Submit`에 넘기면, 프레임 종료 후 포인터가 무효화되어 깨진 문자열 출력. 해결: 클래스 멤버 `uiBuffers[12][64]`에 동적 텍스트 저장 후 포인터 전달.
+
+3. **마우스 클릭 시 유닛 미이동**  
+   - `Input::ProcessInput`에서 `mousePosition.y`를 설정하지 않아 Y 좌표가 0으로 고정됨.  
+   - 이동 직후 `OnMouseClick`에서 `EndTurn()` 호출로 상태가 Done으로 바뀌어 시각적 이동이 끝나기 전에 턴 종료.  
+   해결: 마우스 Y 갱신 추가, 이동 완료 시에만 `UpdateMovement`에서 state를 Done으로 변경.
+
+4. **턴이 입력 없이 자동 진행**  
+   `HandleInput` 안에 조건 없는 블록에서 `isPlayerTurn`을 매 프레임 토글하고 있음. 해결: 해당 블록 제거, SPACE 키 입력 시에만 턴 전환.
+
+5. **유닛이 화면에서 움직이지 않음**  
+   유닛 렌더링이 `Actor::position` 기준으로만 되어 있고, 이동 시 `gridPosition`만 바뀌어 화면 위치가 갱신되지 않음. 해결: `Unit::Draw`는 `gridPosition`을 2x2 화면 좌표로 변환해 그리며, `AddUnit`/`BeginPlay`에서 `SetPosition` 호출 제거.
+
+6. **네임스페이스/API 리팩터링**  
+   `Wanted` → `FEClone`, `WANTED_API` → `FECLONE_API` 전환 시 엔진·게임 전반 참조 수정. Game 쪽 클래스에 DLL API 매크로가 붙어 링크 불일치(C4273) 발생 → Game 프로젝트 클래스에서는 매크로 제거.
+
+7. **2x2 타일 표시 문자열 초기화**  
+   `Tile::displayStr`을 `char[4][8]`로 바꾼 뒤 생성자 초기화 리스트에 `displayStr(".")`를 두면 C2075(brace-enclosed initializer list 필요) 발생. 해결: 초기화 리스트에서 제거하고, 생성자 본문에서 `strcpy_s`로 네 개의 행 각각 초기화.
+
+8. **좌표·UI 레이아웃**  
+   2x2 멀티라인 적용 후 그리드 좌표와 화면 좌표 불일치. 마우스 클릭은 `(x-1)/2`, `(y-1)/2`로 그리드로 변환. 스탯 패널·툴팁 위치를 `grid*2` 기준으로 재계산해 겹침 방지.
+>>>>>>> Stashed changes
