@@ -18,6 +18,9 @@ namespace FEClone
 		Wall        // 벽: 통과 불가
 	};
 
+	// 지형 타입을 표시용 문자열로 변환
+	const char* GetTerrainTypeName(TerrainType type);
+
 	// 타일 클래스 - 각 타일의 지형 정보를 담음
 	class Tile
 	{

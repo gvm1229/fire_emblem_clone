@@ -68,7 +68,8 @@ namespace FEClone
 
 				if (nextEnemy != nullptr)
 				{
-					enemyAI.RunAI(nextEnemy, playerUnits, grid, movementCalculator, navigationSystem);
+					enemyAI.RunAI(nextEnemy, playerUnits, grid, movementCalculator, navigationSystem,
+						[this](const char* msg) { AddLog(msg); });
 				}
 				else
 				{
@@ -104,6 +105,9 @@ namespace FEClone
 
 	// 스탯 UI 패널
 	DrawStatsPanel();
+
+	// 이벤트 로그 패널
+	DrawLogPanel();
 
 	// 키보드 툴팁
 	DrawKeyboardTooltip();
@@ -295,7 +299,14 @@ namespace FEClone
 						newTile->SetHasUnit(true);
 					}
 
-					// 주의: EndTurn()은 이동이 완료된 후 UpdateMovement()에서 호출됨
+					// 로그: Unit #N moved X tiles to Terrain
+					{
+						int unitNum = selectedUnit->GetUnitIndex() >= 0 ? selectedUnit->GetUnitIndex() + 1 : 0;
+						const char* terrainName = GetTerrainTypeName(newTile ? newTile->GetTerrainType() : TerrainType::Plain);
+						char logBuf[80];
+						sprintf_s(logBuf, sizeof(logBuf), "Unit #%d moved %zu tiles to %s.", unitNum, path.size(), terrainName);
+						AddLog(logBuf);
+					}
 
 					// 선택 해제
 					selectedUnit = nullptr;
@@ -368,22 +379,6 @@ namespace FEClone
 			Renderer::Get().Submit("·", Vector2(baseX + 1, baseY), highlightColor, 8);
 			Renderer::Get().Submit("·", Vector2(baseX, baseY + 1), highlightColor, 8);
 			Renderer::Get().Submit("·", Vector2(baseX + 1, baseY + 1), highlightColor, 8);
-		}
-	}
-
-	// 지형 타입을 문자열로 변환하는 헬퍼 함수
-	const char* GetTerrainTypeName(TerrainType type)
-	{
-		switch (type)
-		{
-		case TerrainType::Plain:    return "Plain";
-		case TerrainType::Forest:   return "Forest";
-		case TerrainType::Mountain: return "Mountain";
-		case TerrainType::Castle:   return "Castle";
-		case TerrainType::Village:  return "Village";
-		case TerrainType::Water:    return "Water";
-		case TerrainType::Wall:     return "Wall";
-		default:                    return "Unknown";
 		}
 	}
 
@@ -501,6 +496,58 @@ namespace FEClone
 		// 구분선 (맵과 입력 모니터 사이) - 2x2 그리드 고려
 		int separatorY = (grid != nullptr) ? grid->GetHeight() * 2 + 2 : 32;
 		Renderer::Get().Submit("--------------------", Vector2(0, separatorY), Color::White, 10);
+	}
+
+	// 이벤트 로그 패널 (유닛 정보 오른쪽). 로그 메시지는 줄 단위로 감싸서 전체 표시.
+	// Submit()은 포인터만 저장하므로, 래핑된 줄은 wrappedLogLines에 보관해 Draw() 완료까지 수명 유지.
+	void BattleLevel::DrawLogPanel()
+	{
+		int panelX = (grid != nullptr) ? grid->GetWidth() * 2 + 6 : 37;
+		int logX = panelX + 20;  // UNIT INFO 패널 오른쪽에 인접
+		int logY = 0;
+
+		Renderer::Get().Submit("======================", Vector2(logX, logY), Color::White, 10);
+		Renderer::Get().Submit("   EVENT LOG", Vector2(logX, logY + 1), Color::Yellow, 10);
+		Renderer::Get().Submit("======================", Vector2(logX, logY + 2), Color::White, 10);
+		logY += 4;
+
+		wrappedLogLines.clear();
+		const int wrapWidth = 48;  // 한 줄 최대 문자 수 (창 너비에 맞춤)
+		for (const std::string& msg : eventLog)
+		{
+			if (msg.empty())
+				continue;
+			size_t pos = 0;
+			while (pos < msg.length())
+			{
+				size_t remain = msg.length() - pos;
+				size_t len = remain > static_cast<size_t>(wrapWidth)
+					? static_cast<size_t>(wrapWidth) : remain;
+				// 줄 끝 근처에서 공백이 있으면 그곳에서 줄바꿈
+				if (len == static_cast<size_t>(wrapWidth) && pos + len < msg.length())
+				{
+					size_t lastSpace = msg.rfind(' ', pos + len);
+					if (lastSpace != std::string::npos && lastSpace >= pos)
+						len = lastSpace - pos + 1;
+				}
+				wrappedLogLines.push_back(msg.substr(pos, len));
+				pos += len;
+				while (pos < msg.length() && msg[pos] == ' ')
+					pos++;
+			}
+		}
+		for (size_t i = 0; i < wrappedLogLines.size(); ++i)
+			Renderer::Get().Submit(wrappedLogLines[i].c_str(), Vector2(logX, logY + static_cast<int>(i)), Color::White, 10);
+	}
+
+	// 이벤트 로그 추가 (최근 10개 유지)
+	void BattleLevel::AddLog(const char* message)
+	{
+		if (message == nullptr || message[0] == '\0')
+			return;
+		eventLog.push_back(message);
+		while (eventLog.size() > static_cast<size_t>(kMaxEventLogEntries))
+			eventLog.pop_front();
 	}
 
 	// 키보드 툴팁 (하단)

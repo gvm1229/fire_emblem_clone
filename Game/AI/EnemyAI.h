@@ -6,6 +6,8 @@
 #include "Algorithm/NavigationSystem.h"
 #include <vector>
 #include <unordered_set>
+#include <functional>
+#include <cstddef>
 
 namespace FEClone
 {
@@ -22,12 +24,14 @@ namespace FEClone
 		// grid: 맵 그리드
 		// movementCalculator: 이동 범위 계산기
 		// navigationSystem: 경로 탐색 시스템
+		// onLog: 이동 시 로그 메시지 전달 (nullptr 가능)
 		void RunAI(
 			Unit* enemy,
 			const std::vector<Unit*>& playerUnits,
 			Grid* grid,
 			MovementCalculator& movementCalculator,
-			NavigationSystem& navigationSystem
+			NavigationSystem& navigationSystem,
+			std::function<void(const char*)> onLog = nullptr
 		);
 
 	private:

@@ -116,4 +116,20 @@ namespace FEClone
 		break;
 		}
 	}
+
+	// 지형 타입을 표시용 문자열로 변환
+	const char* GetTerrainTypeName(TerrainType type)
+	{
+		switch (type)
+		{
+		case TerrainType::Plain:    return "Plain";
+		case TerrainType::Forest:   return "Forest";
+		case TerrainType::Mountain: return "Mountain";
+		case TerrainType::Castle:   return "Castle";
+		case TerrainType::Village:  return "Village";
+		case TerrainType::Water:    return "Water";
+		case TerrainType::Wall:     return "Wall";
+		default:                    return "Unknown";
+		}
+	}
 }

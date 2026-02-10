@@ -1,5 +1,6 @@
 #include "EnemyAI.h"
 #include "Map/Tile.h"
+#include <cstdio>
 
 namespace FEClone
 {
@@ -22,7 +23,8 @@ namespace FEClone
 		const std::vector<Unit*>& playerUnits,
 		Grid* grid,
 		MovementCalculator& movementCalculator,
-		NavigationSystem& navigationSystem)
+		NavigationSystem& navigationSystem,
+		std::function<void(const char*)> onLog)
 	{
 		// 이미 플레이어 유닛에 인접해 있으면 이동하지 않고 턴 종료
 		const Vector2 enemyPos = enemy->GetGridPosition();
@@ -128,6 +130,15 @@ namespace FEClone
 			if (newTile != nullptr)
 			{
 				newTile->SetHasUnit(true);
+			}
+
+			// 로그: Enemy moved X tiles to Terrain
+			if (onLog)
+			{
+				const char* terrainName = GetTerrainTypeName(newTile ? newTile->GetTerrainType() : TerrainType::Plain);
+				char buf[80];
+				sprintf_s(buf, sizeof(buf), "Enemy moved %zu tiles to %s.", path.size(), terrainName);
+				onLog(buf);
 			}
 		}
 		else
