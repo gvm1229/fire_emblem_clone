@@ -33,7 +33,7 @@ namespace FEClone
 		strcpy_s(displayStr[1], sizeof(displayStr[1]), ".");
 		strcpy_s(displayStr[2], sizeof(displayStr[2]), ".");
 		strcpy_s(displayStr[3], sizeof(displayStr[3]), ".");
-		displayColor = Color::White;
+		displayColor = Color::bgGray_WhiteText;
 		break;
 
 	case TerrainType::Forest:
@@ -46,7 +46,7 @@ namespace FEClone
 		strcpy_s(displayStr[1], sizeof(displayStr[1]), "♠");
 		strcpy_s(displayStr[2], sizeof(displayStr[2]), "♠");
 		strcpy_s(displayStr[3], sizeof(displayStr[3]), "♠");
-		displayColor = Color::Green;
+		displayColor = Color::bgGray_GreenText;
 		break;
 
 	case TerrainType::Mountain:
@@ -59,7 +59,7 @@ namespace FEClone
 		strcpy_s(displayStr[1], sizeof(displayStr[1]), "\\");
 		strcpy_s(displayStr[2], sizeof(displayStr[2]), "▓");
 		strcpy_s(displayStr[3], sizeof(displayStr[3]), "▓");
-		displayColor = Color::White;
+		displayColor = Color::bgGray_WhiteText;
 		break;
 
 	case TerrainType::Castle:
@@ -73,7 +73,7 @@ namespace FEClone
 		strcpy_s(displayStr[1], sizeof(displayStr[1]), "╗");
 		strcpy_s(displayStr[2], sizeof(displayStr[2]), "╚");
 		strcpy_s(displayStr[3], sizeof(displayStr[3]), "╝");
-		displayColor = FEClone::Color::Cyan;
+		displayColor = Color::bgGray_CyanText;
 		break;
 
 	case TerrainType::Village:
@@ -86,7 +86,7 @@ namespace FEClone
 		strcpy_s(displayStr[1], sizeof(displayStr[1]), "\\");
 		strcpy_s(displayStr[2], sizeof(displayStr[2]), "▄");
 		strcpy_s(displayStr[3], sizeof(displayStr[3]), "▄");
-		displayColor = FEClone::Color::Yellow;
+		displayColor = Color::bgGray_YellowText;
 		break;
 
 	case TerrainType::Water:
@@ -99,7 +99,7 @@ namespace FEClone
 		strcpy_s(displayStr[1], sizeof(displayStr[1]), "≈");
 		strcpy_s(displayStr[2], sizeof(displayStr[2]), "≈");
 		strcpy_s(displayStr[3], sizeof(displayStr[3]), "≈");
-		displayColor = Color::Blue;
+		displayColor = Color::bgGray_BlueText;
 		break;
 
 	case TerrainType::Wall:
@@ -112,7 +112,7 @@ namespace FEClone
 		strcpy_s(displayStr[1], sizeof(displayStr[1]), "█");
 		strcpy_s(displayStr[2], sizeof(displayStr[2]), "█");
 		strcpy_s(displayStr[3], sizeof(displayStr[3]), "█");
-		displayColor = Color::White;
+		displayColor = Color::bgGray_WhiteText;
 		break;
 		}
 	}

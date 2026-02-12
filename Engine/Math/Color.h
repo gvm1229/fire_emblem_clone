@@ -14,8 +14,15 @@ namespace FEClone
 		Green = FOREGROUND_GREEN,
 		Red = FOREGROUND_RED,
 		Purple = Red | Blue,
-		White = Blue | Green | Red,
 		Yellow = Red | Green,
 		Cyan = Blue | Green,
+		White = Blue | Green | Red,
+		bgGray = BACKGROUND_INTENSITY,
+		bgGray_BlueText = Blue | BACKGROUND_INTENSITY,
+		bgGray_GreenText = Green | BACKGROUND_INTENSITY,
+		bgGray_PurpleText = Purple | BACKGROUND_INTENSITY,
+		bgGray_YellowText = Yellow | BACKGROUND_INTENSITY,
+		bgGray_CyanText = Cyan | BACKGROUND_INTENSITY,
+		bgGray_WhiteText = White | BACKGROUND_INTENSITY,
 	};
 }
