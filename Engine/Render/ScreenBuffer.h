@@ -3,33 +3,29 @@
 #include "Math/Vector2.h"
 #include <Windows.h>
 
-namespace Wanted
+namespace FEClone
 {
-	/*
-	* ÀÛ¼ºÀÚ : Àå¼¼À±
-	* ³¯Â¥   : 2026.02.03
-	* ³»¿ë   : ´õºí ¹öÆÛ¸µ¿¡ »ç¿ëÇÒ Console Output ÇÚµéÀ» °ü¸®ÇÏ´Â Å¬·¡½º.
-	*/
+	// ë”ë¸” ë²„í¼ë§ì— ì‚¬ìš©í•  Console Output í•¸ë“¤ì„ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤.
 	class ScreenBuffer
 	{
 	public:
 		ScreenBuffer(const Vector2& screenSize);
 		~ScreenBuffer();
 
-		// ÄÜ¼Ö ¹öÆÛ¸¦ Áö¿ì´Â ÇÔ¼ö.
+		// ì½˜ì†” ë²„í¼ë¥¼ ì§€ìš°ëŠ” í•¨ìˆ˜.
 		void Clear();
 
-		// ÄÜ¼Ö¿¡ 2Â÷¿ø ±ÛÀÚ ¹è¿­À» ±×¸± ¶§ »ç¿ëÇÏ´Â ÇÔ¼ö.
+		// ì½˜ì†”ì— 2ì°¨ì› ê¸€ì ë°°ì—´ì„ ê·¸ë¦´ ë•Œ ì‚¬ìš©í•˜ëŠ” í•¨ìˆ˜.
 		void Draw(CHAR_INFO* charInfo);
 
-		// ¹öÆÛ ¹İÈ¯ Getter.
+		// ë²„í¼ ë°˜í™˜ Getter.
 		inline HANDLE GetBuffer() const { return buffer; }
 
 	private:
-		// ÄÜ¼Ö Ãâ·Â ÇÚµé.
+		// ì½˜ì†” ì¶œë ¥ í•¸ë“¤.
 		HANDLE buffer = nullptr;
 
-		// È­¸é Å©±â.
+		// í™”ë©´ í¬ê¸°.
 		Vector2 screenSize;
 	};
 }

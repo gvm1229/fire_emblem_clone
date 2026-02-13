@@ -3,16 +3,26 @@
 #include "Common/Common.h"
 #include <Windows.h>
 
-namespace Wanted
+namespace FEClone
 {
-	// ÄÜ¼Ö¿¡ ÅØ½ºÆ® »ö»ó µîÀ» ÁöÁ¤ÇÒ ¶§ »ç¿ëÇÒ
-	// »ö»ó ¿­°ÅÇü.
-	enum class WANTED_API Color : unsigned short
+	// ì½˜ì†”ì— í…ìŠ¤íŠ¸ ìƒ‰ìƒ ë“±ì„ ì§€ì •í•  ë•Œ ì‚¬ìš©í• 
+	// ìƒ‰ìƒ ì—´ê±°í˜•.
+	enum class FECLONE_API Color : unsigned short
 	{
 		Black = 0,
 		Blue = FOREGROUND_BLUE,
 		Green = FOREGROUND_GREEN,
 		Red = FOREGROUND_RED,
+		Purple = Red | Blue,
+		Yellow = Red | Green,
+		Cyan = Blue | Green,
 		White = Blue | Green | Red,
+		bgGray = BACKGROUND_INTENSITY,
+		bgGray_BlueText = Blue | BACKGROUND_INTENSITY,
+		bgGray_GreenText = Green | BACKGROUND_INTENSITY,
+		bgGray_PurpleText = Purple | BACKGROUND_INTENSITY,
+		bgGray_YellowText = Yellow | BACKGROUND_INTENSITY,
+		bgGray_CyanText = Cyan | BACKGROUND_INTENSITY,
+		bgGray_WhiteText = White | BACKGROUND_INTENSITY,
 	};
 }

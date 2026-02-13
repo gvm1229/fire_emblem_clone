@@ -2,15 +2,15 @@
 
 #include "Common/Common.h"
 
-// ��� ���迡 �ִ� Ŭ���� ����
-// ����(�����߿�) ����ȯ�� �ϱ� ���� ����ϴ� Ŭ����.
+// 상속 관계에 있는 클래스 간의
+// 동적(실행중에) 형변환을 하기 위해 사용하는 클래스.
 // RunTime-Type-Information.
-namespace Wanted
+namespace FEClone
 {
-	// Ŀ���� RTTI�� �����ϴ� Ŭ������ �ֻ��� Ŭ����.
-	// C#�� Object, Java�� object, 
-	// �𸮾��� UObject�� �����غ� �� ����.
-	class WANTED_API RTTI
+	// 커스텀 RTTI를 제공하는 클래스의 최상위 클래스.
+	// C#의 Object, Java의 object, 
+	// 언리얼의 UObject로 생각해볼 수 있음.
+	class FECLONE_API RTTI
 	{
 	public:
 		virtual const size_t& GetType() const = 0;
@@ -25,7 +25,7 @@ namespace Wanted
 			return false;
 		}
 
-		// Ÿ�� ���� �Լ�.
+		// 타입 질문 함수.
 		template<typename T>
 		bool IsTypeOf()
 		{
@@ -56,8 +56,8 @@ namespace Wanted
 	};
 }
 
-// RTTI�� ������ Ŭ������ �߰��� ��ũ��.
-// �Ʒ� �ڵ忡�� Type, ParentType�� ���� Ÿ������ ��ȯ�Ǿ� ����/�ٿ��ֱ� ��.
+// RTTI를 선언할 클래스에 추가할 매크로.
+// 아래 코드에서 Type, ParentType이 실제 타입으로 변환되어 복사/붙여넣기 됨.
 #define RTTI_DECLARATIONS(Type, ParentType)												\
 friend class RTTI;																		\
 protected:																				\
@@ -84,3 +84,7 @@ public:																					\
 	{																					\
 		return Is(rtti->GetType());														\
 	}
+
+// RTTI를 사용하는 클래스의 구현(.cpp) 파일에 추가할 매크로
+// TypeIdClass()는 헤더에서 inline으로 정의되므로 별도 정의 불필요
+#define RTTI_DEFINITIONS(Type)

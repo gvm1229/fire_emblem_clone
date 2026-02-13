@@ -7,7 +7,7 @@ Timer::Timer(float targetTime)
 
 void Timer::Tick(float deltaTime)
 {
-	// °æ°ú ½Ã°£ ¾÷µ¥ÀÌÆ®.
+	// ê²½ê³¼ ì‹œê°„ ì—…ë°ì´íŠ¸.
 	elapsedTime += deltaTime;
 }
 

@@ -66,7 +66,8 @@
       <AdditionalLibraryDirectories>..\Library\Engine\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y</Command>
+      <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y
+xcopy ..\Assets $(OutDir)..\Assets\ /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -86,30 +87,29 @@
       <AdditionalLibraryDirectories>..\Library\Engine\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y</Command>
+      <Command>xcopy ..\Library\Engine\$(Platform)\$(Configuration)\Engine.dll $(OutDir)\ /e /y
+xcopy ..\Assets $(OutDir)..\Assets\ /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Actor\Enemy.cpp" />
-    <ClCompile Include="Actor\EnemyBullet.cpp" />
-    <ClCompile Include="Actor\EnemyDestroyEffect.cpp" />
-    <ClCompile Include="Actor\EnemySpawner.cpp" />
-    <ClCompile Include="Actor\MouseTester.cpp" />
-    <ClCompile Include="Actor\Player.cpp" />
-    <ClCompile Include="Actor\PlayerBullet.cpp" />
-    <ClCompile Include="Level\GameLevel.cpp" />
+    <ClCompile Include="AI\EnemyAI.cpp" />
+    <ClCompile Include="Level\BattleLevel.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Map\Grid.cpp" />
+    <ClCompile Include="Map\Tile.cpp" />
+    <ClCompile Include="System\MovementCalculator.cpp" />
+    <ClCompile Include="Unit\Unit.cpp" />
     <ClCompile Include="Util\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Actor\Enemy.h" />
-    <ClInclude Include="Actor\EnemyBullet.h" />
-    <ClInclude Include="Actor\EnemyDestroyEffect.h" />
-    <ClInclude Include="Actor\EnemySpawner.h" />
-    <ClInclude Include="Actor\MouseTester.h" />
-    <ClInclude Include="Actor\Player.h" />
-    <ClInclude Include="Actor\PlayerBullet.h" />
-    <ClInclude Include="Level\GameLevel.h" />
+    <ClInclude Include="AI\EnemyAI.h" />
+    <ClInclude Include="Level\BattleLevel.h" />
+    <ClInclude Include="Map\Grid.h" />
+    <ClInclude Include="Map\Tile.h" />
+    <ClInclude Include="System\MovementCalculator.h" />
+    <ClInclude Include="Unit\Unit.h" />
+    <ClInclude Include="Unit\UnitClass.h" />
+    <ClInclude Include="Unit\UnitStats.h" />
     <ClInclude Include="Util\Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

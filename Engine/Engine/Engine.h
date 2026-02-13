@@ -2,89 +2,89 @@
 
 #include "Common/Common.h"
 
-namespace Wanted
+namespace FEClone
 {
-	// Àü¹æ ¼±¾ğ.
+	// ì „ë°© ì„ ì–¸.
 	class Input;
 	class Renderer;
-	// Tip: °ÔÀÓ ¿£Áø ¸¸µé ¶§ ½Ã½ºÅÛÀûÀÎ °ÍµéÀº ¸í½ÃÀûÀ¸·Î ½Ì±ÛÅæÀ¸·Î Àü¿ªÀûÀ¸·Î Á¢±ÙÇÏµµ·Ï ÇÔ.
+	// Tip: ê²Œì„ ì—”ì§„ ë§Œë“¤ ë•Œ ì‹œìŠ¤í…œì ì¸ ê²ƒë“¤ì€ ëª…ì‹œì ìœ¼ë¡œ ì‹±ê¸€í†¤ìœ¼ë¡œ ì „ì—­ì ìœ¼ë¡œ ì ‘ê·¼í•˜ë„ë¡ í•¨.
 
 	// Main game engine class.
-	class WANTED_API Engine
+	class FECLONE_API Engine
 	{
-		// ¿£Áø ¼³Á¤ ±¸Á¶Ã¼.
+		// ì—”ì§„ ì„¤ì • êµ¬ì¡°ì²´.
 		struct EngineSetting
 		{
-			// ÇÁ·¹ÀÓ ¼Óµµ.
+			// í”„ë ˆì„ ì†ë„.
 			float framerate = 0.0f;
 
-			// È­¸é ³Êºñ.
+			// í™”ë©´ ë„ˆë¹„.
 			int width = 0;
 
-			// È­¸é ³ôÀÌ.
+			// í™”ë©´ ë†’ì´.
 			int height = 0;
 		};
 
 	public:
 		Engine();
-		// Tip: ¼Ò¸êÀÚ¿¡ virtual ºÙ¿©Áà¾ß ÀÚ¼Õ °´Ã¼¿¡¼­µµ ´©¶ôµÇÁö ¾Ê°í Àß ½ÇÇàµÊ
+		// Tip: ì†Œë©¸ìì— virtual ë¶™ì—¬ì¤˜ì•¼ ìì† ê°ì²´ì—ì„œë„ ëˆ„ë½ë˜ì§€ ì•Šê³  ì˜ ì‹¤í–‰ë¨
 		virtual ~Engine();
 
-		// ¿£Áø ·çÇÁ(°ÔÀÓ ·çÇÁ).
+		// ì—”ì§„ ë£¨í”„(ê²Œì„ ë£¨í”„).
 		void Run();
 
-		// ¿£Áø Á¾·á ÇÔ¼ö.
+		// ì—”ì§„ ì¢…ë£Œ í•¨ìˆ˜.
 		void QuitEngine();
 
-		// »õ ·¹º§À» Ãß°¡(¼³Á¤)ÇÏ´Â ÇÔ¼ö.
+		// ìƒˆ ë ˆë²¨ì„ ì¶”ê°€(ì„¤ì •)í•˜ëŠ” í•¨ìˆ˜.
 		void SetNewLevel(class Level* newLevel);
 
-		// Àü¿ª Á¢±Ù ÇÔ¼ö.
+		// ì „ì—­ ì ‘ê·¼ í•¨ìˆ˜.
 		static Engine& Get();
 
-		// È­¸é ³Êºñ ¹İÈ¯ ÇÔ¼ö.
+		// í™”ë©´ ë„ˆë¹„ ë°˜í™˜ í•¨ìˆ˜.
 		inline int GetWidth() const { return setting.width; }
 
-		// È­¸é ³ôÀÌ ¹İÈ¯ ÇÔ¼ö.
+		// í™”ë©´ ë†’ì´ ë°˜í™˜ í•¨ìˆ˜.
 		inline int GetHeight() const { return setting.height; }
 
 	protected:
-		// Á¤¸® ÇÔ¼ö.
+		// ì •ë¦¬ í•¨ìˆ˜.
 		void Shutdown();
 
-		// ¼³Á¤ ÆÄÀÏ ·Îµå ÇÔ¼ö.
+		// ì„¤ì • íŒŒì¼ ë¡œë“œ í•¨ìˆ˜.
 		void LoadSetting();
 
-		// °ÔÀÓ ÇÃ·¹ÀÌ ½ÃÀÛ ÇÔ¼ö.
-		// UnityÀÇ °æ¿ì: Start/Awake.
+		// ê²Œì„ í”Œë ˆì´ ì‹œì‘ í•¨ìˆ˜.
+		// Unityì˜ ê²½ìš°: Start/Awake.
 		void BeginPlay();
 
-		// ¾÷µ¥ÀÌÆ® ÇÔ¼ö (deltaTime: ÇÁ·¹ÀÓ °£°İ ½Ã°£)
+		// ì—…ë°ì´íŠ¸ í•¨ìˆ˜ (deltaTime: í”„ë ˆì„ ê°„ê²© ì‹œê°„)
 		void Tick(float deltaTime);
 
-		// ±×¸®±â ÇÔ¼ö. (Draw/Render).
+		// ê·¸ë¦¬ê¸° í•¨ìˆ˜. (Draw/Render).
 		void Draw();
 
 	protected:
-		// ¿£Áø Á¾·á ÇÃ·¡±× (Á¶°ÇºÎ ¹«ÇÑ·çÇÁ)
+		// ì—”ì§„ ì¢…ë£Œ í”Œë˜ê·¸ (ì¡°ê±´ë¶€ ë¬´í•œë£¨í”„)
 		bool isQuit = false;
 
-		// ¿£Áø ¼³Á¤ °ª.
+		// ì—”ì§„ ì„¤ì • ê°’.
 		EngineSetting setting;
 
-		// ÀÔ·Â °ü¸®ÀÚ.
+		// ì…ë ¥ ê´€ë¦¬ì.
 		Input* input = nullptr;
 
-		// ·»´õ·¯ °´Ã¼.
+		// ë Œë”ëŸ¬ ê°ì²´.
 		Renderer* renderer = nullptr;
 
-		// ¸ŞÀÎ ·¹º§.
+		// ë©”ì¸ ë ˆë²¨.
 		class Level* mainLevel = nullptr;
 
-		// ÀüÈ¯ÇÒ ·¹º§À» ÀÓ½Ã ÀúÀåÇÏ´Â º¯¼ö.
+		// ì „í™˜í•  ë ˆë²¨ì„ ì„ì‹œ ì €ì¥í•˜ëŠ” ë³€ìˆ˜.
 		class Level* nextLevel = nullptr;
 
-		// Àü¿ª º¯¼ö.
+		// ì „ì—­ ë³€ìˆ˜.
 		static Engine* instance;
 	};
 }
