@@ -180,7 +180,6 @@ Submit에 넘기는 문자열이 **실제로 그릴 때까지 유효하도록**,
 
 ---
 
-<<<<<<< Updated upstream
 ## 게임 종료 시 크래시 (해결됨)
 
 ### 1. 현상
@@ -244,7 +243,6 @@ Submit에 넘기는 문자열이 **실제로 그릴 때까지 유효하도록**,
   - `ProcessPendingAttackAfterMove()`: `PerformCombat()` 호출 직후 `if (gameOver) return;` 추가.  
   - `OnMouseClick()` (인접 적 공격 분기): `PerformCombat()` 호출 직후 `if (gameOver) return;` 추가.  
   - `Draw()`: `gameOver`일 때 적 유닛 루프 생략, `gameOver`일 때 `Level::Draw()` 생략.
-=======
 ## 프로젝트 진행 중 겪었던 어려움 (요약)
 
 1. **콘솔 UTF-8/유니코드 출력**  
@@ -272,4 +270,3 @@ Submit에 넘기는 문자열이 **실제로 그릴 때까지 유효하도록**,
 
 8. **좌표·UI 레이아웃**  
    2x2 멀티라인 적용 후 그리드 좌표와 화면 좌표 불일치. 마우스 클릭은 `(x-1)/2`, `(y-1)/2`로 그리드로 변환. 스탯 패널·툴팁 위치를 `grid*2` 기준으로 재계산해 겹침 방지.
->>>>>>> Stashed changes
