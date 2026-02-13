@@ -3,38 +3,38 @@
 
 namespace FEClone
 {
-RTTI_DEFINITIONS(Unit)
-
-// 생성자
-Unit::Unit(UnitClass unitClass)
-	: Actor()
-	, stats()
-	, faction(Faction::Player)
-	, unitClass(unitClass)
-	, state(UnitState::Idle)
-	, gridPosition(0, 0)
-	, moveSpeed(5.0f)
-	, moveTimer(0.0f)
-	, displayStr("")
-	, unitIndex(-1)
-{
-	strcpy_s(displayStr, sizeof(displayStr), GetUnitClassString(unitClass));
-
-	// Lord 유닛은 스탯을 50% 강화
-	if (unitClass == UnitClass::Lord)
+	RTTI_DEFINITIONS(Unit)
+	
+	// 생성자
+	Unit::Unit(UnitClass unitClass)
+		: Actor()
+		, stats()
+		, faction(Faction::Player)
+		, unitClass(unitClass)
+		, state(UnitState::Idle)
+		, gridPosition(0, 0)
+		, moveSpeed(5.0f)
+		, moveTimer(0.0f)
+		, displayStr("")
+		, unitIndex(-1)
 	{
-		stats.maxHP = static_cast<int>(stats.maxHP * 1.5f);
-		stats.currentHP = stats.maxHP;
-		stats.strength = static_cast<int>(stats.strength * 1.5f);
-		stats.magic = (stats.magic == 0) ? 3 : static_cast<int>(stats.magic * 1.5f);
-		stats.skill = static_cast<int>(stats.skill * 1.5f);
-		stats.speed = static_cast<int>(stats.speed * 1.5f);
-		stats.luck = (stats.luck == 0) ? 3 : static_cast<int>(stats.luck * 1.5f);
-		stats.defense = static_cast<int>(stats.defense * 1.5f);
-		stats.resistance = (stats.resistance == 0) ? 3 : static_cast<int>(stats.resistance * 1.5f);
-		stats.movement = static_cast<int>(stats.movement * 1.5f);
+		strcpy_s(displayStr, sizeof(displayStr), GetUnitClassString(unitClass));
+	
+		// Lord 유닛은 스탯을 50% 강화
+		if (unitClass == UnitClass::Lord)
+		{
+			stats.maxHP = static_cast<int>(stats.maxHP * 1.5f);
+			stats.currentHP = stats.maxHP;
+			stats.strength = static_cast<int>(stats.strength * 1.5f);
+			stats.magic = (stats.magic == 0) ? 3 : static_cast<int>(stats.magic * 1.5f);
+			stats.skill = static_cast<int>(stats.skill * 1.5f);
+			stats.speed = static_cast<int>(stats.speed * 1.5f);
+			stats.luck = (stats.luck == 0) ? 3 : static_cast<int>(stats.luck * 1.5f);
+			stats.defense = static_cast<int>(stats.defense * 1.5f);
+			stats.resistance = (stats.resistance == 0) ? 3 : static_cast<int>(stats.resistance * 1.5f);
+			stats.movement = static_cast<int>(stats.movement * 1.5f);
+		}
 	}
-}
 
 	// 소멸자
 	Unit::~Unit()
